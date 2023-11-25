@@ -1,5 +1,10 @@
-export default {
-  nitro: {
-    preset: 'vercel-edge',
+// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  css: ["~/assets/css/main.css"],
+  modules: ["@element-plus/nuxt", "@nuxtjs/google-fonts"],
+  googleFonts: {
+    families: {
+      Roboto: true,
+    },
   },
-};
+});
