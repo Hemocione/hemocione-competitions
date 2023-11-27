@@ -1,14 +1,16 @@
 <template>
-  <div class="navBar">
-    <img src="/img/title.svg" />
+  <div class="navbar">
+    <img class="navbar-logo" src="/img/title.svg" />
   </div>
 </template>
 
 <style>
-.navBar {
+.navbar {
   width: 100%;
-  padding: 10px 0;
-  padding-left: 30px;
   background-color: black;
+}
+.navbar-logo {
+  margin: 10px 0;
+  margin-left: 30px;
 }
 </style>

@@ -1,28 +1,30 @@
 <template>
   <NavBar />
-  <div class="summaries-list">
-    <h1 :style="{ margin: 0 }">Competições</h1>
-    <div>
-      <div :style="{ margin: '10px 0 15px 0' }">
-        Clique em uma competição para registrar sua doação ou acessar as
-        informações.
+  <div :style="{ 'background-color': '#F9F9FA' }">
+    <div class="summaries-list">
+      <h1 :style="{ margin: 0 }">Competições</h1>
+      <div>
+        <div :style="{ margin: '10px 0 15px 0' }">
+          Clique em uma competição para registrar sua doação ou acessar as
+          informações.
+        </div>
       </div>
-    </div>
-    <div>
-      <div :class="onGoingSwitchClass" @click="switchOnGoing(true)">
-        Em andamento
+      <div>
+        <div :class="onGoingSwitchClass" @click="switchOnGoing(true)">
+          Em andamento
+        </div>
+        <div :class="closedSwitchClass" @click="switchOnGoing(false)">
+          Encerradas
+        </div>
       </div>
-      <div :class="closedSwitchClass" @click="switchOnGoing(false)">
-        Encerradas
+      <div>
+        <CompetitionSummary
+          v-for="s in summaries"
+          :title="s.title"
+          :start="s.start"
+          :end="s.end"
+        />
       </div>
-    </div>
-    <div>
-      <CompetitionSummary
-        v-for="s in summaries"
-        :title="s.title"
-        :start="s.start"
-        :end="s.end"
-      />
     </div>
   </div>
 </template>

@@ -1,10 +1,33 @@
+:root {
+  --hemo-color-primary: #bb0a08;
+  --hemo-color-primary-dark: #8a0000;
+  --hemo-color-primary-light-2: #e93c3c;
+  --hemo-color-primary-light-1: #ff6262;
+  --hemo-color-secondary: #f2f2f2;
+  --hemo-color-success: #2ac769;
+  --hemo-color-warn: #f6a609;
+  --hemo-color-text-secondary: #25282b;
+  --hemo-color-text-secondary-opaque: rgba(37, 40, 43, 0.2);
+  --hemo-color-text-primary: #f2f2f2;
+  --el-color-primary: var(--hemo-color-primary-light-2) !important;
+  --el-color-primary-light-3: var(--hemo-color-primary-light-1) !important;
+  --el-color-primary-light-5: var(--hemo-color-primary-light-1) !important;
+  --el-color-primary-dark-2: var(--hemo-color-primary-dark) !important;
+  --el-color-main: var(--hemo-color-secondary) !important;
+  --el-color-success: var(--hemo-color-success) !important;
+  --el-color-warning: var(--hemo-color-warn) !important;
+  --el-color-danger: var(--hemo-color-warn) !important;
+  --el-color-info: var(--hemo-color-primary) !important;
+  --el-color-text-primary: var(--hemo-color-text-primary) !important;
+  --el-color-text-secondary: var(--hemo-color-text-secondary) !important;
+  --el-border-color-light: var(--hemo-color-primary-dark) !important;
+}
 html,
 body {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
-  background-color: #f9f9fa;
   font-family: "Roboto", monospace, -apple-system, BlinkMacSystemFont,
     "Segoe UI", "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
