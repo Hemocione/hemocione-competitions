@@ -8,11 +8,10 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "nuxt": "^3.0.0"
-  },
-  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
     "@element-plus/nuxt": "^1.0.7",
     "@nuxtjs/google-fonts": "^3.1.0",
-    "yarn": "^1.22.21"
+    "element-plus": "^2.4.3",
+    "nuxt": "^3.8.0"
   }
 }
