@@ -12,12 +12,19 @@
       </div>
       <div class="status-teams">
         <div class="details-status">EM ANDAMENTO</div>
+        <div :style="{ flex: 70 }"></div>
+        <el-select placeholder="Equipes">
+          <el-option label="Zone one" value="shanghai" />
+          <el-option label="Zone two" value="beijing" />
+        </el-select>
       </div>
       <div class="details-grid">
         <div class="last-donators">
           <div class="last-donators-title">Últimos doadores</div>
           <div class="last-donators-item">
-            <div :style="{ flex: 1 }"><img src="/img/defaultAvatar.svg" /></div>
+            <div :style="{ flex: 1 }">
+              <img src="/img/defaultAvatar.svg" />
+            </div>
             <span :style="{ flex: 8 }">Doador da Silva Nome Gra...</span>
             <span class="last-donators-item-blood-type">A+</span>
           </div>
@@ -46,26 +53,47 @@
           <div class="place-strip">
             <div :style="{ flex: 5 }"></div>
             <div class="team-image-name">
-              <div><img src="/img/defaultAvatar.svg" /></div>
+              <div :style="{ 'margin-bottom': '10px' }">
+                <img class="podium-user" src="/img/defaultAvatar.svg" />
+              </div>
               <div>EQUIPE A</div>
             </div>
-            <div class="snd podium-step"></div>
+            <div class="snd podium-step">
+              <img class="medal" src="/img/silver.svg" />
+              <br />
+              <br />
+              <span>12</span>
+            </div>
           </div>
           <div class="place-strip">
             <div :style="{ flex: 5 }"></div>
             <div class="team-image-name">
-              <div><img src="/img/defaultAvatar.svg" /></div>
+              <div :style="{ 'margin-bottom': '10px' }">
+                <img class="podium-user" src="/img/defaultAvatar.svg" />
+              </div>
               <div>EQUIPE B</div>
             </div>
-            <div class="st podium-step"></div>
+            <div class="st podium-step">
+              <img class="medal" src="/img/gold.svg" />
+              <br />
+              <br />
+              <span>13</span>
+            </div>
           </div>
           <div class="place-strip">
             <div :style="{ flex: 5 }"></div>
             <div class="team-image-name">
-              <div><img src="/img/defaultAvatar.svg" /></div>
+              <div :style="{ 'margin-bottom': '10px' }">
+                <img class="podium-user" src="/img/defaultAvatar.svg" />
+              </div>
               <div>EQUIPE C</div>
             </div>
-            <div class="rd podium-step"></div>
+            <div class="rd podium-step">
+              <img class="medal" src="/img/bronze.svg" />
+              <br />
+              <br />
+              <span>9</span>
+            </div>
           </div>
         </div>
         <div class="ranking">
@@ -107,12 +135,18 @@
   <div :style="{ height: '11vh' }"></div>
   <div class="register-sticky">
     <div :style="{ flex: 1 }"></div>
-    <el-button class="register-button" type="primary">
-      + Registrar nova doação
-    </el-button>
+    <div class="register-button-strip">
+      <NuxtLink to="/donation">
+        <el-button class="register-button" type="primary">
+          + Registrar nova doação
+        </el-button>
+      </NuxtLink>
+    </div>
     <div :style="{ flex: 1 }"></div>
   </div>
 </template>
+
+<script lang="ts" setup></script>
 
 <style>
 .details-main-body {
@@ -126,13 +160,17 @@
   margin-bottom: 60px;
 }
 .details-status {
+  flex: 12;
+  text-align: center;
+  height: 20px;
   background-color: #f3f2f1;
-  padding: 10px;
-  display: inline-block;
   border-radius: 15px;
   border: solid #dbdde0 2px;
+  padding: 10px;
+  display: inline-block;
 }
 .status-teams {
+  display: flex;
   margin-bottom: 35px;
 }
 .last-donators {
@@ -190,10 +228,12 @@
   bottom: 0;
   display: flex;
 }
-.register-button {
-  width: 90%;
+.register-button-strip {
   margin: auto;
   flex: 3;
+}
+.register-button {
+  width: 100%;
 }
 .podium {
   border: solid #dbdde0 2px;
@@ -208,10 +248,13 @@
 .place-strip {
   display: flex;
   flex-direction: column;
+  gap: 10px;
   flex: 1;
   height: 100%;
 }
 .podium-step {
+  padding: 20px;
+  text-align: center;
   border-top-right-radius: 30px;
   border-top-left-radius: 30px;
 }
@@ -229,5 +272,11 @@
 }
 .team-image-name {
   text-align: center;
+}
+.podium-user {
+  height: 60px;
+}
+.medal {
+  height: 50px;
 }
 </style>

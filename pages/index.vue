@@ -1,32 +1,38 @@
 <template>
-  <NavBar />
-  <div :style="{ 'background-color': '#F9F9FA' }">
-    <div class="summaries-list">
-      <h1 :style="{ margin: 0 }">Competições</h1>
-      <div>
-        <div :style="{ margin: '10px 0 15px 0' }">
-          Clique em uma competição para registrar sua doação ou acessar as
-          informações.
+  <el-container :style="{ 'min-height': '100%' }">
+    <el-header :style="{ padding: '0px' }">
+      <NavBar />
+    </el-header>
+    <el-main class="main-strip">
+      <div :style="{ flex: 1 }"></div>
+      <div class="summaries-list">
+        <h1 :style="{ margin: 0 }">Competições</h1>
+        <div>
+          <div :style="{ margin: '10px 0 15px 0' }">
+            Clique em uma competição para registrar sua doação ou acessar as
+            informações.
+          </div>
+        </div>
+        <div>
+          <div :class="onGoingSwitchClass" @click="switchOnGoing(true)">
+            Em andamento
+          </div>
+          <div :class="closedSwitchClass" @click="switchOnGoing(false)">
+            Encerradas
+          </div>
+        </div>
+        <div>
+          <CompetitionSummary
+            v-for="s in summaries"
+            :title="s.title"
+            :start="s.start"
+            :end="s.end"
+          />
         </div>
       </div>
-      <div>
-        <div :class="onGoingSwitchClass" @click="switchOnGoing(true)">
-          Em andamento
-        </div>
-        <div :class="closedSwitchClass" @click="switchOnGoing(false)">
-          Encerradas
-        </div>
-      </div>
-      <div>
-        <CompetitionSummary
-          v-for="s in summaries"
-          :title="s.title"
-          :start="s.start"
-          :end="s.end"
-        />
-      </div>
-    </div>
-  </div>
+      <div :style="{ flex: 1 }"></div>
+    </el-main>
+  </el-container>
 </template>
 
 <script setup lang="ts">
@@ -68,21 +74,23 @@ function switchOnGoing(v: boolean) {
   margin-bottom: 20px;
   cursor: pointer;
 }
-
 .switch-on {
   border-bottom: solid 5px #bb0a08;
 }
-
 .switch-off {
   color: gray;
 }
-
 .summaries-list {
   padding: 20px;
-  margin: auto;
-  margin-top: 0;
-  width: 70%;
   background-color: white;
-  height: 100%;
+  flex: 4;
+}
+.main-strip {
+  background-color: #f9f9fa;
+  min-height: 100%;
+  padding: 0px;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
 }
 </style>

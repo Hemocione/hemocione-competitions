@@ -23,7 +23,8 @@
   --el-border-color-light: var(--hemo-color-primary-dark) !important;
 }
 html,
-body {
+body,
+#__nuxt {
   height: 100%;
   width: 100%;
   margin: 0;
