@@ -7,4 +7,7 @@ export default defineNuxtConfig({
       Roboto: true,
     },
   },
+  nitro: {
+    preset: 'vercel',
+  },
 });
