@@ -1,159 +1,176 @@
 <template>
-  <NavBar />
-  <div :style="{ display: 'flex' }">
-    <div :style="{ flex: 1 }">
-      <NuxtLink to="/">
-        <img :style="{ margin: '40px' }" src="/img/arrow.svg"
-      /></NuxtLink>
-    </div>
-    <div class="details-strip">
-      <div class="details-title">
-        <h1>Competição IDOR: Enfermagem x Radiologia</h1>
+  <div>
+    <NavBar />
+    <div class="details-container">
+      <div :style="{ flex: 1 }">
+        <NuxtLink to="/">
+          <img :style="{ margin: '40px' }" src="/img/arrow.svg">
+        </NuxtLink>
       </div>
-      <div class="status-teams">
-        <div class="details-status">EM ANDAMENTO</div>
-        <div :style="{ flex: 70 }"></div>
-        <el-select placeholder="Equipes">
-          <el-option label="Zone one" value="shanghai" />
-          <el-option label="Zone two" value="beijing" />
-        </el-select>
-      </div>
-      <div class="details-grid">
-        <div class="last-donators">
-          <div class="last-donators-title">Últimos doadores</div>
-          <div class="last-donators-item">
-            <div :style="{ flex: 1 }">
-              <img src="/img/defaultAvatar.svg" />
+      <div class="details-strip">
+        <div class="details-title">
+          <h1>Competição IDOR: Enfermagem x Radiologia</h1>
+        </div>
+        <div class="status-teams">
+          <div class="details-status">
+            EM ANDAMENTO
+          </div>
+          <div :style="{ flex: 70 }" />
+          <el-select placeholder="Equipes">
+            <el-option label="Zone one" value="shanghai" />
+            <el-option label="Zone two" value="beijing" />
+          </el-select>
+        </div>
+        <div class="details-grid">
+          <div class="last-donators">
+            <div class="last-donators-title">
+              Últimos doadores
             </div>
-            <span :style="{ flex: 8 }">Doador da Silva Nome Gra...</span>
-            <span class="last-donators-item-blood-type">A+</span>
+            <div class="last-donators-item">
+              <div :style="{ flex: 1 }">
+                <img src="/img/defaultAvatar.svg">
+              </div>
+              <span :style="{ flex: 8 }">Doador da Silva Nome Gra...</span>
+              <span class="last-donators-item-blood-type">A+</span>
+            </div>
+            <div class="last-donators-item">
+              <div :style="{ flex: 1 }">
+                <img src="/img/defaultAvatar.svg">
+              </div>
+              <span :style="{ flex: 8 }">Doador da Silva</span>
+              <span class="last-donators-item-blood-type">A+</span>
+            </div>
+            <div class="last-donators-item">
+              <div :style="{ flex: 1 }">
+                <img src="/img/defaultAvatar.svg">
+              </div>
+              <span :style="{ flex: 8 }">Doador da Silva</span>
+              <span class="last-donators-item-blood-type">A+</span>
+            </div>
+            <div class="last-donators-item">
+              <div :style="{ flex: 1 }">
+                <img src="/img/defaultAvatar.svg">
+              </div>
+              <span :style="{ flex: 8 }">Doador da Silva</span>
+              <span class="last-donators-item-blood-type">A+</span>
+            </div>
+            <div class="last-donators-item">
+              <div :style="{ flex: 1 }">
+                <img src="/img/defaultAvatar.svg">
+              </div>
+              <span :style="{ flex: 8 }">Doador da Silva</span>
+              <span class="last-donators-item-blood-type">A+</span>
+            </div>
           </div>
-          <div class="last-donators-item">
-            <div :style="{ flex: 1 }"><img src="/img/defaultAvatar.svg" /></div>
-            <span :style="{ flex: 8 }">Doador da Silva</span>
-            <span class="last-donators-item-blood-type">A+</span>
+          <div class="podium">
+            <div class="place-strip">
+              <div :style="{ flex: 5 }" />
+              <div class="team-image-name">
+                <div :style="{ 'margin-bottom': '10px' }">
+                  <img class="podium-user" src="/img/defaultAvatar.svg">
+                </div>
+                <div>EQUIPE A</div>
+              </div>
+              <div class="snd podium-step">
+                <img class="medal" src="/img/silver.svg">
+                <br>
+                <br>
+                <span>12</span>
+              </div>
+            </div>
+            <div class="place-strip">
+              <div :style="{ flex: 5 }" />
+              <div class="team-image-name">
+                <div :style="{ 'margin-bottom': '10px' }">
+                  <img class="podium-user" src="/img/defaultAvatar.svg">
+                </div>
+                <div>EQUIPE B</div>
+              </div>
+              <div class="st podium-step">
+                <img class="medal" src="/img/gold.svg">
+                <br>
+                <br>
+                <span>13</span>
+              </div>
+            </div>
+            <div class="place-strip">
+              <div :style="{ flex: 5 }" />
+              <div class="team-image-name">
+                <div :style="{ 'margin-bottom': '10px' }">
+                  <img class="podium-user" src="/img/defaultAvatar.svg">
+                </div>
+                <div>EQUIPE C</div>
+              </div>
+              <div class="rd podium-step">
+                <img class="medal" src="/img/bronze.svg">
+                <br>
+                <br>
+                <span>9</span>
+              </div>
+            </div>
           </div>
-          <div class="last-donators-item">
-            <div :style="{ flex: 1 }"><img src="/img/defaultAvatar.svg" /></div>
-            <span :style="{ flex: 8 }">Doador da Silva</span>
-            <span class="last-donators-item-blood-type">A+</span>
-          </div>
-          <div class="last-donators-item">
-            <div :style="{ flex: 1 }"><img src="/img/defaultAvatar.svg" /></div>
-            <span :style="{ flex: 8 }">Doador da Silva</span>
-            <span class="last-donators-item-blood-type">A+</span>
-          </div>
-          <div class="last-donators-item">
-            <div :style="{ flex: 1 }"><img src="/img/defaultAvatar.svg" /></div>
-            <span :style="{ flex: 8 }">Doador da Silva</span>
-            <span class="last-donators-item-blood-type">A+</span>
+          <div class="ranking">
+            <div class="ranking-title">
+              <span :style="{ flex: 1 }">Classificação</span>
+              <span :style="{ flex: 1 }">Equipes</span>
+              <span :style="{ flex: 1 }">Doações</span>
+            </div>
+            <div class="ranking-row">
+              <span :style="{ flex: 1 }">1</span>
+              <span :style="{ flex: 1 }">Equipe B</span>
+              <span :style="{ flex: 1 }">13</span>
+            </div>
+            <div class="ranking-row">
+              <span :style="{ flex: 1 }">2</span>
+              <span :style="{ flex: 1 }">Equipe C</span>
+              <span :style="{ flex: 1 }">15</span>
+            </div>
+            <div class="ranking-row">
+              <span :style="{ flex: 1 }">3</span>
+              <span :style="{ flex: 1 }">Equipe D</span>
+              <span :style="{ flex: 1 }">15</span>
+            </div>
+            <div class="ranking-row">
+              <span :style="{ flex: 1 }">4</span>
+              <span :style="{ flex: 1 }">Equipe E</span>
+              <span :style="{ flex: 1 }">15</span>
+            </div>
+            <div class="ranking-row">
+              <span :style="{ flex: 1 }">5</span>
+              <span :style="{ flex: 1 }">Equipe F</span>
+              <span :style="{ flex: 1 }">15</span>
+            </div>
           </div>
         </div>
-        <div class="podium">
-          <div class="place-strip">
-            <div :style="{ flex: 5 }"></div>
-            <div class="team-image-name">
-              <div :style="{ 'margin-bottom': '10px' }">
-                <img class="podium-user" src="/img/defaultAvatar.svg" />
-              </div>
-              <div>EQUIPE A</div>
-            </div>
-            <div class="snd podium-step">
-              <img class="medal" src="/img/silver.svg" />
-              <br />
-              <br />
-              <span>12</span>
-            </div>
-          </div>
-          <div class="place-strip">
-            <div :style="{ flex: 5 }"></div>
-            <div class="team-image-name">
-              <div :style="{ 'margin-bottom': '10px' }">
-                <img class="podium-user" src="/img/defaultAvatar.svg" />
-              </div>
-              <div>EQUIPE B</div>
-            </div>
-            <div class="st podium-step">
-              <img class="medal" src="/img/gold.svg" />
-              <br />
-              <br />
-              <span>13</span>
-            </div>
-          </div>
-          <div class="place-strip">
-            <div :style="{ flex: 5 }"></div>
-            <div class="team-image-name">
-              <div :style="{ 'margin-bottom': '10px' }">
-                <img class="podium-user" src="/img/defaultAvatar.svg" />
-              </div>
-              <div>EQUIPE C</div>
-            </div>
-            <div class="rd podium-step">
-              <img class="medal" src="/img/bronze.svg" />
-              <br />
-              <br />
-              <span>9</span>
-            </div>
-          </div>
+      </div>
+      <div :style="{ flex: 1 }" />
+      <div class="register-sticky">
+        <div :style="{ flex: 1 }" />
+        <div class="register-button-strip">
+          <NuxtLink to="/donation">
+            <el-button class="register-button" type="primary">
+              + Registrar nova doação
+            </el-button>
+          </NuxtLink>
         </div>
-        <div class="ranking">
-          <div class="ranking-title">
-            <span :style="{ flex: 1 }">Classificação</span>
-            <span :style="{ flex: 1 }">Equipes</span>
-            <span :style="{ flex: 1 }">Doações</span>
-          </div>
-          <div class="ranking-row">
-            <span :style="{ flex: 1 }">1</span>
-            <span :style="{ flex: 1 }">Equipe B</span>
-            <span :style="{ flex: 1 }">13</span>
-          </div>
-          <div class="ranking-row">
-            <span :style="{ flex: 1 }">2</span>
-            <span :style="{ flex: 1 }">Equipe C</span>
-            <span :style="{ flex: 1 }">15</span>
-          </div>
-          <div class="ranking-row">
-            <span :style="{ flex: 1 }">3</span>
-            <span :style="{ flex: 1 }">Equipe D</span>
-            <span :style="{ flex: 1 }">15</span>
-          </div>
-          <div class="ranking-row">
-            <span :style="{ flex: 1 }">4</span>
-            <span :style="{ flex: 1 }">Equipe E</span>
-            <span :style="{ flex: 1 }">15</span>
-          </div>
-          <div class="ranking-row">
-            <span :style="{ flex: 1 }">5</span>
-            <span :style="{ flex: 1 }">Equipe F</span>
-            <span :style="{ flex: 1 }">15</span>
-          </div>
-        </div>
+        <div :style="{ flex: 1 }" />
       </div>
     </div>
-    <div :style="{ flex: 1 }"></div>
-  </div>
-  <div :style="{ height: '11vh' }"></div>
-  <div class="register-sticky">
-    <div :style="{ flex: 1 }"></div>
-    <div class="register-button-strip">
-      <NuxtLink to="/donation">
-        <el-button class="register-button" type="primary">
-          + Registrar nova doação
-        </el-button>
-      </NuxtLink>
-    </div>
-    <div :style="{ flex: 1 }"></div>
   </div>
 </template>
 
 <script lang="ts" setup></script>
 
 <style>
+.details-container {
+  display: flex;
+}
 .details-main-body {
   display: flex;
 }
 .details-strip {
   flex: 3;
+  margin-bottom: 15vh;
 }
 .details-title {
   text-align: center;
@@ -223,7 +240,7 @@
   position: fixed;
   border-top: solid #dbdde0 2px;
   background-color: white;
-  height: 10%;
+  height: 10vh;
   width: 100%;
   bottom: 0;
   display: flex;

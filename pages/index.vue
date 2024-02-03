@@ -6,11 +6,13 @@
     <el-main class="main-strip">
       <div class="summaries-list">
         <!-- Competition Header -->
-        <h1 class="summary-title">Competições</h1 >
+        <h1 class="summary-title">
+          Competições
+        </h1>
         <p class="summary-subtitle">
           Clique em uma competição para registrar sua doação ou acessar as informações.
         </p>
-        
+
         <!-- Competition Status Switch -->
         <div :class="onGoingSwitchClass" @click="switchOnGoing(true)">
           Em andamento
@@ -21,7 +23,8 @@
 
         <!-- Competition Summaries -->
         <CompetitionSummary
-          v-for="summary in filteredSummaries"
+          v-for="(summary, idx) in filteredSummaries"
+          :key="summary.title + idx"
           :title="summary.title"
           :start="summary.start"
           :end="summary.end"
@@ -32,44 +35,44 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
 
-const onGoing = ref(false);
+const onGoing = ref(false)
 const summaries = [
   {
-    title: "Semana Universitária de Doação de Sangue de São Paulo",
-    start: dayjs().subtract(7, "days").toDate(),
-    end: dayjs().add(7, "days").toDate(),
+    title: 'Semana Universitária de Doação de Sangue de São Paulo',
+    start: dayjs().subtract(7, 'days').toDate(),
+    end: dayjs().add(7, 'days').toDate()
   },
   {
-    title: "Competição IDOR: Enfermagem x Radiologia",
-    start: dayjs().subtract(7, "days").toDate(),
-    end: dayjs().add(7, "days").toDate(),
+    title: 'Competição IDOR: Enfermagem x Radiologia',
+    start: dayjs().subtract(7, 'days').toDate(),
+    end: dayjs().add(7, 'days').toDate()
   },
   {
-    title: "Competição Tecnologia: Engenharia de Software x Ciência de Dados",
-    start: dayjs().subtract(7, "days").toDate(),
-    end: dayjs().subtract(1, "days").toDate(), // ended
+    title: 'Competição Tecnologia: Engenharia de Software x Ciência de Dados',
+    start: dayjs().subtract(7, 'days').toDate(),
+    end: dayjs().subtract(1, 'days').toDate() // ended
   }
-];
+]
 
-const closedSummaries = computed(() => summaries.filter((summary) => summary.end < dayjs().toDate()));
-const onGoingSummaries = computed(() => summaries.filter((summary) => summary.end >= dayjs().toDate()));
-const filteredSummaries = computed(() => (onGoing.value ? onGoingSummaries.value : closedSummaries.value));
+const closedSummaries = computed(() => summaries.filter(summary => summary.end < dayjs().toDate()))
+const onGoingSummaries = computed(() => summaries.filter(summary => summary.end >= dayjs().toDate()))
+const filteredSummaries = computed(() => (onGoing.value ? onGoingSummaries.value : closedSummaries.value))
 
 const onGoingSwitchClass = computed(() => [
-  "switch",
-  onGoing.value ? "switch-on" : "switch-off",
-]);
+  'switch',
+  onGoing.value ? 'switch-on' : 'switch-off'
+])
 
 const closedSwitchClass = computed(() => [
-  "switch",
-  onGoing.value ? "switch-off" : "switch-on",
-]);
+  'switch',
+  onGoing.value ? 'switch-off' : 'switch-on'
+])
 
-function switchOnGoing(v: boolean) {
-  if (v === onGoing.value) return;
-  onGoing.value = v;
+function switchOnGoing (v: boolean) {
+  if (v === onGoing.value) { return }
+  onGoing.value = v
 }
 </script>
 

@@ -3,6 +3,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "lint": "eslint . --ext .js,.ts,.vue",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
@@ -10,9 +11,13 @@
   "devDependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "@element-plus/nuxt": "^1.0.7",
+    "@nuxtjs/eslint-config-typescript": "^12.1.0",
+    "@nuxtjs/eslint-module": "^4.1.0",
     "@nuxtjs/google-fonts": "^3.1.0",
     "element-plus": "^2.4.3",
-    "nuxt": "^3.8.0"
+    "eslint": "^8.56.0",
+    "nuxt": "^3.8.0",
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "dayjs": "^1.11.10"

@@ -5,12 +5,12 @@
         {{ title }}
       </h3>
       <span> INICIO: {{ start }} </span>
-      <br />
-      <br />
+      <br>
+      <br>
       <span> TÉRMINO: {{ end }} </span>
     </div>
     <div class="arrow">
-      <img :style="{ height: '50px' }" src="/img/bodylessArrow.svg" />
+      <img :style="{ height: '50px' }" src="/img/bodylessArrow.svg">
     </div>
   </NuxtLink>
 </template>
@@ -19,8 +19,8 @@
 defineProps({
   title: String,
   start: Date,
-  end: Date,
-});
+  end: Date
+})
 </script>
 
 <style>

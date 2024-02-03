@@ -6,8 +6,11 @@
     <el-main :style="{ display: 'flex' }">
       <div :style="{ flex: 1 }">
         <NuxtLink to="/">
-          <img :style="{ margin: '40px' }" src="/img/arrow.svg"
-        /></NuxtLink>
+          <img
+            :style="{ margin: '40px' }"
+            src="/img/arrow.svg"
+          >
+        </NuxtLink>
       </div>
       <div class="form-strip">
         <div class="details-title">
@@ -18,10 +21,10 @@
           <span>Selecione sua equipe para registrar a doação</span>
         </div>
       </div>
-      <div :style="{ flex: 1 }"></div>
+      <div :style="{ flex: 1 }" />
     </el-main>
     <el-footer :style="{ display: 'flex' }">
-      <div :style="{ flex: 1 }"></div>
+      <div :style="{ flex: 1 }" />
       <div class="register-button-strip">
         <NuxtLink to="/donation">
           <el-button class="register-button" type="primary">
@@ -29,7 +32,7 @@
           </el-button>
         </NuxtLink>
       </div>
-      <div :style="{ flex: 1 }"></div>
+      <div :style="{ flex: 1 }" />
     </el-footer>
   </el-container>
 </template>
