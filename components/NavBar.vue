@@ -1,6 +1,6 @@
 <template>
   <div class="navbar">
-    <img class="navbar-logo" src="/img/title.svg" />
+    <img class="navbar-logo" src="/img/title.svg">
   </div>
 </template>
 
