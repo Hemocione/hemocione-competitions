@@ -6,7 +6,10 @@ export const registerDonation = async (
   competitionId: number,
   competitionTeamId: number,
   user_name: string,
-  user_email: string
+  user_email: string,
+  hemocione_id: string,
+  extra_fields: string
+
 ) => {
   return await prisma.$transaction(async (prisma) => {
     const competitionTeam = await prisma.competitionTeams.findUnique({
@@ -28,6 +31,8 @@ export const registerDonation = async (
         user_email: user_email,
         competitionTeamId: competitionTeam.id,
         competitionId: competitionId,
+        hemocioneID: hemocione_id,
+        extraFields: extra_fields,
       },
     });
 

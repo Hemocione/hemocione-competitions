@@ -13,6 +13,8 @@ export default defineEventHandler(async (event) => {
     const user_name = body.user_name;
     const user_email = body.user_email;
     const competitionTeamId = body.competitionTeamId;
+    const hemocione_id = body.hemocione_id;
+    const extra_fields = body.extra_fields;
 
     const competition = await getCompetition(competitionId);
 
@@ -24,7 +26,9 @@ export default defineEventHandler(async (event) => {
         competitionId,
         competitionTeamId,
         user_name,
-        user_email
+        user_email,
+        hemocione_id,
+        extra_fields
     );
 
     return {
