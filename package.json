@@ -17,9 +17,8 @@
     "element-plus": "^2.4.3",
     "eslint": "^8.56.0",
     "nuxt": "^3.8.0",
-    "typescript": "^5.3.3"
-  },
-  "dependencies": {
-    "dayjs": "^1.11.10"
+    "typescript": "^5.3.3",
+    "dayjs": "^1.11.10",
+    "@prisma/client": "^5.8.1"
   }
 }
