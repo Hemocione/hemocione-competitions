@@ -3,40 +3,31 @@ import { dbClient } from "../db";
 export const registerDonation = async (
   competitionId: number,
   competitionTeamId: number,
-  user_name: string,
-  user_email: string,
-  hemocione_id: string,
-  extra_fields: string
-
-) => {
-  const competitionTeam = await dbClient.competitionTeams.findUnique({
-    where: {
-      competitionId_teamId: {
-        teamId: competitionTeamId,
-        competitionId: competitionId,
-      },
-    },
-  });
-
-  if (!competitionTeam) {
-    throw new Error('CompetitionTeam not found');
+  payload: {
+    hemocioneID: string,
+    user_name: string,
+    user_email: string,
+    extraFields?: string
+    proof?: string
   }
-
+) => {
+  const { user_name, user_email, extraFields, hemocioneID, proof } = payload;
   return await dbClient.$transaction(async (db) => {
     const createdDonation = await db.donations.create({
       data: {
-        user_name: user_name,
-        user_email: user_email,
-        competitionTeamId: competitionTeam.id,
+        hemocioneID,
+        user_name,
+        user_email,
+        competitionTeamId: competitionTeamId,
         competitionId: competitionId,
-        hemocioneID: hemocione_id,
-        extraFields: extra_fields,
+        ...(extraFields ? { extraFields } : {}),
+        ...(proof ? { proof } : {}),
       },
     });
 
     await db.competitionTeams.update({
       where: {
-        id: competitionTeam.id,
+        id: competitionTeamId,
       },
       data: {
         donation_count: {

@@ -42,6 +42,8 @@ const getCompetitionBySlugPromise = (slug: string) => {
       end_at: true,
       published: true,
       publication_date: true,
+      extraFields: true,
+      mandatory_proof: true,
       competitionTeams: {
         select: {
           teamId: true,
