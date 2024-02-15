@@ -46,7 +46,7 @@ const getCompetitionBySlugPromise = (slug: string) => {
       mandatory_proof: true,
       competitionTeams: {
         select: {
-          teamId: true,
+          id: true,
           donation_count: true,
           teams: {
             select: {
