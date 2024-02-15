@@ -2,12 +2,7 @@ import { getCompetition } from "~/server/services/competitionService";
 import { registerDonation } from "~/server/services/donationService";
 
 export default defineEventHandler(async (event) => {
-  
-    // Get includeUnpublished from query
-    const competitionId = Number(getRouterParam(event, 'id'));
-    if (isNaN(competitionId)) {
-        throw new Error('Invalid competition id');
-    }
+    const competitionSlug = String(getRouterParam(event, 'slug'));
     // Get user_name, user_email, competitionTeamId from body
     const body = await readBody(event);
     const user_name = body.user_name;

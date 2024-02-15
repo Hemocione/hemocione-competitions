@@ -50,6 +50,9 @@
     </div>
   </template>
   <script setup lang="ts">
+  definePageMeta({
+    middlewares: ['auth']
+  })
   const props = defineProps({
     competitionName: { type: String, required: true },
     name: { type: String, required: true }

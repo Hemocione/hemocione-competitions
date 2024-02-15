@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { dbClient } from "../db";
 
 // status 3 = draft, 2 = ativo, 1 = upcoming, 0 = finalizado
 const statusCaseWhenClause = `
@@ -12,9 +10,7 @@ CASE
 END`
 
 export const getCompetitions = async (includeUnpublished = false) => {
-
-  console.log(includeUnpublished)
-  const competitions = await prisma.$queryRaw`SELECT
+  const competitions = await dbClient.$queryRaw`SELECT
     id,
     name,
     start_at,
@@ -36,9 +32,54 @@ export const getCompetitions = async (includeUnpublished = false) => {
   return competitions;
 }; 
 
+const getCompetitionBySlugPromise = (slug: string) => {
+  return dbClient.competitions.findUnique({
+    where: { slug },
+    select: {
+      id: true,
+      name: true,
+      start_at: true,
+      end_at: true,
+      published: true,
+      publication_date: true,
+      competitionTeams: {
+        select: {
+          teamId: true,
+          donation_count: true,
+          teams: {
+            select: {
+              name: true,
+              id: true,
+              institutions: {
+                select: {
+                  name: true,
+                  id: true
+                }
+              }
+            },
+          }
+        }
+      },
+    }
+  });
+}
+
+type Competition = Awaited<ReturnType<typeof getCompetitionBySlugPromise>>;
+const CompetitionsBySlugCache = new Map<string, Competition>();
+
+export const getCompetitionBySlug = async (slug: string) => {
+  const cachedCompetition = CompetitionsBySlugCache.get(slug);
+  if (cachedCompetition) {
+    return cachedCompetition;
+  }
+
+  const competition = await getCompetitionBySlugPromise(slug);
+  CompetitionsBySlugCache.set(slug, competition);
+  return competition;
+}
+
 export const getCompetition = async (id: number) => {
-  
-  const competition = await prisma.$queryRaw`SELECT
+  const competition = await dbClient.$queryRaw`SELECT
     id,
     name,
     CASE
@@ -55,7 +96,7 @@ export const getCompetition = async (id: number) => {
 
 
 export const getCompetitionRanking = async (competitionId: number) => {
-  const result = await prisma.competitionTeams.findMany({
+  const result = await dbClient.competitionTeams.findMany({
     where: {
       competitionId: competitionId,
     },
@@ -78,7 +119,7 @@ export const createCompetition = async (
   startsAt: Date,
   endsAt: Date
 ) => {
-  return await prisma.competitions.create({
+  return await dbClient.competitions.create({
     data: {
       name,
       start_at: startsAt,
@@ -94,8 +135,8 @@ export const editCompetition = async (
   startsAt: Date,
   endsAt: Date
 ) => {
-  return await prisma.$transaction(async (prisma) => {
-    const competitionToEdit = await prisma.competitions.findUnique({
+  return await dbClient.$transaction(async (dbClient) => {
+    const competitionToEdit = await dbClient.competitions.findUnique({
       where: { id: id },
     });
 
@@ -103,7 +144,7 @@ export const editCompetition = async (
       throw new Error('Competition not found');
     }
 
-    const updatedCompetition = await prisma.competitions.update({
+    const updatedCompetition = await dbClient.competitions.update({
       where: { id: id },
       data: {
         name,
@@ -117,8 +158,8 @@ export const editCompetition = async (
 };
 
 export const deleteCompetition = async (id: number) => {
-  return await prisma.$transaction(async (prisma) => {
-    const deletedCompetition = await prisma.competitions.delete({
+  return await dbClient.$transaction(async (db) => {
+    const deletedCompetition = await db.competitions.delete({
       where: { id: id },
     });
 

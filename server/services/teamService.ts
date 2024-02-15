@@ -1,10 +1,7 @@
-
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();import { NotFoundError, Unexpected } from '../errors'
+import { dbClient } from "../db";
 
 export const createTeam = async (name: string, institutionId: number) => {
-  const duplicatedTeam = await prisma.teams.findFirst({
+  const duplicatedTeam = await dbClient.teams.findFirst({
     where: { institutionId, name }, // Não poderíamos olhar apenas o name e não o institutuin ID
   }); 
 
@@ -12,7 +9,7 @@ export const createTeam = async (name: string, institutionId: number) => {
     throw new Error(`O nome '${name}' já está sendo utilizado`);
   }
 
-  const createdTeam = await prisma.teams.create({
+  const createdTeam = await dbClient.teams.create({
     data: {
       name: name,
       institutionId: institutionId,
@@ -28,23 +25,23 @@ export const editTeam = async (
   id: number,
   institutionId: number
 ) => {
-  const duplicatedTeam = await prisma.teams.findFirst({
+  const duplicatedTeam = await dbClient.teams.findFirst({
     where: { name },
   });
 
   if (duplicatedTeam) {
-    throw new Unexpected(`O nome '${name}' já está sendo utilizado`);
+    throw new Error(`O nome '${name}' já está sendo utilizado`);
   }
 
-  const teamToEdit = await prisma.teams.findUnique({
+  const teamToEdit = await dbClient.teams.findUnique({
     where: { id: id, institutionId: institutionId },
   });
 
   if (!teamToEdit) {
-    throw new NotFoundError('Time não encontrado');
+    throw new Error('Time não encontrado');
   }
 
-  const updatedTeam = await prisma.teams.update({
+  const updatedTeam = await dbClient.teams.update({
     where: { id: id, institutionId: institutionId },
     data: {
       name: name,
@@ -55,7 +52,7 @@ export const editTeam = async (
 };
 
 export const deleteTeam = async (id: number, institutionId: number) => {
-  const deletedTeam = await prisma.teams.delete({
+  const deletedTeam = await dbClient.teams.delete({
     where: { id: id, institutionId: institutionId },
   });
 
@@ -66,7 +63,7 @@ export const assignTeamToCompetition = async (
   teamId: number,
   competitionId: number
 ) => {
-  const createdCompetitionTeam = await prisma.competitionTeams.create({
+  const createdCompetitionTeam = await dbClient.competitionTeams.create({
     data: {
       teamId: teamId,
       competitionId: competitionId,
@@ -82,7 +79,7 @@ export const unassignTeamFromCompetition = async (
   competitionId: number
 ) => {
   try {
-    const deletedCompetitionTeam = await prisma.competitionTeams.delete({
+    const deletedCompetitionTeam = await dbClient.competitionTeams.delete({
       where: {
         competitionId_teamId: {
           teamId: teamId,

@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { dbClient } from "../db";
 
 export const getRankingByCompetitionId = async (
   competitionId: any
@@ -8,7 +6,7 @@ export const getRankingByCompetitionId = async (
   const id = parseInt(competitionId);
   if (!Number.isInteger(id)) return [];
 
-  const result = await prisma.$queryRaw`
+  const result = await dbClient.$queryRaw`
     SELECT CAST(SUM("donation_count") as int) AS "donation_count",
            "teams"."institutionId" AS "id",
            MAX("institutions"."name") AS "name"
@@ -25,7 +23,7 @@ export const getRankingByCompetitionId = async (
 
 
 export const createInstitution = async (name: string) => {
-  const createdInstitution = await prisma.institutions.create({
+  const createdInstitution = await dbClient.institutions.create({
     data: {
       name: name,
     },
@@ -35,7 +33,7 @@ export const createInstitution = async (name: string) => {
 };
 
 export const editInstitution = async (id: number, name: string) => {
-  const institutionToEdit = await prisma.institutions.findUnique({
+  const institutionToEdit = await dbClient.institutions.findUnique({
     where: { id: id },
   });
 
@@ -43,7 +41,7 @@ export const editInstitution = async (id: number, name: string) => {
     throw new Error('Institution not found');
   }
 
-  const updatedInstitution = await prisma.institutions.update({
+  const updatedInstitution = await dbClient.institutions.update({
     where: { id: id },
     data: {
       name: name,
@@ -55,7 +53,7 @@ export const editInstitution = async (id: number, name: string) => {
 
 
 export const deleteInstitution = async (id: number) => {
-  const deletedInstitution = await prisma.institutions.delete({
+  const deletedInstitution = await dbClient.institutions.delete({
     where: { id: id },
   });
 

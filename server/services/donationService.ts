@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { dbClient } from "../db";
 
 export const registerDonation = async (
   competitionId: number,
@@ -11,21 +9,21 @@ export const registerDonation = async (
   extra_fields: string
 
 ) => {
-  return await prisma.$transaction(async (prisma) => {
-    const competitionTeam = await prisma.competitionTeams.findUnique({
-      where: {
-        competitionId_teamId: {
-          teamId: competitionTeamId,
-          competitionId: competitionId,
-        },
+  const competitionTeam = await dbClient.competitionTeams.findUnique({
+    where: {
+      competitionId_teamId: {
+        teamId: competitionTeamId,
+        competitionId: competitionId,
       },
-    });
+    },
+  });
 
-    if (!competitionTeam) {
-      throw new Error('CompetitionTeam not found');
-    }
+  if (!competitionTeam) {
+    throw new Error('CompetitionTeam not found');
+  }
 
-    const createdDonation = await prisma.donations.create({
+  return await dbClient.$transaction(async (db) => {
+    const createdDonation = await db.donations.create({
       data: {
         user_name: user_name,
         user_email: user_email,
@@ -36,7 +34,7 @@ export const registerDonation = async (
       },
     });
 
-    await prisma.competitionTeams.update({
+    await db.competitionTeams.update({
       where: {
         id: competitionTeam.id,
       },
