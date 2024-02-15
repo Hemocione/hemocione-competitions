@@ -63,7 +63,6 @@ export function getCurrentToken(query?: LocationQuery): string | null {
 }
 
 export function redirectToID(fullPath: string) {
-  const config = useRuntimeConfig();
-  const redirectUrl = `${config.public.siteUrl}${fullPath}`;
+  const redirectUrl = `${window.location.origin}${fullPath}`;
   navigateTo(getHemocioneIdUrl(redirectUrl), { external: true });
 }

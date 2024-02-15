@@ -1,11 +1,11 @@
 <template>
   <div class="main-container">
-    <h2>{{ route.params.competitionName }}</h2>
-    <img src="../assets/images/check-donation.svg" alt="checked-icon">
+    <h2>{{ competition?.name }}</h2>
+    <img src="../../../assets/images/check-donation.svg" alt="checked-icon">
 
     <h3>Doação registrada com sucesso!</h3>
     <img
-      src="../assets/images/shared.svg"
+      src="../../../assets/images/shared.svg"
       alt="share-icon"
       @click="handleShare"
     >
@@ -13,7 +13,13 @@
 </template>
 
 <script setup lang="ts">
-const route = useRoute()
+const route = useRoute();
+const slug = route.params.slug;
+const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
+if (!competition.value) {
+  navigateTo("https://hemocione.com.br", { external: true });
+}
+
 
 function handleShare () {
   // TODO: implementar a lógica de compartilhamento

@@ -1,4 +1,4 @@
-import { getCurrentToken } from "~/middlewares/auth";
+import { getCurrentToken } from "~/middleware/auth";
 
 type FetchParams = Parameters<typeof $fetch>;
 

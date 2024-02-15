@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink class="summaryBox" to="/competition">
+  <NuxtLink class="summaryBox" to="/competitionRank">
     <div :style="{ flex: 9 }">
       <h3 :style="{ margin: '0 0 10px 0' }">
         {{ title }}
