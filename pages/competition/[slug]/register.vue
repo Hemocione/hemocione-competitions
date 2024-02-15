@@ -142,6 +142,24 @@ async function handleSubmit(event: any) {
   event.preventDefault();
   // TODO: validar required fields
   console.log("Formulário enviado!", form.value);
+
+  // TODO: enviar na api
+  await $fetch(`/api/v1/competitions/${slug}/donations`, {
+    method: "POST",
+    body: {
+      competitionTeamId: form.value.team,
+      proof: form.value.comprovante,
+      extraFields: [
+        {
+          slug: "matricula",
+          value: form.value.matricula,
+        },
+      ],
+    },
+    headers: {
+      Authorization: `Bearer ****`
+    }
+  });
   // Enviar para rota
 
   await navigateTo(`/competition/${slug}/success`);
