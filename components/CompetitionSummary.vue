@@ -10,7 +10,7 @@
       <span> TÉRMINO: {{ end }} </span>
     </div>
     <div class="arrow">
-      <img :style="{ height: '50px' }" src="/img/bodylessArrow.svg">
+      <img :style="{ height: '50px' }" src="/images/bodylessArrow.svg">
     </div>
   </NuxtLink>
 </template>

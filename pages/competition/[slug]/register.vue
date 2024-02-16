@@ -1,98 +1,114 @@
 <template>
   <div class="main">
     <div class="main-form-container column">
-    <header class="header">
-      <h2>{{ competition?.name }}</h2>
-      <div>
-        <h3>Olá, {{ user?.givenName }}!</h3>
-        <h4>Selecione sua equipe para registrar a doação</h4>
-      </div>
-    </header>
-    <form class="form" @submit="handleSubmit">
-      <!-- Institution Select -->
-      <TransitionGroup name="slide-fade-down" appear>
-        <div class="column" key="institution" v-if="institutions.length > 1">
-          <label class="label-form">Instituição <span>*</span></label>
-          <el-select
-            v-model="form.institutionId"
-            size="large"
-            :placeholder="'Selecione sua Instituição'"
-            @change="() => form.competitionTeamId = null"
-            required
-          >
-            <el-option
-              v-for="(institution, idx) in institutions"
-              :key="institution?.id ?? idx"
-              :label="institution?.name ?? idx"
-              :value="institution?.id ?? idx"
-            >
-              {{ institution?.name }}
-            </el-option>
-          </el-select>
+      <header class="header">
+        <h2>{{ competition?.name }}</h2>
+        <div>
+          <h3>Olá, {{ user?.givenName }}!</h3>
+          <h4>Selecione sua equipe para registrar a doação</h4>
         </div>
-
-        <!-- Team Select -->
-        <div v-if="isInstitutionSelected" class="column" key="team">
-          <label class="label-form">Equipe <span>*</span></label>
-          <el-select
-            v-model="form.competitionTeamId"
-            size="large"
-            :placeholder="'Selecione sua equipe'"
-          >
-            <el-option
-              v-for="compTeam in competitionTeams"
-              :key="compTeam.id"
-              :label="compTeam?.teams?.name ?? compTeam.id"
-              :value="compTeam.id"
+      </header>
+      <form class="form" @submit="handleSubmit">
+        <!-- Institution Select -->
+        <TransitionGroup name="slide-fade-down" appear>
+          <div class="column" key="institution" v-if="institutions.length > 1">
+            <label class="label-form">Instituição <span>*</span></label>
+            <el-select
+              v-model="form.institutionId"
+              size="large"
+              :placeholder="'Selecione sua Instituição'"
+              @change="() => form.competitionTeamId = null"
+              required
             >
-              {{ compTeam.teams?.name }}
-            </el-option>
-          </el-select>
-        </div>
-        <!-- Proof Field -->
-        <div class="column" key="proof" v-if="isTeamSelected">
-          <input
-            id="file-input"
-            type="file"
-            accept="image/*"
-            @change="handleFileSelect($event)"
-          />
-          <label class="label-form"
-            >Comprovante de doação
-            <span v-if="competition?.mandatory_proof">*</span></label
-          >
-          <div
-            class="camera-icon-container"
-            onclick="document.getElementById('file-input').click()"
-          >
-            <NuxtImg src="/images/cam.svg" alt="camera-icon" />
+              <el-option
+                v-for="(institution, idx) in institutions"
+                :key="institution?.id ?? idx"
+                :label="institution?.name ?? idx"
+                :value="institution?.id ?? idx"
+              >
+                {{ institution?.name }}
+              </el-option>
+            </el-select>
           </div>
-        </div>
 
-        <!-- Extra Fields -->
-        <div
-          v-for="(field, idx) in extraFields"
-          v-if="isTeamSelected"
-          :key="field.slug + idx"
-          class="column"
-        >
-          <label class="label-form">{{ field.label }} <span v-if="field.required">*</span></label>
-          <el-input
-            v-model="form[field.slug]"
-            size="large"
-            :placeholder="field.label"
-            :required="field.required"
-          ></el-input>
-        </div>
-      </TransitionGroup>
-    </form>
-  </div>
-  <common-cool-footer hide-toggle height="fit-content" desktop-border-radius="0">
+          <!-- Team Select -->
+          <div v-if="isInstitutionSelected" class="column" key="team">
+            <label class="label-form">Equipe <span>*</span></label>
+            <el-select
+              v-model="form.competitionTeamId"
+              size="large"
+              :placeholder="'Selecione sua equipe'"
+            >
+              <el-option
+                v-for="compTeam in competitionTeams"
+                :key="compTeam.id"
+                :label="compTeam?.teams?.name ?? compTeam.id"
+                :value="compTeam.id"
+              >
+                {{ compTeam.teams?.name }}
+              </el-option>
+            </el-select>
+          </div>
+          <!-- Proof Field -->
+          <div class="column" key="proof" v-if="isTeamSelected">
+            <input
+              id="file-input"
+              type="file"
+              accept="image/*"
+              @change="handleFileSelect($event)"
+            />
+            <label class="label-form"
+              >Comprovante de doação
+              <span v-if="competition?.mandatory_proof">*</span></label
+            >
+            <TransitionGroup name="fade" appear>
+              <div
+                class="camera-icon-container"
+                key="camera-init"
+                onclick="document.getElementById('file-input').click()"
+                v-if="!uploadingImage && !form.proof"
+              >
+                <NuxtImg src="/images/cam.svg" alt="camera-icon"/>
+              </div>
+              <div class="camera-photo-taken-container" key="image-taken" v-if="form.proof && !uploadingImage">
+                <el-icon size="40" onclick="document.getElementById('file-input').click()" class="retry">
+                  <ElIconCameraFilled
+                    style="position: absolute; right: 0; top: 0; padding: 0.5rem; cursor: pointer"
+                  />
+                </el-icon>
+                <img :src="form.proof" alt="proof" class="taken-image"/>
+              </div>
+              <div class="camera-icon-container" key="loading" v-if="uploadingImage">
+                <CommonLogoLoader />
+              </div>
+            </TransitionGroup>
+          </div>
+
+          <!-- Extra Fields -->
+          <div
+            v-for="(field, idx) in extraFields"
+            v-if="isTeamSelected"
+            :key="field.slug + idx"
+            class="column"
+          >
+            <label class="label-form">{{ field.label }} <span v-if="field.required">*</span></label>
+            <el-input
+              v-model="form.extraFields[field.slug]"
+              size="large"
+              :placeholder="field.label"
+              :required="field.required"
+            ></el-input>
+          </div>
+        </TransitionGroup>
+      </form>
+    </div>
+    <common-cool-footer hide-toggle height="fit-content" desktop-border-radius="0">
       <el-button
         type="primary"
         size="large"
         native-type="submit"
         :disabled="!canRegisterDonation"
+        @click="handleSubmit"
         >{{ canRegisterDonation ? 'Registrar Doação' : 'Preencha os Campos Obrigatórios' }}</el-button
       >
     </common-cool-footer>
@@ -102,19 +118,19 @@
 <script setup lang="ts">
 import { useUserStore } from "~/store/user";
 import { uniqBy } from "lodash";
-
 definePageMeta({
   middleware: ["auth"],
 });
-const { user } = useUserStore();
-
-console.log("User", user);
-
+const { user, token } = useUserStore();
 const route = useRoute();
 const slug = route.params.slug;
+
+const uploadingImage = ref(false);
+
 const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
 const extraFields = competition.value?.extraFields as unknown as ExtraField[];
 const extraFieldsSlugs = extraFields?.map((e) => e.slug) ?? [];
+const requiredExtraFieldsSlugs = extraFields?.filter((e) => e.required).map((e) => e.slug) ?? [];
 
 if (!competition.value) {
   navigateTo("https://hemocione.com.br", { external: true });
@@ -123,13 +139,13 @@ if (!competition.value) {
 export type Competition = typeof competition.value;
 
 const form = ref({
-  competitionTeamId: null,
+  competitionTeamId: null as number | null | undefined,
   proof: "",
-  institutionId: null,
+  institutionId: null as number | null | undefined,
   extraFields: {
     ...Object.fromEntries(extraFieldsSlugs.map((slug) => [slug, ""])),
   },
-} as Record<string, any>);
+});
 
 const institutions = computed(() =>
   uniqBy(
@@ -149,52 +165,99 @@ if (institutions.value.length === 1) {
 const isTeamSelected = computed(() => form.value.competitionTeamId);
 const isInstitutionSelected = computed(() => form.value.institutionId);
 const allRequiredExtraFieldsFilled = computed(() =>
-  extraFieldsSlugs.every((slug) => form.value.extraFields[slug])
+  requiredExtraFieldsSlugs.every((slug) => form.value.extraFields[slug])
 );
 
 const canRegisterDonation = computed(() => {
   return isTeamSelected.value && allRequiredExtraFieldsFilled.value && (!competition.value?.mandatory_proof || form.value.proof);
 });
 
-function handleFileSelect(event: any) {
-  const file = event.target.files[0];
-  if (file) {
-    // TODO: enviar para a cdn e pegar o link
-    console.log("Arquivo selecionado:", file);
+const MB = 1024 * 1024;
 
-    // setar o valor do input com o path do arquivo
-    form.value.comprovante = file.name;
+async function handleFileSelect(event: any) {
+  uploadingImage.value = true;
+  const files = event.target?.files;
+  console.log("Files", event.target?.value);
+  if (!files.length) {
+    return;
+  }
+  if (files.length > 1) {
+    ElMessage.error("Envie apenas uma imagem.");
+    return;
+  }
+
+  const file = files[0];
+    // check if file is an image
+  if (!file.type.includes("image")) {
+    ElMessage.error("Envie uma imagem válida.");
+    return;
+  }
+
+  // check if file is less than 5mb
+  if (file.size > 5*MB) {
+    ElMessage.error("Envie uma imagem menor que 5mb.");
+    return;
+  }
+
+  try {
+    setTimeout(() => {
+      if (uploadingImage.value) {
+        ElMessage.error("Parece que sua conexão está lenta. Por favor, tente novamente.");
+        uploadingImage.value = false;
+      }
+    }, 15000);
+    const { url } = await uploadImage(file, { userToken: String(token) });
+    form.value.proof = url;
+  } catch (error) {
+    console.error("Error uploading image", error);
+    ElMessage.error("Erro ao enviar imagem. Por favor, tente novamente.");
+  }
+
+  if (uploadingImage.value) {
+    uploadingImage.value = false;
   }
 }
 
+const extraFieldsResponse = computed(() => {
+  const keys = Object.keys(form.value.extraFields);
+  return keys.map((key) => {
+    return {
+      slug: key,
+      value: form.value.extraFields[key],
+    };
+  });
+});
+
 async function handleSubmit(event: any) {
   event.preventDefault();
-  // TODO: validar required fields
-  console.log("Formulário enviado!", form.value);
-
-  // TODO: enviar na api
+  if (!canRegisterDonation.value) {
+    return;
+  }
   await $fetch(`/api/v1/competitions/${slug}/donations`, {
     method: "POST",
     body: {
-      competitionTeamId: form.value.team,
-      proof: form.value.comprovante,
-      extraFields: [
-        {
-          slug: "matricula",
-          value: form.value.matricula,
-        },
-      ],
+      competitionTeamId: form.value.competitionTeamId,
+      proof: form.value.proof,
+      extraFields: extraFieldsResponse.value,
     },
     headers: {
-      Authorization: `Bearer ****`
+      Authorization: `Bearer ${token}`
     }
   });
-  // Enviar para rota
-
-  await navigateTo(`/competition/${slug}/success`);
+  navigateTo(`/competition/${slug}/success`);
 }
 </script>
 <style scoped>
+
+.retry {
+  background-color: var(--hemo-color-secondary);
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 50%;
+}
 .main {
   display: flex;
   flex-direction: column;
@@ -253,20 +316,39 @@ async function handleSubmit(event: any) {
 }
 .camera-icon-container {
   border: 1px solid #dbdde0 !important;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   aspect-ratio: 4/1;
+  padding: 1rem;
+}
+
+.camera-photo-taken-container {
+  border: 1px solid #dbdde0 !important;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.taken-image {
+  width: 100%;
+  max-height: 50svh;
+  aspect-ratio: auto;
+  object-fit: contain;
 }
 #file-input {
   display: none;
 }
 .el-input--large .el-input__wrapper {
   height: 56px;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 }
 </style>
   

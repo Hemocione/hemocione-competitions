@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  css: ['~/assets/css/main.css', '~/assets/css/transitions.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/transitions.css', '~/assets/css/animations.css'],
   modules: ['@element-plus/nuxt', '@nuxtjs/google-fonts', "@pinia/nuxt", "@nuxt/image"],
   googleFonts: {
     families: {
@@ -17,6 +17,7 @@ export default defineNuxtConfig({
         process.env.HEMOCIONE_ID_URL ?? "https://id.d.hemocione.com.br",
       hemocioneIdApiUrl:
         process.env.HEMOCIONE_ID_API_URL ?? "https://hemocione-id-dev.cpt.hemocione.com.br",
+      cdnUploadUrl: process.env.CDN_UPLOAD_URL ?? "http://localhost:3001/api/upload",
     },
     hemocioneIdJwtSecretKey: process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "hemocione"
   },
