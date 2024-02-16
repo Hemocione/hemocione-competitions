@@ -8,7 +8,7 @@ export const uploadImage = async (file: File, auth: { userToken?: string, secret
 
   const formData = new FormData();
   formData.append("image", file);
-  const response = await fetch(config.public.cdnUploadUrl, {
+  return await $fetch(config.public.cdnUploadUrl, {
     method: "POST",
     headers: {
       ...( userToken ? { Authorization: `Bearer ${userToken}` } : {}),
@@ -16,6 +16,5 @@ export const uploadImage = async (file: File, auth: { userToken?: string, secret
       ContentType: "multipart/form-data",
     },
     body: formData,
-  });
-  return response.json();
+  }) as { url: string };
 };

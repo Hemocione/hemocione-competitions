@@ -13,7 +13,6 @@ export type ExtraFields = ExtraField[];
 
 export interface ExtraFieldResponse {
   slug: string;
-  type: ExtraFieldType;
   value: string;
 }
 

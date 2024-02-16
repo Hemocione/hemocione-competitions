@@ -39,3 +39,12 @@ export const registerDonation = async (
     return createdDonation;
   });
 };
+
+export const getUserDonation = async (competitionId: number, hemocioneID: string) => {
+  return await dbClient.donations.findFirst({
+    where: {
+      competitionId,
+      hemocioneID,
+    },
+  });
+}

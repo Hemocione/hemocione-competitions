@@ -29,6 +29,17 @@ export default defineNuxtConfig({
       ssr: false,
     },
   },
+  app: {
+    pageTransition: {
+      name: "slide-left",
+      mode: "out-in",
+      appear: true,
+    },
+    layoutTransition: {
+      name: "slide-left",
+      mode: "out-in",
+    },
+  },
   image: {
     domains: ["cdn.hemocione.com.br"],
     alias: {

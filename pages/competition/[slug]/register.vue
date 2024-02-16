@@ -14,7 +14,7 @@
           <div class="column" key="institution" v-if="institutions.length > 1">
             <label class="label-form">Instituição <span>*</span></label>
             <el-select
-              v-model="form.institutionId"
+              v-model="(form.institutionId as number)"
               size="large"
               :placeholder="'Selecione sua Instituição'"
               @change="() => form.competitionTeamId = null"
@@ -35,7 +35,7 @@
           <div v-if="isInstitutionSelected" class="column" key="team">
             <label class="label-form">Equipe <span>*</span></label>
             <el-select
-              v-model="form.competitionTeamId"
+              v-model="(form.competitionTeamId as number)"
               size="large"
               :placeholder="'Selecione sua equipe'"
             >
@@ -61,7 +61,7 @@
               >Comprovante de doação
               <span v-if="competition?.mandatory_proof">*</span></label
             >
-            <TransitionGroup name="fade" appear>
+            <Transition name="fade" appear mode="out-in">
               <div
                 class="camera-icon-container"
                 key="camera-init"
@@ -70,18 +70,18 @@
               >
                 <NuxtImg src="/images/cam.svg" alt="camera-icon"/>
               </div>
-              <div class="camera-photo-taken-container" key="image-taken" v-if="form.proof && !uploadingImage">
+              <div class="camera-photo-taken-container" key="image-taken" v-else-if="form.proof && !uploadingImage">
                 <el-icon size="40" onclick="document.getElementById('file-input').click()" class="retry">
                   <ElIconCameraFilled
                     style="position: absolute; right: 0; top: 0; padding: 0.5rem; cursor: pointer"
                   />
                 </el-icon>
-                <img :src="form.proof" alt="proof" class="taken-image"/>
+                <img :src="form.proof" alt="Comprovante de Doação" class="taken-image"/>
               </div>
-              <div class="camera-icon-container" key="loading" v-if="uploadingImage">
+              <div class="camera-icon-container" key="loading" v-else-if="uploadingImage">
                 <CommonLogoLoader />
               </div>
-            </TransitionGroup>
+            </Transition>
           </div>
 
           <!-- Extra Fields -->
@@ -107,7 +107,8 @@
         type="primary"
         size="large"
         native-type="submit"
-        :disabled="!canRegisterDonation"
+        :disabled="!canRegisterDonation || registeringDonation"
+        :loading="registeringDonation"
         @click="handleSubmit"
         >{{ canRegisterDonation ? 'Registrar Doação' : 'Preencha os Campos Obrigatórios' }}</el-button
       >
@@ -121,13 +122,26 @@ import { uniqBy } from "lodash";
 definePageMeta({
   middleware: ["auth"],
 });
-const { user, token } = useUserStore();
+const { user, token, getDonationByCompetitionSlug, registerDonation } = useUserStore();
+
+if (!user) {
+  navigateTo("/unauthorized");
+}
 const route = useRoute();
 const slug = route.params.slug;
 
 const uploadingImage = ref(false);
+const registeringDonation = ref(false);
 
 const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
+const donation = await getDonationByCompetitionSlug(String(slug));
+const goToSuccess = () => {
+  navigateTo(`/competition/${slug}/success?name=${encodeURIComponent(competition.value?.name ?? "Copa Hemocione")}`);
+};
+if (donation) {
+  goToSuccess();
+}
+
 const extraFields = competition.value?.extraFields as unknown as ExtraField[];
 const extraFieldsSlugs = extraFields?.map((e) => e.slug) ?? [];
 const requiredExtraFieldsSlugs = extraFields?.filter((e) => e.required).map((e) => e.slug) ?? [];
@@ -177,7 +191,6 @@ const MB = 1024 * 1024;
 async function handleFileSelect(event: any) {
   uploadingImage.value = true;
   const files = event.target?.files;
-  console.log("Files", event.target?.value);
   if (!files.length) {
     return;
   }
@@ -186,7 +199,7 @@ async function handleFileSelect(event: any) {
     return;
   }
 
-  const file = files[0];
+  const file = files[0] as File;
     // check if file is an image
   if (!file.type.includes("image")) {
     ElMessage.error("Envie uma imagem válida.");
@@ -195,56 +208,62 @@ async function handleFileSelect(event: any) {
 
   // check if file is less than 5mb
   if (file.size > 5*MB) {
-    ElMessage.error("Envie uma imagem menor que 5mb.");
+    ElMessage.error("Envie uma imagem menor que 5 MB");
     return;
   }
 
+  // TODO: check if File is older than competition start
+  // TODO: check file location + add bloodbank to form 
+  
+  const message = ElMessage({
+    message: "Enviando imagem...",
+    type: "info",
+    duration: 0,
+  });
   try {
-    setTimeout(() => {
-      if (uploadingImage.value) {
-        ElMessage.error("Parece que sua conexão está lenta. Por favor, tente novamente.");
-        uploadingImage.value = false;
-      }
-    }, 15000);
     const { url } = await uploadImage(file, { userToken: String(token) });
+    message.close();
+    ElMessage({ message: "Imagem enviada com sucesso!", type: "success", duration: 3000 });
     form.value.proof = url;
   } catch (error) {
+    message.close();
     console.error("Error uploading image", error);
-    ElMessage.error("Erro ao enviar imagem. Por favor, tente novamente.");
+    ElMessage({ type: "error", message: "Erro ao enviar imagem. Por favor, tente novamente.", duration: 3000 });
   }
 
-  if (uploadingImage.value) {
-    uploadingImage.value = false;
-  }
+  uploadingImage.value = false;
 }
 
 const extraFieldsResponse = computed(() => {
   const keys = Object.keys(form.value.extraFields);
-  return keys.map((key) => {
-    return {
-      slug: key,
-      value: form.value.extraFields[key],
-    };
-  });
+  return keys.map((key) => ({
+    slug: key,
+    value: form.value.extraFields[key],
+  })) ?? [];
 });
 
 async function handleSubmit(event: any) {
+  registeringDonation.value = true;
   event.preventDefault();
-  if (!canRegisterDonation.value) {
+  if (!canRegisterDonation.value || !form.value.competitionTeamId) {
     return;
   }
-  await $fetch(`/api/v1/competitions/${slug}/donations`, {
-    method: "POST",
-    body: {
-      competitionTeamId: form.value.competitionTeamId,
-      proof: form.value.proof,
-      extraFields: extraFieldsResponse.value,
-    },
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-  navigateTo(`/competition/${slug}/success`);
+
+  const payload = {
+    competitionTeamId: form.value.competitionTeamId,
+    proof: form.value.proof,
+    extraFields: extraFieldsResponse.value,
+  };
+  try {
+    await registerDonation(String(slug), payload);
+  } catch (error) {
+    ElMessage({ type: "error", "message": "Erro ao registrar doação. Por favor, tente novamente.", duration: 3000 });
+    registeringDonation.value = false;
+    return;
+  }
+
+  registeringDonation.value = false;
+  goToSuccess();
 }
 </script>
 <style scoped>
@@ -339,8 +358,8 @@ async function handleSubmit(event: any) {
 
 .taken-image {
   width: 100%;
+  min-height: 10svh;
   max-height: 50svh;
-  aspect-ratio: auto;
   object-fit: contain;
 }
 #file-input {

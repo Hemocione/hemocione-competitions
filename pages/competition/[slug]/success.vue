@@ -1,48 +1,75 @@
 <template>
-  <div class="main-container">
-    <h2>{{ competition?.name }}</h2>
-    <img src="../../../assets/images/check-donation.svg" alt="checked-icon">
-
-    <h3>Doação registrada com sucesso!</h3>
-    <img
-      src="../../../assets/images/shared.svg"
-      alt="share-icon"
-      @click="handleShare"
-    >
+  <div class="main">
+    <div class="main-container">
+      <header class="header">
+        <h2>{{ name || "Copa Hemocione" }}</h2>
+      </header>
+      <div class="success">
+        <img src="/images/check-donation.svg" alt="checked-icon">
+        <span>Doação registrada com sucesso! Obrigado por salvar 4 vidas :)</span>
+      </div>
+    </div>
+    <common-cool-footer hide-toggle height="fit-content" desktop-border-radius="0">
+      <el-button
+        type="primary"
+        size="large"
+        native-type="submit"
+        @click="openHemocionePage"
+        >Conheça mais o Hemocione</el-button
+      >
+    </common-cool-footer>
   </div>
 </template>
 
 <script setup lang="ts">
 const route = useRoute();
-const slug = route.params.slug;
-const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
-if (!competition.value) {
+const name = route.query.name;
+const openHemocionePage = () => {
   navigateTo("https://hemocione.com.br", { external: true });
-}
-
-
-function handleShare () {
-  // TODO: implementar a lógica de compartilhamento
-  console.log('clicked')
-}
+};
 </script>
 
-<style>
+<style scoped>
+
+.success {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  text-align: center;
+  height: 100%;
+}
+.header {
+  width: 100%;
+}
+
+.header h2 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  height: var(--hemo-page-min-height);
+  width: 100%;
+  position: relative;
+}
+
 .main-container {
   width: 100%;
   height: 100%;
-  display: flex;
   align-items: center;
+  display: flex;
   flex-direction: column;
+  background-color: white;
+  padding: 1rem;
 }
+
 .main-container h2 {
-  margin-bottom: 100px;
-}
-.main-container img {
-  margin: 60px 0;
-}
-.main-container h3 {
-  color: #52575c;
-  font-weight: normal;
+  font-size: 2rem;
+  justify-self: flex-start;
 }
 </style>
