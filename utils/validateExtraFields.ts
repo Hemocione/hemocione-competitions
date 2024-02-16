@@ -2,22 +2,22 @@
 const extraFieldsTypes = ['text'] as const; // HOJE
 type ExtraFieldType = typeof extraFieldsTypes[number];
 
-interface ExtraField {
+export interface ExtraField {
   slug: string;
   label: string;
   required: boolean;
   type: ExtraFieldType;
 }
 
-type ExtraFields = ExtraField[];
+export type ExtraFields = ExtraField[];
 
-interface ExtraFieldResponse {
+export interface ExtraFieldResponse {
   slug: string;
   type: ExtraFieldType;
   value: string;
 }
 
-type ExtraFieldsResponse = ExtraFieldResponse[];
+export type ExtraFieldsResponse = ExtraFieldResponse[];
 
 // extra fields are configured in the competition
 // extra fields response are the user input in the donation for each extra field

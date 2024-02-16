@@ -1,8 +1,5 @@
 <template>
   <el-container class="main-container">
-    <el-header class="header">
-      <NavBar />
-    </el-header>
     <el-main class="main-strip">
       <div class="summaries-list">
         <!-- Competition Header -->

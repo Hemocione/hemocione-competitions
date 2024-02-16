@@ -1,5 +1,6 @@
 <template>
-  <div class="main-form-container column">
+  <div class="main">
+    <div class="main-form-container column">
     <header class="header">
       <h2>{{ competition?.name }}</h2>
       <div>
@@ -9,79 +10,92 @@
     </header>
     <form class="form" @submit="handleSubmit">
       <!-- Institution Select -->
-      <div class="column">
-        <label class="label-form">Instituição <span>*</span></label>
-        <el-select
-          v-model="form.institutionId"
-          class="input-style"
-          size="large"
-          :placeholder="'Selecione sua Instituição'"
-          @change="form.team = ''"
-        >
-          <el-option
-            v-for="item in institutions"
-            :key="item?.id"
-            :label="item?.name"
-            :value="item?.id"
+      <TransitionGroup name="slide-fade-down" appear>
+        <div class="column" key="institution" v-if="institutions.length > 1">
+          <label class="label-form">Instituição <span>*</span></label>
+          <el-select
+            v-model="form.institutionId"
+            size="large"
+            :placeholder="'Selecione sua Instituição'"
+            @change="() => form.competitionTeamId = null"
+            required
           >
-            {{ item?.name }}
-          </el-option>
-        </el-select>
-      </div>
-
-      <!-- Team Select -->
-      <div v-if="isInstitutionSelected" class="column">
-        <label class="label-form">Equipe <span>*</span></label>
-        <el-select
-          v-model="form.team"
-          class="input-style"
-          size="large"
-          :placeholder="'Selecione sua equipe'"
-        >
-          <el-option
-            v-for="compTeam in competitionTeamsOfSelectedInstitution"
-            :key="compTeam.id"
-            :label="compTeam?.teams?.name"
-            :value="compTeam?.teams?.id"
-          >
-            {{ compTeam.teams?.name }}
-          </el-option>
-        </el-select>
-      </div>
-
-      <!-- Matricula Field -->
-      <div v-if="getExtraField('matricula')" class="column">
-        <label class="label-form"
-          >Matrícula
-          <span v-if="getExtraField('matricula')?.required">*</span></label
-        >
-        <el-input v-model="form.matricula" class="input-style" />
-      </div>
-
-      <!-- Proof Field -->
-
-      <div class="column">
-        <label class="label-form"
-          >Comprovante de doação
-          <span v-if="competition?.mandatory_proof">*</span></label
-        >
-        <div
-          class="camera-icon-container"
-          onclick="document.getElementById('file-input').click()"
-        >
-          <img src="../../../assets/images/cam.svg" alt="camera-icon" />
+            <el-option
+              v-for="(institution, idx) in institutions"
+              :key="institution?.id ?? idx"
+              :label="institution?.name ?? idx"
+              :value="institution?.id ?? idx"
+            >
+              {{ institution?.name }}
+            </el-option>
+          </el-select>
         </div>
 
-        <input
-          id="file-input"
-          type="file"
-          accept="image/*"
-          @change="handleFileSelect($event)"
-        />
-      </div>
-      <!-- TODO: adicionar componente que o guimaboy fez -->
-      <button class="input-style">Registrar</button>
+        <!-- Team Select -->
+        <div v-if="isInstitutionSelected" class="column" key="team">
+          <label class="label-form">Equipe <span>*</span></label>
+          <el-select
+            v-model="form.competitionTeamId"
+            size="large"
+            :placeholder="'Selecione sua equipe'"
+          >
+            <el-option
+              v-for="compTeam in competitionTeams"
+              :key="compTeam.id"
+              :label="compTeam?.teams?.name ?? compTeam.id"
+              :value="compTeam.id"
+            >
+              {{ compTeam.teams?.name }}
+            </el-option>
+          </el-select>
+        </div>
+        <!-- Proof Field -->
+        <div class="column" key="proof" v-if="isTeamSelected">
+          <input
+            id="file-input"
+            type="file"
+            accept="image/*"
+            @change="handleFileSelect($event)"
+          />
+          <label class="label-form"
+            >Comprovante de doação
+            <span v-if="competition?.mandatory_proof">*</span></label
+          >
+          <div
+            class="camera-icon-container"
+            onclick="document.getElementById('file-input').click()"
+          >
+            <NuxtImg src="/images/cam.svg" alt="camera-icon" />
+          </div>
+        </div>
+
+        <!-- Extra Fields -->
+        <div
+          v-for="(field, idx) in extraFields"
+          v-if="isTeamSelected"
+          :key="field.slug + idx"
+          class="column"
+        >
+          <label class="label-form">{{ field.label }} <span v-if="field.required">*</span></label>
+          <el-input
+            v-model="form[field.slug]"
+            size="large"
+            :placeholder="field.label"
+            :required="field.required"
+          ></el-input>
+        </div>
+      </TransitionGroup>
     </form>
+  </div>
+  <common-cool-footer hide-toggle height="fit-content" desktop-border-radius="0">
+      <el-button
+        type="primary"
+        size="large"
+        native-type="submit"
+        :disabled="!canRegisterDonation"
+        >{{ canRegisterDonation ? 'Registrar Doação' : 'Preencha os Campos Obrigatórios' }}</el-button
+      >
+    </common-cool-footer>
   </div>
 </template>
 
@@ -94,9 +108,14 @@ definePageMeta({
 });
 const { user } = useUserStore();
 
+console.log("User", user);
+
 const route = useRoute();
 const slug = route.params.slug;
 const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
+const extraFields = competition.value?.extraFields as unknown as ExtraField[];
+const extraFieldsSlugs = extraFields?.map((e) => e.slug) ?? [];
+
 if (!competition.value) {
   navigateTo("https://hemocione.com.br", { external: true });
 }
@@ -104,10 +123,12 @@ if (!competition.value) {
 export type Competition = typeof competition.value;
 
 const form = ref({
-  team: "",
-  matricula: "",
-  comprovante: "",
+  competitionTeamId: null,
+  proof: "",
   institutionId: null,
+  extraFields: {
+    ...Object.fromEntries(extraFieldsSlugs.map((slug) => [slug, ""])),
+  },
 } as Record<string, any>);
 
 const institutions = computed(() =>
@@ -117,14 +138,22 @@ const institutions = computed(() =>
   )
 );
 
-const isInstitutionSelected = computed(() => form.value.institutionId);
-const competitionTeamsOfSelectedInstitution = computed(() => {
-  const selectedId = isInstitutionSelected.value;
-  if (!selectedId) return [];
+const competitionTeams = computed(() => competition.value?.competitionTeams.filter(
+  (compTeams) => compTeams.teams?.institutions?.id === form.value.institutionId
+));
 
-  return competition.value?.competitionTeams.filter(
-    (compTeams) => compTeams.teams?.institutions?.id === selectedId
-  );
+if (institutions.value.length === 1) {
+  form.value.institutionId = institutions?.value[0]?.id;
+}
+
+const isTeamSelected = computed(() => form.value.competitionTeamId);
+const isInstitutionSelected = computed(() => form.value.institutionId);
+const allRequiredExtraFieldsFilled = computed(() =>
+  extraFieldsSlugs.every((slug) => form.value.extraFields[slug])
+);
+
+const canRegisterDonation = computed(() => {
+  return isTeamSelected.value && allRequiredExtraFieldsFilled.value && (!competition.value?.mandatory_proof || form.value.proof);
 });
 
 function handleFileSelect(event: any) {
@@ -164,29 +193,26 @@ async function handleSubmit(event: any) {
 
   await navigateTo(`/competition/${slug}/success`);
 }
-
-// TODO: Add correct type
-interface ExtraField {
-  slug: string;
-  label: string;
-  required: boolean;
-  type: "text";
-}
-
-function getExtraField(field: string): ExtraField | null {
-  const extraFields = competition.value?.extraFields;
-  if (!Array.isArray(extraFields)) return null;
-  return (
-    (extraFields as unknown as ExtraField[]).find((e) => e.slug === field) ??
-    null
-  );
-}
 </script>
-  <style>
+<style scoped>
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
 .main-form-container {
   width: 100%;
+  max-width: var(--hemo-page-max-width);
+  min-height: var(--hemo-page-min-height);
   height: 100%;
-  align-items: center;
+  align-items: center;  
+  background-color: white;
+  padding: 1rem;
 }
 .column {
   display: flex;
@@ -195,11 +221,13 @@ function getExtraField(field: string): ExtraField | null {
 .header {
   display: flex;
   flex-direction: column;
-  width: 50%;
+  align-items: flex-start;
+  width: 100%;
 }
 .header h2 {
   text-align: center;
   color: #25282b;
+  margin: 0
 }
 .header h3 {
   color: #52575c;
@@ -212,23 +240,16 @@ function getExtraField(field: string): ExtraField | null {
 .form {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
   width: 100%;
-  max-width: 50%;
-  border-radius: 10px;
-
-  margin-top: 40px;
 }
 .label-form {
-  font-size: 16px;
+  font-size: 1rem;
   color: #52575c;
-  margin: 15px 0;
+  margin-bottom: 0.8rem;
 }
 .label-form span {
   color: red;
-}
-.input-style {
-  border-radius: 8px;
-  height: 56px;
 }
 .camera-icon-container {
   border: 1px solid #dbdde0 !important;
@@ -237,7 +258,8 @@ function getExtraField(field: string): ExtraField | null {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 110px;
+  width: 100%;
+  aspect-ratio: 4/1;
 }
 #file-input {
   display: none;
