@@ -1,4 +1,4 @@
-import { isBoolean } from "lodash";
+import _ from "lodash";
 import { assertSecretAuth } from "~/server/services/auth";
 import { editCompetitionBySlug } from "~/server/services/competitionService";
 
@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const competitionSlug = String(getRouterParam(event, 'slug'));
   const body = await readBody(event)
   const { name, startsAt, endsAt, mandatoryProof, extraFields } = body
-  if (!name || !startsAt || !endsAt || isBoolean(mandatoryProof) === false) {
+  if (!name || !startsAt || !endsAt || _.isBoolean(mandatoryProof) === false) {
     throw createError({
       statusCode: 400,
       statusMessage: "Bad Request - name, startsAt, mandatoryProof and endsAt are required",
