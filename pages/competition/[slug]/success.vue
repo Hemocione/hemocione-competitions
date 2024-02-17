@@ -3,7 +3,7 @@
     <div class="main-container">
       <header class="header">
         <h2>{{ name || "Copa Hemocione" }}</h2>
-      </header>
+      </header> 
       <div class="success">
         <img src="/images/check-donation.svg" alt="checked-icon">
         <span>Doação registrada com sucesso! Obrigado por salvar 4 vidas :)</span>
@@ -55,6 +55,7 @@ const openHemocionePage = () => {
   flex-direction: column;
   height: var(--hemo-page-min-height);
   width: 100%;
+  max-width: var(--hemo-page-max-width);
   position: relative;
 }
 
