@@ -30,7 +30,7 @@ model teams {
 model competitions {
   id               Int       @id @default(autoincrement())
   name             String    @db.VarChar(255)
-  slug             String?   @unique @db.VarChar(255)
+  slug             String    @unique @db.VarChar(255)
   mandatory_proof  Boolean?  @default(false)
   start_at         DateTime  @db.Timestamptz(6)
   end_at           DateTime  @db.Timestamptz(6)
