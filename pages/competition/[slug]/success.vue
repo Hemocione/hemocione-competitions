@@ -1,0 +1,75 @@
+<template>
+  <div class="main">
+    <div class="main-container">
+      <header class="header">
+        <h2>{{ name || "Copa Hemocione" }}</h2>
+      </header>
+      <div class="success">
+        <img src="/images/check-donation.svg" alt="checked-icon">
+        <span>Doação registrada com sucesso! Obrigado por salvar 4 vidas :)</span>
+      </div>
+    </div>
+    <common-cool-footer hide-toggle height="fit-content" desktop-border-radius="0">
+      <el-button
+        type="primary"
+        size="large"
+        native-type="submit"
+        @click="openHemocionePage"
+        >Conheça mais o Hemocione</el-button
+      >
+    </common-cool-footer>
+  </div>
+</template>
+
+<script setup lang="ts">
+const route = useRoute();
+const name = route.query.name;
+const openHemocionePage = () => {
+  navigateTo("https://hemocione.com.br", { external: true });
+};
+</script>
+
+<style scoped>
+
+.success {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  text-align: center;
+  height: 100%;
+}
+.header {
+  width: 100%;
+}
+
+.header h2 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  height: var(--hemo-page-min-height);
+  width: 100%;
+  position: relative;
+}
+
+.main-container {
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 1rem;
+}
+
+.main-container h2 {
+  font-size: 2rem;
+  justify-self: flex-start;
+}
+</style>

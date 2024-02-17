@@ -8,7 +8,7 @@
         <NuxtLink to="/">
           <img
             :style="{ margin: '40px' }"
-            src="/img/arrow.svg"
+            src="/images/arrow.svg"
           >
         </NuxtLink>
       </div>
