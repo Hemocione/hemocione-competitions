@@ -5,10 +5,10 @@
 </template>
 
 <script setup lang="ts">
-useServerHead({
+useHead({
   title: "Copa Hemocione",
 });
-useServerSeoMeta({
+useSeoMeta({
   title: "Copa Hemocione",
   description:
     "Encontre competições de doação de sangue próximas a você e ajude a salvar vidas!",
