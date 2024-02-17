@@ -147,7 +147,7 @@ const extraFields = competition.value?.extraFields as unknown as ExtraField[];
 const extraFieldsSlugs = extraFields?.map((e) => e.slug) ?? [];
 const requiredExtraFieldsSlugs = extraFields?.filter((e) => e.required).map((e) => e.slug) ?? [];
 
-if (!competition.value) {
+if (!competition.value?.published ) {
   navigateTo("https://hemocione.com.br", { external: true });
 }
 
