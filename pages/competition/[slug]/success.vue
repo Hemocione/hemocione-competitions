@@ -22,11 +22,22 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from '~/store/user';
+
+definePageMeta({
+  middleware: "auth",
+})
 const route = useRoute();
 const name = route.query.name;
+const { getDonationByCompetitionSlug } = useUserStore();
 const openHemocionePage = () => {
   navigateTo("https://hemocione.com.br", { external: true });
 };
+
+const donation = await getDonationByCompetitionSlug(String(route.params.slug));
+if (!donation) {
+  navigateTo(`/competition/${route.params.slug}/register`);
+}
 </script>
 
 <style scoped>
