@@ -12,11 +12,11 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      authCookieKey: process.env.HEMOCIONE_AUTH_COOKIE_KEY ?? "devHemocioneId",
+      authCookieKey: process.env.HEMOCIONE_AUTH_COOKIE_KEY ?? "hemocioneId",
       hemocioneIdUrl:
-        process.env.HEMOCIONE_ID_URL ?? "https://id.d.hemocione.com.br",
+        process.env.HEMOCIONE_ID_URL ?? "https://id.hemocione.com.br",
       hemocioneIdApiUrl:
-        process.env.HEMOCIONE_ID_API_URL ?? "https://hemocione-id-dev.cpt.hemocione.com.br",
+        process.env.HEMOCIONE_ID_API_URL ?? "https://hemocione-id.cpt.hemocione.com.br",
       cdnUploadUrl: process.env.CDN_UPLOAD_URL ?? "http://localhost:3001/api/upload",
     },
     hemocioneIdJwtSecretKey: process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "hemocione",
