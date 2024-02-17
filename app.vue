@@ -5,6 +5,9 @@
 </template>
 
 <script setup lang="ts">
+useServerHead({
+  title: "Copa Hemocione",
+});
 useServerSeoMeta({
   title: "Copa Hemocione",
   description:
