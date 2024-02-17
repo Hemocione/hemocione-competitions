@@ -25,5 +25,8 @@
   },
   "prisma": {
     "schema": "server/db/schema.prisma"
+  },
+  "dependencies": {
+    "prisma": "^5.9.1"
   }
 }
