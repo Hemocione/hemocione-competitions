@@ -6,6 +6,7 @@
 
 <script setup lang="ts">
 useServerSeoMeta({
+  title: "Copa Hemocione",
   description:
     "Encontre competições de doação de sangue próximas a você e ajude a salvar vidas!",
   ogDescription:
