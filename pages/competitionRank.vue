@@ -159,7 +159,9 @@
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+navigateTo('https://hemocione.com.br', { external: true }) // for now
+</script>
 
 <style>
 .details-container {

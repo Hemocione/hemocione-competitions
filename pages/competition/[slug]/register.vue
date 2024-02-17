@@ -5,10 +5,10 @@
         <h2>{{ competition?.name }}</h2>
         <div>
           <h3>Olá, {{ user?.givenName }}!</h3>
-          <h4>Selecione sua equipe para registrar a doação</h4>
+          <h4>{{ presentationText }}</h4>
         </div>
       </header>
-      <form class="form" @submit="handleSubmit">
+      <form class="form" @submit="handleSubmit" v-if="!isCompetitionInFuture && !isCompetitionInPast">
         <!-- Institution Select -->
         <TransitionGroup name="slide-fade-down" appear>
           <div class="column" key="institution" v-if="institutions.length > 1">
@@ -107,10 +107,10 @@
         type="primary"
         size="large"
         native-type="submit"
-        :disabled="!canRegisterDonation || registeringDonation"
+        :disabled="!canRegisterDonation || registeringDonation || isCompetitionInFuture || isCompetitionInPast"
         :loading="registeringDonation"
         @click="handleSubmit"
-        >{{ canRegisterDonation ? 'Registrar Doação' : 'Preencha os Campos Obrigatórios' }}</el-button
+        >{{ coolButtonText }}</el-button
       >
     </common-cool-footer>
   </div>
@@ -119,6 +119,7 @@
 <script setup lang="ts">
 import { useUserStore } from "~/store/user";
 import { uniqBy } from "lodash";
+import dayjs from "dayjs";
 definePageMeta({
   middleware: ["auth"],
 });
@@ -149,6 +150,18 @@ const requiredExtraFieldsSlugs = extraFields?.filter((e) => e.required).map((e) 
 if (!competition.value) {
   navigateTo("https://hemocione.com.br", { external: true });
 }
+
+const isCompetitionInFuture = new Date(Date.parse(competition.value?.start_at as string)) > new Date();
+const isCompetitionInPast = new Date(Date.parse(competition.value?.end_at as string)) < new Date();
+
+const initialDate = dayjs(competition.value?.start_at).format("DD/MM/YYYY");
+const finalDate = dayjs(competition.value?.end_at).format("DD/MM/YYYY");
+
+const presentationText = isCompetitionInFuture
+  ? `${competition.value?.name} ainda não começou. Aguarde até a data de início (${initialDate}) para registrar sua doação.`
+  : isCompetitionInPast
+  ? "A competição já acabou. Obrigado por participar!"
+  : "Selecione sua equipe para registrar sua doação.";
 
 export type Competition = typeof competition.value;
 
@@ -184,6 +197,19 @@ const allRequiredExtraFieldsFilled = computed(() =>
 
 const canRegisterDonation = computed(() => {
   return isTeamSelected.value && allRequiredExtraFieldsFilled.value && (!competition.value?.mandatory_proof || form.value.proof);
+});
+
+const coolButtonText = computed(() => {
+  if (isCompetitionInFuture) {
+    return "Aguardando início da Copa Hemocione";
+  }
+  if (isCompetitionInPast) {
+    return `Copa Hemocione encerrada em ${finalDate}`;
+  }
+  if (!canRegisterDonation.value) {
+    return "Preencha os Campos Obrigatórios";
+  }
+  return "Registrar Doação";
 });
 
 const MB = 1024 * 1024;

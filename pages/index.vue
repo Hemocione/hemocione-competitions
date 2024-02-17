@@ -32,6 +32,8 @@
 </template>
 
 <script setup lang="ts">
+navigateTo('https://hemocione.com.br', { external: true }) // for now
+
 import dayjs from 'dayjs'
 
 const onGoing = ref(false)
