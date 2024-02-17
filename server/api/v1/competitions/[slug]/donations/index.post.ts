@@ -14,6 +14,16 @@ export default defineEventHandler(async (event) => {
       "statusMessage": "Competition not found"
     });
   }
+  const now = new Date();
+  const isCompetitionInFuture = competition.start_at && competition.start_at > now;
+  const isCompetitionInPast = competition.end_at && competition.end_at < now;
+
+  if (isCompetitionInFuture || isCompetitionInPast) {
+    throw createError({
+      "statusCode": 400,
+      "statusMessage": "Bad Request - Competition is not active"
+    });
+  }
 
   const body = await readBody(event);
   const {
