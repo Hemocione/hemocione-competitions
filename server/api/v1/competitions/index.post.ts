@@ -13,6 +13,9 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const createdCompetition = await createCompetition(name, startsAt, endsAt, mandatoryProof, extraFields);
+  const startsAtDate = new Date(startsAt);
+  const endsAtDate = new Date(endsAt);
+
+  const createdCompetition = await createCompetition(name, startsAtDate, endsAtDate, mandatoryProof, extraFields);
   return createdCompetition;
 });

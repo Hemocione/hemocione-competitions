@@ -14,6 +14,9 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const editedCompetition = await editCompetitionBySlug(competitionSlug, { name, startsAt, endsAt, extraFields, mandatoryProof });
+  const startsAtDate = new Date(startsAt);
+  const endsAtDate = new Date(endsAt);
+
+  const editedCompetition = await editCompetitionBySlug(competitionSlug, { name, startsAt: startsAtDate, endsAt: endsAtDate, extraFields, mandatoryProof });
   return editedCompetition;
 });
