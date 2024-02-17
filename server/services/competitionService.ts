@@ -146,8 +146,8 @@ export const editCompetitionBySlug = async (
   slug: string,
   payload: {
     name: string,
-    startsAt: string,
-    endsAt: string,
+    startsAt: Date,
+    endsAt: Date,
     mandatoryProof: boolean,
     extraFields?: ExtraFields,
   }
