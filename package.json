@@ -5,7 +5,8 @@
     "dev": "npx prisma generate && nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "migrate:deploy": "if [ \"$ENABLE_MIGRATIONS\" = \"1\" ]; then npx prisma migrate deploy; else echo \"no migrations enabled\"; fi",
+    "postinstall": "yarn migrate:deploy && npx prisma generate && nuxt prepare"
   },
   "devDependencies": {
     "@element-plus/icons-vue": "^2.3.1",
