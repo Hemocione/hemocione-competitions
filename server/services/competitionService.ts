@@ -120,7 +120,8 @@ export const getCompetitionRanking = async (competitionId: number) => {
 export const createCompetition = async (
   name: string,
   startsAt: Date,
-  endsAt: Date
+  endsAt: Date,
+  extraFields?: ExtraFields
 ) => {
   const slug = slugify(name, {
     lower: true,
@@ -133,6 +134,7 @@ export const createCompetition = async (
       slug,
       start_at: startsAt,
       end_at: endsAt,
+      extraFields: extraFields || [] as any, // TODO: fix this to type ExtraFields as Prisma JSON Array type
       published: false,
     },
   });
@@ -143,16 +145,18 @@ export const editCompetitionBySlug = async (
   payload: {
     name: string,
     startsAt: string,
-    endsAt: string
+    endsAt: string,
+    extraFields?: ExtraFields,
   }
 ) => {
-  const { name, startsAt, endsAt } = payload;
+  const { name, startsAt, endsAt, extraFields } = payload;
   const updatedCompetition = await dbClient.competitions.update({
     where: { slug },
     data: {
       name,
       start_at: startsAt,
       end_at: endsAt,
+      extraFields: extraFields || [] as any, // TODO: fix this to type ExtraFields as Prisma JSON Array type
     },
   });
   return updatedCompetition;

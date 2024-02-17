@@ -4,7 +4,7 @@ import { createCompetition } from "~/server/services/competitionService";
 export default defineEventHandler(async (event) => {
   assertSecretAuth(event);
   const body = await readBody(event)
-  const { name, startsAt, endsAt } = body
+  const { name, startsAt, endsAt, extraFields } = body
   if (!name || !startsAt || !endsAt) {
     throw createError({
       statusCode: 400,
@@ -12,6 +12,6 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const createdCompetition = await createCompetition(name, startsAt, endsAt);
+  const createdCompetition = await createCompetition(name, startsAt, endsAt, extraFields);
   return createdCompetition;
 });
