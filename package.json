@@ -22,6 +22,7 @@
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "nuxt": "^3.8.0",
+    "slugify": "^1.6.6",
     "typescript": "^5.3.3"
   },
   "prisma": {

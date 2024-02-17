@@ -19,7 +19,8 @@ export default defineNuxtConfig({
         process.env.HEMOCIONE_ID_API_URL ?? "https://hemocione-id-dev.cpt.hemocione.com.br",
       cdnUploadUrl: process.env.CDN_UPLOAD_URL ?? "http://localhost:3001/api/upload",
     },
-    hemocioneIdJwtSecretKey: process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "hemocione"
+    hemocioneIdJwtSecretKey: process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "hemocione",
+    secret: process.env.API_SECRET ?? "secret",
   },
   routeRules: {
     "/competition/:slug/register": {

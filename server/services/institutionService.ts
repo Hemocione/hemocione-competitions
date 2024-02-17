@@ -33,14 +33,6 @@ export const createInstitution = async (name: string) => {
 };
 
 export const editInstitution = async (id: number, name: string) => {
-  const institutionToEdit = await dbClient.institutions.findUnique({
-    where: { id: id },
-  });
-
-  if (!institutionToEdit) {
-    throw new Error('Institution not found');
-  }
-
   const updatedInstitution = await dbClient.institutions.update({
     where: { id: id },
     data: {

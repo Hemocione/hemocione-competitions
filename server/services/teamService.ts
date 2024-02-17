@@ -1,5 +1,32 @@
 import { dbClient } from "../db";
 
+export const createTeamsForInstitution = async (
+  institutionId: number,
+  teamNames: string[]
+) => {
+  const currentTeams = await dbClient.teams.findMany({
+    where: { institutionId },
+  });
+  const currentTeamNames = currentTeams.map((team) => team.name);
+  const duplicatedTeamNames = teamNames.filter((name) =>
+    currentTeamNames.includes(name)
+  );
+  if (duplicatedTeamNames.length > 0) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `Os nomes [${duplicatedTeamNames.join(', ')}] já estão sendo utilizados`,
+    });
+  }
+  const createdTeams = await dbClient.teams.createMany({
+    data: teamNames.map((name) => ({
+      name,
+      institutionId,
+    })),
+  });
+
+  return createdTeams;
+}
+
 export const createTeam = async (name: string, institutionId: number) => {
   const duplicatedTeam = await dbClient.teams.findFirst({
     where: { institutionId, name }, // Não poderíamos olhar apenas o name e não o institutuin ID
@@ -26,23 +53,18 @@ export const editTeam = async (
   institutionId: number
 ) => {
   const duplicatedTeam = await dbClient.teams.findFirst({
-    where: { name },
+    where: { name, institutionId, id: { not: id } },
   });
 
   if (duplicatedTeam) {
-    throw new Error(`O nome '${name}' já está sendo utilizado`);
-  }
-
-  const teamToEdit = await dbClient.teams.findUnique({
-    where: { id: id, institutionId: institutionId },
-  });
-
-  if (!teamToEdit) {
-    throw new Error('Time não encontrado');
+    throw createError({
+      statusCode: 400,
+      statusMessage: `O nome '${name}' já está sendo utilizado`
+    })
   }
 
   const updatedTeam = await dbClient.teams.update({
-    where: { id: id, institutionId: institutionId },
+    where: { id: id },
     data: {
       name: name,
     },

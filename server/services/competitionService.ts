@@ -1,4 +1,5 @@
 import { dbClient } from "../db";
+import slugify from "slugify";
 
 // status 3 = draft, 2 = ativo, 1 = upcoming, 0 = finalizado
 const statusCaseWhenClause = `
@@ -34,7 +35,7 @@ export const getCompetitions = async (includeUnpublished = false) => {
 
 const getCompetitionBySlugPromise = (slug: string) => {
   return dbClient.competitions.findUnique({
-    where: { slug },
+    where: { slug, published: true },
     select: {
       id: true,
       name: true,
@@ -121,9 +122,15 @@ export const createCompetition = async (
   startsAt: Date,
   endsAt: Date
 ) => {
+  const slug = slugify(name, {
+    lower: true,
+    strict: true,
+    locale: "pt",
+  });
   return await dbClient.competitions.create({
     data: {
       name,
+      slug,
       start_at: startsAt,
       end_at: endsAt,
       published: false,
@@ -131,40 +138,45 @@ export const createCompetition = async (
   });
 };
 
-export const editCompetition = async (
-  id: number,
-  name: string,
-  startsAt: Date,
-  endsAt: Date
+export const editCompetitionBySlug = async (
+  slug: string,
+  payload: {
+    name: string,
+    startsAt: string,
+    endsAt: string
+  }
 ) => {
-  return await dbClient.$transaction(async (dbClient) => {
-    const competitionToEdit = await dbClient.competitions.findUnique({
-      where: { id: id },
-    });
-
-    if (!competitionToEdit) {
-      throw new Error('Competition not found');
-    }
-
-    const updatedCompetition = await dbClient.competitions.update({
-      where: { id: id },
-      data: {
-        name,
-        start_at: startsAt,
-        end_at: endsAt,
-      },
-    });
-
-    return updatedCompetition;
+  const { name, startsAt, endsAt } = payload;
+  const updatedCompetition = await dbClient.competitions.update({
+    where: { slug },
+    data: {
+      name,
+      start_at: startsAt,
+      end_at: endsAt,
+    },
   });
+  return updatedCompetition;
 };
 
-export const deleteCompetition = async (id: number) => {
-  return await dbClient.$transaction(async (db) => {
-    const deletedCompetition = await db.competitions.delete({
-      where: { id: id },
-    });
-
-    return deletedCompetition;
+export const publishCompetitionBySlug = async (slug: string) => {
+  const publishedCompetition = await dbClient.competitions.update({
+    where: { slug },
+    data: {
+      published: true,
+      publication_date: new Date(),
+    },
   });
+
+  return publishedCompetition;
+};
+
+export const unpublishCompetitionBySlug = async (slug: string) => {
+  const unpublishedCompetition = await dbClient.competitions.update({
+    where: { slug },
+    data: {
+      published: false,
+      publication_date: null,
+    },
+  });
+  return unpublishedCompetition;
 };
