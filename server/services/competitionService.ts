@@ -121,6 +121,7 @@ export const createCompetition = async (
   name: string,
   startsAt: Date,
   endsAt: Date,
+  mandatoryProof: boolean,
   extraFields?: ExtraFields
 ) => {
   const slug = slugify(name, {
@@ -134,6 +135,7 @@ export const createCompetition = async (
       slug,
       start_at: startsAt,
       end_at: endsAt,
+      mandatory_proof: mandatoryProof,
       extraFields: extraFields || [] as any, // TODO: fix this to type ExtraFields as Prisma JSON Array type
       published: false,
     },
@@ -146,16 +148,18 @@ export const editCompetitionBySlug = async (
     name: string,
     startsAt: string,
     endsAt: string,
+    mandatoryProof: boolean,
     extraFields?: ExtraFields,
   }
 ) => {
-  const { name, startsAt, endsAt, extraFields } = payload;
+  const { name, startsAt, endsAt, extraFields, mandatoryProof } = payload;
   const updatedCompetition = await dbClient.competitions.update({
     where: { slug },
     data: {
       name,
       start_at: startsAt,
       end_at: endsAt,
+      mandatory_proof: mandatoryProof,
       extraFields: extraFields || [] as any, // TODO: fix this to type ExtraFields as Prisma JSON Array type
     },
   });
