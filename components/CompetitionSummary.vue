@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink class="summaryBox" to="/competition">
+  <NuxtLink class="summaryBox" to="/competitionRank">
     <div :style="{ flex: 9 }">
       <h3 :style="{ margin: '0 0 10px 0' }">
         {{ title }}
@@ -10,7 +10,7 @@
       <span> TÉRMINO: {{ end }} </span>
     </div>
     <div class="arrow">
-      <img :style="{ height: '50px' }" src="/img/bodylessArrow.svg">
+      <img :style="{ height: '50px' }" src="/images/bodylessArrow.svg">
     </div>
   </NuxtLink>
 </template>

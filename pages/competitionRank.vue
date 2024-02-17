@@ -4,7 +4,7 @@
     <div class="details-container">
       <div :style="{ flex: 1 }">
         <NuxtLink to="/">
-          <img :style="{ margin: '40px' }" src="/img/arrow.svg">
+          <img :style="{ margin: '40px' }" src="/images/arrow.svg">
         </NuxtLink>
       </div>
       <div class="details-strip">
@@ -28,35 +28,35 @@
             </div>
             <div class="last-donators-item">
               <div :style="{ flex: 1 }">
-                <img src="/img/defaultAvatar.svg">
+                <img src="/images/defaultAvatar.svg">
               </div>
               <span :style="{ flex: 8 }">Doador da Silva Nome Gra...</span>
               <span class="last-donators-item-blood-type">A+</span>
             </div>
             <div class="last-donators-item">
               <div :style="{ flex: 1 }">
-                <img src="/img/defaultAvatar.svg">
+                <img src="/images/defaultAvatar.svg">
               </div>
               <span :style="{ flex: 8 }">Doador da Silva</span>
               <span class="last-donators-item-blood-type">A+</span>
             </div>
             <div class="last-donators-item">
               <div :style="{ flex: 1 }">
-                <img src="/img/defaultAvatar.svg">
+                <img src="/images/defaultAvatar.svg">
               </div>
               <span :style="{ flex: 8 }">Doador da Silva</span>
               <span class="last-donators-item-blood-type">A+</span>
             </div>
             <div class="last-donators-item">
               <div :style="{ flex: 1 }">
-                <img src="/img/defaultAvatar.svg">
+                <img src="/images/defaultAvatar.svg">
               </div>
               <span :style="{ flex: 8 }">Doador da Silva</span>
               <span class="last-donators-item-blood-type">A+</span>
             </div>
             <div class="last-donators-item">
               <div :style="{ flex: 1 }">
-                <img src="/img/defaultAvatar.svg">
+                <img src="/images/defaultAvatar.svg">
               </div>
               <span :style="{ flex: 8 }">Doador da Silva</span>
               <span class="last-donators-item-blood-type">A+</span>
@@ -67,12 +67,12 @@
               <div :style="{ flex: 5 }" />
               <div class="team-image-name">
                 <div :style="{ 'margin-bottom': '10px' }">
-                  <img class="podium-user" src="/img/defaultAvatar.svg">
+                  <img class="podium-user" src="/images/defaultAvatar.svg">
                 </div>
                 <div>EQUIPE A</div>
               </div>
               <div class="snd podium-step">
-                <img class="medal" src="/img/silver.svg">
+                <img class="medal" src="/images/silver.svg">
                 <br>
                 <br>
                 <span>12</span>
@@ -82,12 +82,12 @@
               <div :style="{ flex: 5 }" />
               <div class="team-image-name">
                 <div :style="{ 'margin-bottom': '10px' }">
-                  <img class="podium-user" src="/img/defaultAvatar.svg">
+                  <img class="podium-user" src="/images/defaultAvatar.svg">
                 </div>
                 <div>EQUIPE B</div>
               </div>
               <div class="st podium-step">
-                <img class="medal" src="/img/gold.svg">
+                <img class="medal" src="/images/gold.svg">
                 <br>
                 <br>
                 <span>13</span>
@@ -97,12 +97,12 @@
               <div :style="{ flex: 5 }" />
               <div class="team-image-name">
                 <div :style="{ 'margin-bottom': '10px' }">
-                  <img class="podium-user" src="/img/defaultAvatar.svg">
+                  <img class="podium-user" src="/images/defaultAvatar.svg">
                 </div>
                 <div>EQUIPE C</div>
               </div>
               <div class="rd podium-step">
-                <img class="medal" src="/img/bronze.svg">
+                <img class="medal" src="/images/bronze.svg">
                 <br>
                 <br>
                 <span>9</span>
@@ -159,7 +159,9 @@
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+navigateTo('https://hemocione.com.br', { external: true }) // for now
+</script>
 
 <style>
 .details-container {
