@@ -10,10 +10,14 @@
       </div>
     </div>
     <common-cool-footer hide-toggle height="fit-content" desktop-border-radius="0">
+      <el-button type="default" size="large" @click="openInstagram"
+        >Siga o Hemocione no Instagram
+        <el-icon class="el-icon--right" size="30"
+          ><NuxtImg src="/images/icons/instagram.svg" /></el-icon
+      ></el-button>
       <el-button
         type="primary"
         size="large"
-        native-type="submit"
         @click="openHemocionePage"
         >Conheça mais o Hemocione</el-button
       >
@@ -23,7 +27,7 @@
 
 <script setup lang="ts">
 import { useUserStore } from '~/store/user';
-
+const config = useRuntimeConfig();
 definePageMeta({
   middleware: "auth",
 })
@@ -32,6 +36,10 @@ const name = route.query.name;
 const { getDonationByCompetitionSlug } = useUserStore();
 const openHemocionePage = () => {
   navigateTo("https://hemocione.com.br", { external: true });
+};
+
+const openInstagram = () => {
+  navigateTo(config.public.instagramUrl, { external: true });
 };
 
 const donation = await getDonationByCompetitionSlug(String(route.params.slug));
