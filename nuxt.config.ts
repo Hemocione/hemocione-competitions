@@ -18,6 +18,7 @@ export default defineNuxtConfig({
       hemocioneIdApiUrl:
         process.env.HEMOCIONE_ID_API_URL ?? "https://hemocione-id.cpt.hemocione.com.br",
       cdnUploadUrl: process.env.CDN_UPLOAD_URL ?? "http://localhost:3001/api/upload",
+      instagramUrl: process.env.INSTAGRAM_URL ?? "https://www.instagram.com/hemocione/",
     },
     hemocioneIdJwtSecretKey: process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "hemocione",
     secret: process.env.API_SECRET ?? "secret",
