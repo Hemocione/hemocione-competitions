@@ -13,7 +13,7 @@
       <el-button type="default" size="large" @click="openInstagram"
         >Siga o Hemocione no Instagram
         <el-icon class="el-icon--right" size="30"
-          ><NuxtImg src="/images/icons/instagram.svg" /></el-icon
+          ><NuxtImg src="/images/icons/instagram.svg" style="height: 100%"/></el-icon
       ></el-button>
       <el-button
         type="primary"
