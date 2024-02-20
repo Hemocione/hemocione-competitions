@@ -32,11 +32,11 @@ export const useUserStore = defineStore("user", {
     donationsByCompetitionSlug: new Map<string, UserDonation>(),
   }),
   actions: {
-    setUser(user: CurrentUserData) {
+    setUser(user: CurrentUserData | null) {
       this.user = user;
       this.donationsByCompetitionSlug.clear();
     },
-    setToken(token: string) {
+    setToken(token: string | null) {
       this.token = token;
     },
     async getDonationByCompetitionSlug(competitionSlug: string) {
