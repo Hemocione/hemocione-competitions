@@ -1912,6 +1912,13 @@
     hookable "^5.5.3"
     unhead "1.8.8"
 
+"@vercel/analytics@^1.0.0":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@vercel/analytics/-/analytics-1.2.1.tgz#4e215a390b6373834dbe2420e72a9d8c5487d86f"
+  integrity sha512-ZB5gDPCQvHu0DcBbywIwMm5aY9mTV8mBl7Mmk8QD84JqBnuYbsNCDnnDuzblNjd82tDtRjAqruZ0mzNm6MAWpA==
+  dependencies:
+    server-only "^0.0.1"
+
 "@vercel/nft@^0.24.3":
   version "0.24.3"
   resolved "https://registry.yarnpkg.com/@vercel/nft/-/nft-0.24.3.tgz#7a6c5b17a4ac153bd07d9d0511ccef20d1cefa66"
@@ -5037,6 +5044,15 @@ nuxi@^3.10.0:
   optionalDependencies:
     fsevents "~2.3.3"
 
+nuxt-vercel-analytics@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/nuxt-vercel-analytics/-/nuxt-vercel-analytics-1.0.0.tgz#d2cfa190a437e42122528bf3fc7126c7e6aecaae"
+  integrity sha512-ob1FpLypY2a6uqjM6SPDH/PZjtYslC6LVN4Pe9tark/TC009N/+65Q99a2NjDN+QQv2x9HA7NcWlJoGGznGn3w==
+  dependencies:
+    "@nuxt/kit" "3.8.2"
+    "@vercel/analytics" "^1.0.0"
+    defu "^6.1.2"
+
 nuxt@^3.8.0:
   version "3.8.2"
   resolved "https://registry.yarnpkg.com/nuxt/-/nuxt-3.8.2.tgz#6db515d41e7745c725be7f34f692bdeabc53da07"
@@ -5917,6 +5933,11 @@ serve-static@^1.15.0:
     escape-html "~1.0.3"
     parseurl "~1.3.3"
     send "0.18.0"
+
+server-only@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/server-only/-/server-only-0.0.1.tgz#0f366bb6afb618c37c9255a314535dc412cd1c9e"
+  integrity sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==
 
 set-blocking@^2.0.0:
   version "2.0.0"
