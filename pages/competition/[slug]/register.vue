@@ -55,6 +55,7 @@
               id="file-input"
               type="file"
               accept="image/*"
+              capture="environment"
               @change="handleFileSelect($event)"
             />
             <label class="label-form"
