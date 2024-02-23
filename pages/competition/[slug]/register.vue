@@ -119,7 +119,7 @@
 
 <script setup lang="ts">
 import { useUserStore } from "~/store/user";
-import { uniqBy } from "lodash";
+import { uniqBy, sortBy } from "lodash";
 import dayjs from "dayjs";
 definePageMeta({
   middleware: ["auth"],
@@ -176,15 +176,18 @@ const form = ref({
 });
 
 const institutions = computed(() =>
-  uniqBy(
-    competition.value?.competitionTeams.map((e) => e.teams?.institutions),
-    "id"
+  sortBy(
+    uniqBy(
+      competition.value?.competitionTeams.map((e) => e.teams?.institutions),
+      "id"
+    ),
+    "name"
   )
 );
 
-const competitionTeams = computed(() => competition.value?.competitionTeams.filter(
+const competitionTeams = computed(() => sortBy(competition.value?.competitionTeams.filter(
   (compTeams) => compTeams.teams?.institutions?.id === form.value.institutionId
-));
+), "teams.name"));
 
 if (institutions.value.length === 1) {
   form.value.institutionId = institutions?.value[0]?.id;
