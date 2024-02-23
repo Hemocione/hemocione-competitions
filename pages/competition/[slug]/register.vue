@@ -19,6 +19,7 @@
               :placeholder="'Selecione sua Instituição'"
               @change="() => form.competitionTeamId = null"
               required
+              filterable
             >
               <el-option
                 v-for="(institution, idx) in institutions"
@@ -38,6 +39,8 @@
               v-model="(form.competitionTeamId as number)"
               size="large"
               :placeholder="'Selecione sua equipe'"
+              required
+              filterable
             >
               <el-option
                 v-for="compTeam in competitionTeams"
