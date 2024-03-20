@@ -1,7 +1,33 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const getSiteUrl = () => {
+  if (process.env.VERCEL_ENV === "preview") {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  if (process.env.VERCEL_ENV === undefined) {
+    return "http://localhost:3000";
+  }
+
+  return "https://copa.hemocione.com.br";
+};
+const getCurrentEnv = () => {
+  if (process.env.VERCEL_ENV === "preview") {
+    return "dev";
+  }
+
+  if (process.env.VERCEL_ENV === "production") {
+    return "prod";
+  }
+
+  return "dev";
+};
+
+const siteUrl = getSiteUrl();
+const currentEnv = getCurrentEnv();
+
 export default defineNuxtConfig({
   css: ['~/assets/css/main.css', '~/assets/css/transitions.css', '~/assets/css/animations.css'],
-  modules: ['@element-plus/nuxt', '@nuxtjs/google-fonts', "@pinia/nuxt", "@nuxt/image", "nuxt-vercel-analytics"],
+  modules: ['@element-plus/nuxt', '@nuxtjs/google-fonts', "@pinia/nuxt", "@nuxt/image", "nuxt-vercel-analytics", "nuxt-bugsnag"],
   googleFonts: {
     families: {
       Roboto: true
@@ -29,6 +55,17 @@ export default defineNuxtConfig({
     },
     "/competition/:slug/success": {
       ssr: false,
+    },
+  },
+  bugsnag: {
+    publishRelease: true,
+    disableLog: false, // might activate later
+    baseUrl: siteUrl,
+    config: {
+      apiKey: process.env.BUGSNAG_API_KEY,
+      enabledReleaseStages: ["prod", "dev"],
+      releaseStage: currentEnv,
+      appVersion: `${currentEnv}-${process.env.VERCEL_GIT_COMMIT_SHA}`,
     },
   },
   app: {

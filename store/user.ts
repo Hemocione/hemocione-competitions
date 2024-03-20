@@ -39,11 +39,6 @@ export const useUserStore = defineStore("user", {
     setToken(token: string | null) {
       this.token = token;
     },
-    invalidateUser() {
-      this.user = null;
-      this.token = null;
-      this.donationsByCompetitionSlug.clear();
-    },
     async getDonationByCompetitionSlug(competitionSlug: string) {
       if (!this.token) return;
 
