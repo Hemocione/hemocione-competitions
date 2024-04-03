@@ -2,16 +2,35 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "npx prisma generate && nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "migrate:deploy": "if [ \"$ENABLE_MIGRATIONS\" = \"1\" ]; then npx prisma migrate deploy; else echo \"no migrations enabled\"; fi",
+    "postinstall": "yarn migrate:deploy && npx prisma generate && nuxt prepare"
   },
   "devDependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "@element-plus/nuxt": "^1.0.7",
+    "@nuxt/image": "^1.3.0",
     "@nuxtjs/google-fonts": "^3.1.0",
+    "@pinia/nuxt": "^0.5.1",
+    "@prisma/client": "^5.9.1",
+    "@types/jsonwebtoken": "^9.0.5",
+    "dayjs": "^1.11.10",
     "element-plus": "^2.4.3",
-    "nuxt": "^3.11.1"
+    "nuxt": "^3.11.1",
+    "eslint": "^8.56.0",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "nuxt-bugsnag": "^7.2.3",
+    "nuxt-vercel-analytics": "^1.0.0",
+    "slugify": "^1.6.6",
+    "typescript": "^5.3.3"
+  },
+  "prisma": {
+    "schema": "server/db/schema.prisma"
+  },
+  "dependencies": {
+    "prisma": "^5.9.1"
   }
 }
