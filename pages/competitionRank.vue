@@ -90,7 +90,7 @@ const props = defineProps({
 
 const { data: competition } = await useFetch(
   `/api/v1/competitions/${props.slug}`
-); // TODO: after change to props.slug
+);
 
 const competitionName = computed(
   () => competition?.value?.name ?? "Copa Hemocione"
