@@ -31,16 +31,6 @@
               </el-option>
             </el-select>
           </div>
-          
-
-            <el-button class="grey-button"
-            type="primary"
-            size="large"
-            native-type="submit"
-            @click="goToLogin()"
-            
-            >{{ "Não é o João Sangue Bom? Entre como outro doador." }}</el-button>
-
 
           <!-- Team Select -->
           <div v-if="isInstitutionSelected" class="column" key="team">
@@ -62,9 +52,6 @@
               </el-option>
             </el-select>
           </div>
-          
-       
-          
           <!-- Proof Field -->
           <div class="column" key="proof" v-if="isTeamSelected">
             <input
@@ -100,7 +87,7 @@
               </div>
             </Transition>
           </div>
-            
+
           <!-- Extra Fields -->
           <div
             v-for="(field, idx) in extraFields"
@@ -128,7 +115,6 @@
         :loading="registeringDonation"
         @click="handleSubmit"
         >{{ coolButtonText }}</el-button
-        
       >
     </common-cool-footer>
   </div>
@@ -138,18 +124,17 @@
 import { useUserStore } from "~/store/user";
 import { uniqBy, sortBy } from "lodash";
 import dayjs from "dayjs";
-import { redirectToID } from "~/middleware/auth";
 definePageMeta({
   middleware: ["auth"],
 });
-const { user, token, getDonationByCompetitionSlug, registerDonation} = useUserStore();
+
+const { user, token, getDonationByCompetitionSlug, registerDonation } = useUserStore();
 
 if (!user) {
   navigateTo("/unauthorized");
 }
 const route = useRoute();
 const slug = route.params.slug;
-
 
 const uploadingImage = ref(false);
 const registeringDonation = ref(false);
@@ -160,7 +145,7 @@ const goToSuccess = () => {
   navigateTo(`/competition/${slug}/success?name=${encodeURIComponent(competition.value?.name ?? "Copa Hemocione")}`);
 };
 
-const goToLogin= () => {
+const goToLogin = () => {
   redirectToID(`/competition/${slug}/register`);
 };
 
@@ -422,13 +407,6 @@ async function handleSubmit(event: any) {
 .el-input--large .el-input__wrapper {
   height: 56px;
   border-radius: 0.5rem;
-}
-
-.grey-button {
-  border: 1px solid #F3F2F1 !important;
-  color: var(--hemo-color-primary) !important;
-  background-color: #F3F2F1 !important;
-  display: flex;
 }
 </style>
   
