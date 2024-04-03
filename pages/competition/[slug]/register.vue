@@ -142,7 +142,7 @@ import { redirectToID } from "~/middleware/auth";
 definePageMeta({
   middleware: ["auth"],
 });
-const { user, token, getDonationByCompetitionSlug, registerDonation, invalidateUser} = useUserStore();
+const { user, token, getDonationByCompetitionSlug, registerDonation} = useUserStore();
 
 if (!user) {
   navigateTo("/unauthorized");
@@ -161,7 +161,6 @@ const goToSuccess = () => {
 };
 
 const goToLogin= () => {
-  invalidateUser();
   redirectToID(`/competition/${slug}/register`);
 };
 
