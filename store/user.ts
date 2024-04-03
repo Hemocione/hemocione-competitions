@@ -8,14 +8,24 @@ export const getUserDonation = async (competitionSlug: string, token: string) =>
   });
 }
 
-export const registerDonation = async (competitionSlug: string, token: string, payload: { proof: string, extraFields: ExtraFieldsResponse, competitionTeamId: number }) => {
-  const { proof, extraFields, competitionTeamId } = payload;
+export const registerDonation = async (
+  competitionSlug: string, 
+  token: string, 
+  payload: { 
+    proof: string, 
+    extraFields: ExtraFieldsResponse, 
+    competitionTeamId: number, 
+    displayFeedImage?: boolean 
+  }
+) => {
+  const { proof, extraFields, competitionTeamId, displayFeedImage} = payload;
   return await $fetch(`/api/v1/competitions/${competitionSlug}/donations`, {
     method: "POST",
     body: {
       competitionTeamId,
       proof,
       extraFields,
+      displayFeedImage
     },
     headers: {
       Authorization: `Bearer ${token}`

@@ -9,9 +9,10 @@ export const registerDonation = async (
     user_email: string,
     extraFields?: string
     proof?: string
+    displayFeedImage?: boolean
   }
 ) => {
-  const { user_name, user_email, extraFields, hemocioneID, proof } = payload;
+  const { user_name, user_email, extraFields, hemocioneID, proof, displayFeedImage } = payload;
   return await dbClient.$transaction(async (db) => {
     const createdDonation = await db.donations.create({
       data: {
@@ -22,6 +23,7 @@ export const registerDonation = async (
         competitionId: competitionId,
         ...(extraFields ? { extraFields } : {}),
         ...(proof ? { proof } : {}),
+        ...(displayFeedImage ? { displayFeedImage } : {}),
       },
     });
 
