@@ -6,294 +6,276 @@
 
     <div class="details-strip">
       <div class="details-title">
-        <h1>Competição IDOR: Enfermagem x Radiologia</h1>
+        <h1>{{ competitionName }}</h1>
       </div>
       <div class="status-teams">
-        <div class="details-status">EM ANDAMENTO</div>
+        <div
+          class="details-status"
+          :style="`background-color:${statusInfo.color}`"
+        >
+          {{ statusInfo.status }}
+        </div>
         <div :style="{ flex: 70 }" />
-        <el-select class="detail-team-select" placeholder="Equipes">
-          <el-option label="Zone one" value="shanghai" />
-          <el-option label="Zone two" value="beijing" />
+        <el-select
+          v-model="selectedTeam"
+          class="detail-team-select"
+          placeholder="Equipes"
+          value-key="id"
+        >
+          <el-option
+            v-for="team in competitionTeams"
+            :label="team.teams.name"
+            :value="team"
+          />
         </el-select>
       </div>
       <div class="details-grid">
         <div class="podium">
-          <div class="place-strip">
+          <div class="place-strip" v-for="team in rankingTeamsClass">
             <div :style="{ flex: 5 }" />
             <div class="team-image-name">
               <div :style="{ 'margin-bottom': '10px' }">
                 <img class="podium-user" src="/images/defaultAvatar.svg" />
               </div>
-              <div>EQUIPE A</div>
+              <div>{{ team.team.teams.name }}</div>
             </div>
-            <div class="snd podium-step">
-              <img class="medal" src="/images/silver.svg" />
-              <br />
-              <br />
-              <span>12</span>
-            </div>
-          </div>
-          <div class="place-strip">
-            <div :style="{ flex: 5 }" />
-            <div class="team-image-name">
-              <div :style="{ 'margin-bottom': '10px' }">
-                <img class="podium-user" src="/images/defaultAvatar.svg" />
-              </div>
-              <div>EQUIPE B</div>
-            </div>
-            <div class="st podium-step">
-              <img class="medal" src="/images/gold.svg" />
-              <br />
-              <br />
-              <span>13</span>
-            </div>
-          </div>
-          <div class="place-strip">
-            <div :style="{ flex: 5 }" />
-            <div class="team-image-name">
-              <div :style="{ 'margin-bottom': '10px' }">
-                <img class="podium-user" src="/images/defaultAvatar.svg" />
-              </div>
-              <div>EQUIPE C</div>
-            </div>
-            <div class="rd podium-step">
-              <img class="medal" src="/images/bronze.svg" />
-              <br />
-              <br />
-              <span>9</span>
+            <div :class="`${team.class} podium-step`">
+              <img class="medal" :src="`/images/${team.medal}.svg`" />
+              <span>{{ team.team.donation_count }}</span>
             </div>
           </div>
         </div>
         <div class="ranking">
           <div class="ranking-title">
-            <span :style="{ flex: 1 }">Classificação</span>
-            <span :style="{ flex: 1 }">Equipes</span>
-            <span :style="{ flex: 1 }">Doações</span>
+            <span class="f1">Classificação</span>
+            <span class="f1">Equipes</span>
+            <span class="f1">Doações</span>
           </div>
-          <div class="ranking-row">
-            <span :style="{ flex: 1 }">1</span>
-            <span :style="{ flex: 1 }">Equipe B</span>
-            <span :style="{ flex: 1 }">13</span>
-          </div>
-          <div class="ranking-row">
-            <span :style="{ flex: 1 }">2</span>
-            <span :style="{ flex: 1 }">Equipe C</span>
-            <span :style="{ flex: 1 }">15</span>
-          </div>
-          <div class="ranking-row">
-            <span :style="{ flex: 1 }">3</span>
-            <span :style="{ flex: 1 }">Equipe D</span>
-            <span :style="{ flex: 1 }">15</span>
-          </div>
-          <div class="ranking-row">
-            <span :style="{ flex: 1 }">4</span>
-            <span :style="{ flex: 1 }">Equipe E</span>
-            <span :style="{ flex: 1 }">15</span>
-          </div>
-          <div class="ranking-row">
-            <span :style="{ flex: 1 }">5</span>
-            <span :style="{ flex: 1 }">Equipe F</span>
-            <span :style="{ flex: 1 }">15</span>
+          <div class="ranking-row" v-for="(team, idx) in competitionTeams">
+            <span class="f1">{{ idx + 1 }}</span>
+            <span class="f1">{{ team.teams.name }}</span>
+            <span class="f1">{{ team.donation_count }}</span>
           </div>
         </div>
       </div>
     </div>
 
     <div class="register-sticky">
-      <div :style="{ flex: 1 }" />
+      <div class="f1" />
       <div class="register-button-strip">
-        <NuxtLink to="/donation">
+        <NuxtLink :to="`/competition/${props.slug}/register`">
           <el-button class="register-button" type="primary">
             + Registrar nova doação
           </el-button>
         </NuxtLink>
       </div>
-      <div :style="{ flex: 1 }" />
+      <div class="f1" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+navigateTo("https://hemocione.com.br", { external: true }); // for now
 import _ from "lodash";
+import dayjs from "dayjs";
 
-defineProps({
-  competitionId: {
+const selectedTeam = ref("");
+
+const props = defineProps({
+  slug: {
     type: String,
-    default: "",
-  },
-  teams: {
-    type: Array,
-    default: [
-      { id: 1, name: "Pain", qtdDoacoes: 12 },
-      { id: 2, name: "Los grandes", qtdDoacoes: 10 },
-      { id: 3, name: "Loud", qtdDoacoes: 15 },
-    ],
+    required: true,
   },
 });
-// TODO: making dinamic 
-// const ranking = computed(() => this.teams.value);
 
-// navigateTo('https://hemocione.com.br', { external: true }) // for now
+const { data: competition } = await useFetch(
+  `/api/v1/competitions/${props.slug}`
+); // TODO: after change to props.slug
+
+const competitionName = computed(
+  () => competition?.value?.name ?? "Copa Hemocione"
+);
+
+const statusInfo = computed(() => {
+  const now = dayjs();
+  const end = dayjs(competition?.value?.end_at);
+  const start = dayjs(competition?.value?.start_at);
+
+  if (now.isAfter(end))
+    return {
+      status: "FINALIZADO",
+      color: "#FB4E4E",
+    };
+  if (now.isAfter(start))
+    return {
+      status: "EM ANDAMENTO",
+      color: "#40DD7F",
+    };
+  return {
+    status: "AGUARDANDO",
+    color: "#f3f2f1",
+  };
+});
+
+const competitionTeams = computed(() =>
+  _.reverse(_.sortBy(competition.value?.competitionTeams, "donation_count"))
+);
+
+const rankingTeamsClass = computed(() => [
+  { class: "snd", team: competitionTeams.value[1], medal: "silver" },
+  { class: "st", team: competitionTeams.value[0], medal: "gold" },
+  { class: "rd", team: competitionTeams.value[2], medal: "bronze" },
+]);
 </script>
 
 <style>
-  .details-container {
-    display: flex;
-    width: 100%;
-    background-color: white;
-  }
-  .details-main-body {
-    display: flex;
-  }
+.details-container {
+  display: flex;
+  width: 100%;
+  background-color: white;
+}
+.details-strip {
+  flex: 3;
+  margin-bottom: 15vh;
+  padding: 0 20%;
+}
+.details-title {
+  text-align: center;
+  margin-bottom: 60px;
+}
+.details-status {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  color: white;
+  border-radius: 200px;
+  padding: 15px;
+}
+.status-teams {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 35px;
+}
+.details-grid {
+  display: flex;
+  flex-direction: column;
+}
+.detail-team-select {
+  height: 48px;
+  width: 20%;
+}
+.ranking {
+  border: solid #dbdde0 2px;
+  border-radius: 5px;
+  border-bottom: 0px;
+  margin-top: 30px;
+  grid-column-start: 1;
+  grid-column-end: 3;
+}
+.ranking-title {
+  background-color: #f3f2f1;
+  padding: 20px;
+  border-bottom: solid #dbdde0 2px;
+  display: flex;
+  text-align: center;
+}
+.ranking-row {
+  padding: 20px;
+  border-bottom: solid #dbdde0 2px;
+  display: flex;
+  text-align: center;
+  background-color: white;
+}
+.register-sticky {
+  position: fixed;
+  border-top: solid #dbdde0 2px;
+  background-color: white;
+  height: 10vh;
+  width: 100%;
+  bottom: 0;
+  display: flex;
+}
+.register-button-strip {
+  margin: auto;
+  flex: 4;
+}
+.register-button {
+  height: 40px;
+  background-color: #e93c3c;
+  width: 100%;
+}
+.podium {
+  border: solid #dbdde0 2px;
+  width: 60%;
+  height: 380px;
+  background-color: #f9f9fa;
+  border-radius: 5px;
+  padding: 8px;
+  display: flex;
+  gap: 3%;
+}
+.place-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex: 1;
+  height: 100%;
+}
+.podium-step {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 15px 0px;
+  text-align: center;
+  border-top-right-radius: 30px;
+  border-top-left-radius: 30px;
+}
+.team-image-name {
+  text-align: center;
+}
+.snd.podium-step {
+  background-color: #efefef;
+  flex: 15;
+}
+.st.podium-step {
+  background-color: #ffebc2;
+  flex: 100;
+}
+.rd.podium-step {
+  background-color: #dfd0cc;
+  flex: 5;
+}
+.podium-user {
+  height: 60px;
+}
+.medal {
+  height: 50px;
+}
+
+.back-arrow {
+  position: fixed;
+  margin: 15px 0px 0px 15px;
+}
+
+.f1 {
+  flex: 1;
+}
+
+@media screen and (max-width: 753px) {
   .details-strip {
-    flex: 3;
-    margin-bottom: 15vh;
     padding: 0 10%;
   }
-  .details-title {
-    text-align: center;
-    margin-bottom: 60px;
-  }
-  .details-status {
-    text-align: center;
-    height: 40px;
-    background-color: #f3f2f1;
-    border-radius: 200px;
-    border: solid #dbdde0 2px;
-    padding: 10px;
-    display: inline-block;
-  }
-  .status-teams {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 35px;
-  }
-  .last-donators {
-    border: solid #dbdde0 2px;
-    border-bottom: 0px;
-    border-radius: 5px;
-    margin-right: 15px;
-  }
-  .last-donators-title {
-    background-color: #f3f2f1;
-    padding: 10px;
-    border-bottom: solid #dbdde0 2px;
-  }
-  .last-donators-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-bottom: solid #dbdde0 2px;
-  }
-  .last-donators-item-blood-type {
-    flex: 1;
-    color: #bb0a08;
-  }
-  .details-grid {
-    display: flex;
-    flex-direction: column;
+  .podium {
+    width: 100%;
   }
   .detail-team-select {
     height: 48px;
-    width: 15%;
-  }
-  .ranking {
-    border: solid #dbdde0 2px;
-    border-radius: 5px;
-    border-bottom: 0px;
-    margin-top: 30px;
-    grid-column-start: 1;
-    grid-column-end: 3;
-  }
-  .ranking-title {
-    background-color: #f3f2f1;
-    padding: 20px;
-    border-bottom: solid #dbdde0 2px;
-    display: flex;
-    text-align: center;
-  }
-  .ranking-row {
-    padding: 20px;
-    border-bottom: solid #dbdde0 2px;
-    display: flex;
-    text-align: center;
-    background-color: white;
-  }
-  .register-sticky {
-    position: fixed;
-    border-top: solid #dbdde0 2px;
-    background-color: white;
-    height: 10vh;
-    width: 100%;
-    bottom: 0;
-    display: flex;
-  }
-  .register-button-strip {
-    margin: auto;
-    flex: 3;
+    width: 30%;
   }
   .register-button {
-    height: 40px;
-    background-color: #e93c3c;
-    width: 100%;
-  }
-  .podium {
-    border: solid #dbdde0 2px;
-    width: 60%;
-    height: 380px;
-    background-color: #f9f9fa;
-    border-radius: 5px;
-    padding: 8px;
-    display: flex;
-    gap: 3%;
-  }
-  .place-strip {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    flex: 1;
-    height: 100%;
-  }
-  .podium-step {
-    padding-top: 20px;
-    text-align: center;
-    border-top-right-radius: 30px;
-    border-top-left-radius: 30px;
-  }
-  .snd.podium-step {
-    background-color: #efefef;
+    height: 48px;
     flex: 10;
   }
-  .st.podium-step {
-    background-color: #ffebc2;
-    flex: 20;
-  }
-  .rd.podium-step {
-    background-color: #dfd0cc;
-  }
-  .team-image-name {
-    text-align: center;
-  }
-  .podium-user {
-    height: 60px;
-  }
-  .medal {
-    height: 50px;
-  }
-
-  .back-arrow {
-    position: fixed;
-    margin: 15px 0px 0px 15px;
-  }
-
-  @media screen and (max-width: 753px) {
-    .podium {
-      width: 100%;
-    }
-    .detail-team-select {
-      height: 48px;
-      width: 30%;
-    }
-  }
+}
 </style>
