@@ -127,6 +127,7 @@ import dayjs from "dayjs";
 definePageMeta({
   middleware: ["auth"],
 });
+
 const { user, token, getDonationByCompetitionSlug, registerDonation } = useUserStore();
 
 if (!user) {
@@ -143,6 +144,11 @@ const donation = await getDonationByCompetitionSlug(String(slug));
 const goToSuccess = () => {
   navigateTo(`/competition/${slug}/success?name=${encodeURIComponent(competition.value?.name ?? "Copa Hemocione")}`);
 };
+
+const goToLogin = () => {
+  redirectToID(`/competition/${slug}/register`);
+};
+
 if (donation) {
   goToSuccess();
 }
