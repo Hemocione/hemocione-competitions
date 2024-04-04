@@ -1,36 +1,49 @@
 <template>
   <NuxtLink class="summaryBox" to="/competitionRank">
     <div :style="{ flex: 9 }">
-      <h3 :style="{ margin: '0 0 10px 0' }">
+      <h4 class="card-title">
         {{ title }}
-      </h3>
-      <span> INICIO: {{ start }} </span>
-      <br>
-      <br>
-      <span> TÉRMINO: {{ end }} </span>
+      </h4>
+
+      <h5 class="card-start">INICIO: {{ formatDate(start) }}</h5>
+      <h5 class="card-end">TÉRMINO: {{ formatDate(end) }}</h5>
     </div>
     <div class="arrow">
-      <img :style="{ height: '50px' }" src="/images/bodylessArrow.svg">
+      <img class="arrow-img" src="/images/bodylessArrow.svg" />
     </div>
   </NuxtLink>
 </template>
 
-<script setup>
+<script lang="ts" setup>
+import dayjs from "dayjs";
+
 defineProps({
   title: String,
   start: Date,
-  end: Date
-})
+  end: Date,
+});
+
+const formatDate = (date: any) => {
+  return dayjs(date).format("DD/MM/YYYY [ÀS] HH:mm[H]");
+};
 </script>
 
 <style>
 .summaryBox {
   display: flex;
   border: solid #dbdde0 2px;
-  margin-bottom: 20px;
   border-radius: 15px;
   padding: 15px;
   cursor: pointer;
+}
+
+.card-title {
+}
+.card-start {
+  color: #52575c;
+}
+.card-end {
+  color: #52575c;
 }
 
 .arrow {
@@ -38,5 +51,8 @@ defineProps({
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.arrow-img {
+  height: 50px;
 }
 </style>
