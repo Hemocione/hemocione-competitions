@@ -5,7 +5,7 @@
         <!-- Competition Header -->
         <h1 class="summary-title">Competições</h1>
         <p class="summary-subtitle">
-          Clique em uma competições para registrar sua doação ou acessar as
+          Clique em uma competição para registrar sua doação ou acessar as
           informações.
         </p>
 
@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-navigateTo('https://hemocione.com.br', { external: true }) // for now
+//navigateTo('https://hemocione.com.br', { external: true }) // for now
 
 import dayjs from "dayjs";
 
@@ -77,6 +77,8 @@ function switchOnGoing(v: boolean) {
 <style scoped>
 .main-container {
   display: flex;
+  min-height: var(--hemo-page-min-height);
+  flex-direction: column;
 }
 .summaryBox {
   margin-bottom: 20px;
@@ -111,13 +113,13 @@ function switchOnGoing(v: boolean) {
   padding: 20px;
   width: 60vw;
   background-color: white;
-}
+ }
 .main-strip {
   display: flex;
   flex-direction: row;
   justify-content: center;
   background-color: #f9f9fa;
   height: 100%;
-  padding: 0px;
+  padding: 0px; 
 }
 </style>

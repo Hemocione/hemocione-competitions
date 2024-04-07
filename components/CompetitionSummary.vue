@@ -5,7 +5,7 @@
         {{ title }}
       </h4>
 
-      <h5 class="card-start">INICIO: {{ formatDate(start) }}</h5>
+      <h5 class="card-start">INÍCIO: {{ formatDate(start) }}</h5>
       <h5 class="card-end">TÉRMINO: {{ formatDate(end) }}</h5>
     </div>
     <div class="arrow">
