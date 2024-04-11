@@ -9,15 +9,29 @@
           informações.
         </p>
 
-        <!-- Competition Status Switch -->
-        <div :class="onGoingSwitchClass" @click="switchOnGoing(true)">
-          Em andamento
-        </div>
-        <div :class="closedSwitchClass" @click="switchOnGoing(false)">
-          Encerradas
-        </div>
+        <div class="switch-container">
+          <!-- Competition Status Switch -->
+          <div class="switch-content">
+            <div :class="onGoingSwitchClass" @click="switchOnGoing(true)">
+              Em andamento
+            </div>
+            <div :class="closedSwitchClass" @click="switchOnGoing(false)">
+              Encerradas
+            </div>
+          </div>
 
-        <!-- Competition Summaries -->
+          <!-- Competition Summaries -->
+          <div v-if="!filteredSummaries.length" class="no-content">
+            <p>
+              {{
+                `Ainda não há competições ${
+                  onGoing ? "em andamento" : "encerradas"
+                }`
+              }}
+            </p>
+            <img src="../public/images/rafiki.svg" />
+          </div>
+        </div>
         <CompetitionSummary
           v-for="(summary, idx) in filteredSummaries"
           class="summaryBox"
@@ -83,11 +97,26 @@ function switchOnGoing(v: boolean) {
 .summaryBox {
   margin-bottom: 20px;
 }
+.switch-container {
+  display: flex;
+  flex-direction: column;
+}
+.switch-content {
+  display: flex;
+  flex-direction: row;
+}
+.no-content {
+  text-align: center;
+}
+.no-content p {
+  font-weight: 700;
+}
+.no-content img {
+  width: 60%;
+  margin-top: 16px;
+}
 .header {
   padding: 0px;
-}
-.f1 {
-  flex: 1;
 }
 .summary-title {
   margin: 0;
@@ -113,13 +142,19 @@ function switchOnGoing(v: boolean) {
   padding: 20px;
   width: 60vw;
   background-color: white;
- }
+}
 .main-strip {
   display: flex;
   flex-direction: row;
   justify-content: center;
   background-color: #f9f9fa;
   height: 100%;
-  padding: 0px; 
+  padding: 0px;
+}
+
+@media screen and (max-width: 753px) {
+  .summaries-list {
+    width: 100vw;
+  }
 }
 </style>

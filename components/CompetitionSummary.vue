@@ -5,8 +5,8 @@
         {{ title }}
       </h4>
 
-      <h5 class="card-start">INÍCIO: {{ formatDate(start) }}</h5>
-      <h5 class="card-end">TÉRMINO: {{ formatDate(end) }}</h5>
+      <h5 class="card-letter">INÍCIO: {{ formatDate(start) }}</h5>
+      <h5 class="card-letter">TÉRMINO: {{ formatDate(end) }}</h5>
     </div>
     <div class="arrow">
       <img class="arrow-img" src="/images/bodylessArrow.svg" />
@@ -38,12 +38,12 @@ const formatDate = (date: any) => {
 }
 
 .card-title {
+  font-size: 18px;
 }
-.card-start {
-  color: #52575c;
-}
-.card-end {
-  color: #52575c;
+.card-letter {
+  color: #52575C;
+  letter-spacing: 0.5px;
+  font-weight: 500;
 }
 
 .arrow {
