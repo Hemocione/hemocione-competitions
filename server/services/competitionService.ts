@@ -22,6 +22,7 @@ export const getCompetitions = async (includeUnpublished = false) => {
       publication_date: true,
       extraFields: true,
       mandatory_proof: true,
+      slug: true,
     },
   });
 };
