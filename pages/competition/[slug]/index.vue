@@ -15,18 +15,19 @@
         >
           {{ statusInfo.status }}
         </div>
-        <div :style="{ flex: 70 }" />
+
         <el-select
-          v-model="selectedTeam"
+          v-if="allInstitutionDonations.length > 1"
+          v-model="selectedType"
           class="detail-team-select"
-          placeholder="Equipes"
+          placeholder="Ranking"
           value-key="id"
         >
           <el-option
-            v-for="team in competitionTeams"
-            :label="team.teams.name"
-            :value="team"
-            :key="team.teams.id"
+            v-for="(type, idx) in rankingTypes"
+            :label="type"
+            :value="type"
+            :key="idx"
           />
         </el-select>
       </div>
@@ -42,27 +43,27 @@
               <div :style="{ 'margin-bottom': '10px' }">
                 <img class="podium-user" src="/images/defaultAvatar.svg" />
               </div>
-              <div>{{ team.team?.teams.name }}</div>
+              <div>{{ team.name }}</div>
             </div>
             <div :class="`${team.class} podium-step`">
               <img class="medal" :src="`/images/${team.medal}.svg`" />
-              <span>{{ team.team?.donation_count }}</span>
+              <span>{{ team.donation_count }}</span>
             </div>
           </div>
         </div>
         <div class="ranking">
           <div class="ranking-title">
             <span class="f1">Classificação</span>
-            <span class="f1">Equipes</span>
+            <span class="f1">{{ labelByType }}</span>
             <span class="f1">Doações</span>
           </div>
           <div
             class="ranking-row"
-            v-for="(team, idx) in competitionTeams"
+            v-for="(team, idx) in content"
             :key="team.id"
           >
             <span class="f1">{{ idx + 1 }}</span>
-            <span class="f1">{{ team.teams.name }}</span>
+            <span class="f1">{{ team.name }}</span>
             <span class="f1">{{ team.donation_count }}</span>
           </div>
         </div>
@@ -87,7 +88,7 @@
 import _ from "lodash";
 import dayjs from "dayjs";
 
-const selectedTeam = ref("");
+const selectedType = ref("");
 
 const route = useRoute();
 const slug = route.params.slug;
@@ -120,13 +121,58 @@ const statusInfo = computed(() => {
 });
 
 const competitionTeams = computed(() =>
-  _.reverse(_.sortBy(competition.value?.competitionTeams, "donation_count"))
+  _.reverse(
+    _.sortBy(
+      competition.value?.competitionTeams.map((c) => ({
+        id: c.id,
+        donation_count: c.donation_count,
+        name: c.teams.name,
+      })),
+      "donation_count"
+    )
+  )
 );
 
+const rankingTypes = computed(() => ["Equipe", "Instituição"]);
+const labelByType = computed(() => {
+  return {
+    Equipe: "Equipes",
+    Instituição: "Instituições",
+  }[selectedType.value] || "Equipes";
+});
+
+const allInstitutionDonations = computed(() => {
+  const institutions = (competition.value?.competitionTeams ?? []).map((e) => ({
+    ...e.teams.institutions,
+    donation_count: e.donation_count,
+  }));
+  const newMap = Object.entries(_.groupBy(institutions, "name")).map(
+    ([key, value]) => ({
+      name: key,
+      id: value[0].id,
+      donation_count: value.reduce(
+        (acc, curr) => acc + (curr?.donation_count ?? 0),
+        0
+      ),
+    })
+  );
+
+  return _.sortBy(newMap, "donation_count");
+});
+
+const content = computed(() => {
+  return (
+    {
+      Equipe: competitionTeams.value,
+      Instituição: allInstitutionDonations.value,
+    }[selectedType.value] || competitionTeams.value
+  );
+});
+
 const rankingTeamsClass = computed(() => [
-  { class: "snd", team: competitionTeams.value[1], medal: "silver" },
-  { class: "st", team: competitionTeams.value[0], medal: "gold" },
-  { class: "rd", team: competitionTeams.value[2], medal: "bronze" },
+  { class: "snd", medal: "silver", ...content.value[1] },
+  { class: "st", medal: "gold", ...content.value[0] },
+  { class: "rd", medal: "bronze", ...content.value[2] },
 ]);
 </script>
 
@@ -155,9 +201,10 @@ const rankingTeamsClass = computed(() => [
   }
   .status-teams {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 35px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
   }
   .details-grid {
     display: flex;
@@ -165,7 +212,7 @@ const rankingTeamsClass = computed(() => [
   }
   .detail-team-select {
     height: 48px;
-    width: 20%;
+    width: 30%;
   }
   .ranking {
     border: solid #dbdde0 2px;
@@ -255,8 +302,8 @@ const rankingTeamsClass = computed(() => [
     height: 50px;
   }
   .back-arrow {
-    position: fixed;
-    margin: 15px 0px 0px 15px;
+    position: absolute;
+    margin: 25px 0px 0px 15px;
   }
   .f1 {
     flex: 1;
@@ -271,7 +318,7 @@ const rankingTeamsClass = computed(() => [
     }
     .detail-team-select {
       height: 48px;
-      width: 30%;
+      width: 40%;
     }
     .register-button {
       height: 48px;

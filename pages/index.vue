@@ -33,9 +33,9 @@
           </div>
         </div>
         <CompetitionSummary
-          v-for="(summary, idx) in filteredSummaries"
+          v-for="summary in filteredSummaries"
           class="summaryBox"
-          :key="summary.title + idx"
+          :key="summary.slug"
           :title="summary.name"
           :start="summary.start"
           :end="summary.end"
