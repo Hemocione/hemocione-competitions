@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink class="summaryBox" to="/competitionRank">
+  <NuxtLink class="summaryBox" :to="`/competition/${slug}`">
     <div :style="{ flex: 9 }">
       <h4 class="card-title">
         {{ title }}
@@ -18,9 +18,22 @@
 import dayjs from "dayjs";
 
 defineProps({
-  title: String,
-  start: Date,
-  end: Date,
+  slug: {
+    type: String,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  start: {
+    type: Date,
+    required: true,
+  },
+  end: {
+    type: Date,
+    required: true,
+  },
 });
 
 const formatDate = (date: any) => {
@@ -29,30 +42,30 @@ const formatDate = (date: any) => {
 </script>
 
 <style>
-.summaryBox {
-  display: flex;
-  border: solid #dbdde0 2px;
-  border-radius: 15px;
-  padding: 15px;
-  cursor: pointer;
-}
+  .summaryBox {
+    display: flex;
+    border: solid #dbdde0 2px;
+    border-radius: 15px;
+    padding: 15px;
+    cursor: pointer;
+  }
 
-.card-title {
-  font-size: 18px;
-}
-.card-letter {
-  color: #52575C;
-  letter-spacing: 0.5px;
-  font-weight: 500;
-}
+  .card-title {
+    font-size: 18px;
+  }
+  .card-letter {
+    color: #52575c;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
 
-.arrow {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.arrow-img {
-  height: 50px;
-}
+  .arrow {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .arrow-img {
+    height: 50px;
+  }
 </style>
