@@ -38,7 +38,7 @@
             native-type="submit"
             @click="goToLogin()"
 
-            >{{ "Não é o João Sangue Bom? Entre como outro doador." }}</el-button>
+            >{{ `Não é ${userName}? Entre como outro doador.` }}</el-button>
           <!-- Team Select -->
           <div v-if="isInstitutionSelected" class="column" key="team">
             <label class="label-form">Equipe <span>*</span></label>
@@ -206,6 +206,8 @@ const institutions = computed(() =>
 const competitionTeams = computed(() => sortBy(competition.value?.competitionTeams.filter(
   (compTeams) => compTeams.teams?.institutions?.id === form.value.institutionId
 ), "teams.name"));
+
+const userName = computed(() => user?.givenName);
 
 if (institutions.value.length === 1) {
   form.value.institutionId = institutions?.value[0]?.id;
