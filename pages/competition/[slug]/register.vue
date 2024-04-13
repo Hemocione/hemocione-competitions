@@ -32,6 +32,13 @@
             </el-select>
           </div>
 
+          <el-button class="grey-button"
+            type="primary"
+            size="large"
+            native-type="submit"
+            @click="goToLogin()"
+
+            >{{ `Não é ${userName}? Entre como outro doador.` }}</el-button>
           <!-- Team Select -->
           <div v-if="isInstitutionSelected" class="column" key="team">
             <label class="label-form">Equipe <span>*</span></label>
@@ -124,9 +131,12 @@
 import { useUserStore } from "~/store/user";
 import { uniqBy, sortBy } from "lodash";
 import dayjs from "dayjs";
+import { redirectToID } from "~/middleware/auth";
+
 definePageMeta({
   middleware: ["auth"],
 });
+
 const { user, token, getDonationByCompetitionSlug, registerDonation } = useUserStore();
 
 if (!user) {
@@ -143,6 +153,11 @@ const donation = await getDonationByCompetitionSlug(String(slug));
 const goToSuccess = () => {
   navigateTo(`/competition/${slug}/success?name=${encodeURIComponent(competition.value?.name ?? "Copa Hemocione")}`);
 };
+
+const goToLogin = () => {
+  redirectToID(`/competition/${slug}/register`);
+};
+
 if (donation) {
   goToSuccess();
 }
@@ -191,6 +206,8 @@ const institutions = computed(() =>
 const competitionTeams = computed(() => sortBy(competition.value?.competitionTeams.filter(
   (compTeams) => compTeams.teams?.institutions?.id === form.value.institutionId
 ), "teams.name"));
+
+const userName = computed(() => user?.givenName);
 
 if (institutions.value.length === 1) {
   form.value.institutionId = institutions?.value[0]?.id;
@@ -401,6 +418,14 @@ async function handleSubmit(event: any) {
 .el-input--large .el-input__wrapper {
   height: 56px;
   border-radius: 0.5rem;
+}
+
+.grey-button {
+  border: 1px solid #F3F2F1 !important;
+  color: var(--hemo-color-primary) !important;
+  background-color: #F3F2F1 !important;
+  display: flex;
+  text-wrap: wrap;
 }
 </style>
   
