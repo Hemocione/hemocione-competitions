@@ -8,30 +8,24 @@ CASE
   WHEN CURRENT_TIMESTAMP > end_at THEN 0
   WHEN CURRENT_TIMESTAMP < start_at THEN 1
   ELSE 2
-END`
+END`;
 
 export const getCompetitions = async (includeUnpublished = false) => {
-  const competitions = await dbClient.$queryRaw`SELECT
-    id,
-    name,
-    start_at,
-    end_at,
-    CASE
-      WHEN NOT published AND publication_date IS NULL THEN 3
-      WHEN CURRENT_TIMESTAMP > end_at THEN 0
-      WHEN CURRENT_TIMESTAMP < start_at THEN 1
-      ELSE 2
-    END as status
-    FROM Competitions
-    WHERE
-      CASE
-        WHEN ${includeUnpublished} THEN true
-        ELSE published = true
-      END
-    ORDER BY status DESC, end_at DESC`;
-
-  return competitions;
-}; 
+  return dbClient.competitions.findMany({
+    where: { published: true },
+    select: {
+      id: true,
+      name: true,
+      start_at: true,
+      end_at: true,
+      published: true,
+      publication_date: true,
+      extraFields: true,
+      mandatory_proof: true,
+      slug: true,
+    },
+  });
+};
 
 const getCompetitionBySlugPromise = (slug: string) => {
   return dbClient.competitions.findUnique({
@@ -56,16 +50,16 @@ const getCompetitionBySlugPromise = (slug: string) => {
               institutions: {
                 select: {
                   name: true,
-                  id: true
-                }
-              }
+                  id: true,
+                },
+              },
             },
-          }
-        }
+          },
+        },
       },
-    }
+    },
   });
-}
+};
 
 type Competition = Awaited<ReturnType<typeof getCompetitionBySlugPromise>>;
 const CompetitionsBySlugCache = new Map<string, Competition>();
@@ -79,7 +73,7 @@ export const getCompetitionBySlug = async (slug: string) => {
   const competition = await getCompetitionBySlugPromise(slug);
   CompetitionsBySlugCache.set(slug, competition);
   return competition;
-}
+};
 
 export const getCompetition = async (id: number) => {
   const competition = await dbClient.$queryRaw`SELECT
@@ -97,7 +91,6 @@ export const getCompetition = async (id: number) => {
   return competition;
 };
 
-
 export const getCompetitionRanking = async (competitionId: number) => {
   const result = await dbClient.competitionTeams.findMany({
     where: {
@@ -109,13 +102,12 @@ export const getCompetitionRanking = async (competitionId: number) => {
       teams: { select: { name: true } },
     },
     orderBy: {
-      donation_count: 'desc',
+      donation_count: "desc",
     },
   });
 
   return result;
 };
-
 
 export const createCompetition = async (
   name: string,
@@ -136,7 +128,7 @@ export const createCompetition = async (
       start_at: startsAt,
       end_at: endsAt,
       mandatory_proof: mandatoryProof,
-      extraFields: extraFields || [] as any, // TODO: fix this to type ExtraFields as Prisma JSON Array type
+      extraFields: extraFields || ([] as any), // TODO: fix this to type ExtraFields as Prisma JSON Array type
       published: false,
     },
   });
@@ -145,11 +137,11 @@ export const createCompetition = async (
 export const editCompetitionBySlug = async (
   slug: string,
   payload: {
-    name: string,
-    startsAt: Date,
-    endsAt: Date,
-    mandatoryProof: boolean,
-    extraFields?: ExtraFields,
+    name: string;
+    startsAt: Date;
+    endsAt: Date;
+    mandatoryProof: boolean;
+    extraFields?: ExtraFields;
   }
 ) => {
   const { name, startsAt, endsAt, extraFields, mandatoryProof } = payload;
@@ -160,7 +152,7 @@ export const editCompetitionBySlug = async (
       start_at: startsAt,
       end_at: endsAt,
       mandatory_proof: mandatoryProof,
-      extraFields: extraFields || [] as any, // TODO: fix this to type ExtraFields as Prisma JSON Array type
+      extraFields: extraFields || ([] as any), // TODO: fix this to type ExtraFields as Prisma JSON Array type
     },
   });
   return updatedCompetition;
