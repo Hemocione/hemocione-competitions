@@ -69,7 +69,7 @@
         </div>
       </div>
     </div>
-    <div class="register-sticky">
+    <div v-if="donationsIsOpen" class="register-sticky">
       <div class="register-button-strip">
         <NuxtLink :to="`/competition/${slug}/register`">
           <el-button class="register-button" type="primary">
@@ -85,7 +85,7 @@
 import _ from "lodash";
 import dayjs from "dayjs";
 
-const selectedType = ref("");
+const selectedType = ref<string>("");
 
 const route = useRoute();
 const slug = route.params.slug;
@@ -96,10 +96,21 @@ const competitionName = computed(
   () => competition?.value?.name ?? "Copa Hemocione"
 );
 
-const statusInfo = computed(() => {
+const importantDates = computed(() => {
   const now = dayjs();
   const end = dayjs(competition?.value?.end_at);
   const start = dayjs(competition?.value?.start_at);
+
+  return { now, end, start };
+});
+
+const donationsIsOpen = computed(() => {
+  const { now, end, start } = importantDates.value;
+  return now.isAfter(start) && now.isBefore(end);
+});
+
+const statusInfo = computed(() => {
+  const { now, end, start } = importantDates.value;
 
   if (now.isAfter(end))
     return {
@@ -132,10 +143,12 @@ const competitionTeams = computed(() =>
 
 const rankingTypes = computed(() => ["Equipe", "Instituição"]);
 const labelByType = computed(() => {
-  return {
-    Equipe: "Equipes",
-    Instituição: "Instituições",
-  }[selectedType.value] || "Equipes";
+  return (
+    {
+      Equipe: "Equipes",
+      Instituição: "Instituições",
+    }[selectedType?.value] || "Equipes"
+  );
 });
 
 const allInstitutionDonations = computed(() => {
