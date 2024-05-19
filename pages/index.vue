@@ -13,7 +13,7 @@
           <!-- Competition Status Switch -->
           <div class="switch-content">
             <div :class="onGoingSwitchClass" @click="switchOnGoing(true)">
-              Em andamento
+              Disponíveis
             </div>
             <div :class="closedSwitchClass" @click="switchOnGoing(false)">
               Encerradas
@@ -25,7 +25,7 @@
             <p>
               {{
                 `Ainda não há competições ${
-                  onGoing ? "em andamento" : "encerradas"
+                  onGoing ? "disponíveis" : "encerradas"
                 }`
               }}
             </p>
