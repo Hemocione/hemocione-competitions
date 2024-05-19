@@ -154,7 +154,7 @@ const allInstitutionDonations = computed(() => {
     })
   );
 
-  return _.sortBy(newMap, "donation_count");
+  return _.orderBy(newMap, "donation_count", "desc")
 });
 
 const content = computed(() => {
