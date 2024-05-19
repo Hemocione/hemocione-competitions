@@ -335,7 +335,6 @@ async function handleSubmit(event: any) {
   height: 100%;
   min-height: var(--hemo-page-min-height);
   width: 100%;
-  max-width: var(--hemo-page-max-width);
   position: relative;
 }
 
