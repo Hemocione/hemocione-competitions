@@ -93,7 +93,6 @@ function switchOnGoing(v: boolean) {
     display: flex;
     width: 100%;
     min-height: var(--hemo-page-min-height);
-    max-width: var(--hemo-page-max-width);
     flex-direction: column;
   }
   .summaryBox {
@@ -140,15 +139,17 @@ function switchOnGoing(v: boolean) {
     color: gray;
   }
   .summaries-list {
-    padding: 20px;
-    width: 100vw;
+    width: 100%;
+    max-width: var(--hemo-page-max-width);
+    height: 100%;
+    min-height: var(--hemo-page-min-height);
     background-color: white;
+    padding: 20px 5%;
   }
   .main-strip {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    background-color: #f9f9fa;
     height: 100%;
     padding: 0px;
   }

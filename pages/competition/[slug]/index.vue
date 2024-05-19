@@ -185,21 +185,24 @@ const rankingTeamsClass = computed(() => [
 ]);
 </script>
 
-<style>
+<style scoped>
   .details-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
-    max-width: var(--hemo-page-max-width);
+    justify-content: space-between;
+    height: 100%;
     min-height: var(--hemo-page-min-height);
-    background-color: white;
+    width: 100%;
     position: relative;
   }
   .details-strip {
+    width: 100%;
     max-width: var(--hemo-page-max-width);
+    height: 100%;
     min-height: var(--hemo-page-min-height);
-    width: 80%;
+    background-color: white;
+    padding: 20px 5%;
   }
   .details-title {
     text-align: center;
@@ -307,9 +310,6 @@ const rankingTeamsClass = computed(() => [
   }
 
   @media screen and (max-width: 753px) {
-    .details-strip {
-      width: 90%;
-    }
     .podium {
       width: 100%;
     }
