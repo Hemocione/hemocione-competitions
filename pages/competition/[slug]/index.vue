@@ -1,9 +1,5 @@
 <template>
   <div class="details-container">
-    <NuxtLink class="back-arrow" to="/">
-      <img src="/images/arrow.svg" />
-    </NuxtLink>
-
     <div class="details-strip">
       <div class="details-title">
         <h1>{{ competitionName }}</h1>
@@ -69,15 +65,18 @@
         </div>
       </div>
     </div>
-    <div v-if="donationsIsOpen" class="register-sticky">
-      <div class="register-button-strip">
-        <NuxtLink :to="`/competition/${slug}/register`">
-          <el-button class="register-button" type="primary">
-            + Registrar nova doação
-          </el-button>
-        </NuxtLink>
-      </div>
-    </div>
+    <common-cool-footer
+      v-if="donationsIsOpen"
+      hide-toggle
+      height="fit-content"
+      desktop-border-radius="0"
+    >
+      <NuxtLink :to="`/competition/${slug}/register`">
+        <el-button class="register-button" type="primary" size="large"
+          >+ Registrar nova doação</el-button
+        >
+      </NuxtLink>
+    </common-cool-footer>
   </div>
 </template>
 
@@ -167,7 +166,7 @@ const allInstitutionDonations = computed(() => {
     })
   );
 
-  return _.orderBy(newMap, "donation_count", "desc")
+  return _.orderBy(newMap, "donation_count", "desc");
 });
 
 const content = computed(() => {
@@ -189,12 +188,18 @@ const rankingTeamsClass = computed(() => [
 <style>
   .details-container {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: var(--hemo-page-max-width);
+    min-height: var(--hemo-page-min-height);
     background-color: white;
+    position: relative;
   }
   .details-strip {
-    flex: 3;
-    margin-bottom: 15vh;
-    padding: 0 20%;
+    max-width: var(--hemo-page-max-width);
+    min-height: var(--hemo-page-min-height);
+    width: 80%;
   }
   .details-title {
     text-align: center;
@@ -244,19 +249,6 @@ const rankingTeamsClass = computed(() => [
     display: flex;
     text-align: center;
     background-color: white;
-  }
-  .register-sticky {
-    position: fixed;
-    border-top: solid #dbdde0 2px;
-    background-color: white;
-    height: 10vh;
-    width: 70vw;
-    bottom: 0;
-    display: flex;
-  }
-  .register-button-strip {
-    margin: auto;
-    flex: 4;
   }
   .register-button {
     height: 40px;
@@ -310,17 +302,13 @@ const rankingTeamsClass = computed(() => [
   .medal {
     height: 50px;
   }
-  .back-arrow {
-    position: absolute;
-    margin: 25px 0px 0px 15px;
-  }
   .f1 {
     flex: 1;
   }
 
   @media screen and (max-width: 753px) {
     .details-strip {
-      padding: 0 10%;
+      width: 90%;
     }
     .podium {
       width: 100%;
