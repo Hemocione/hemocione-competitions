@@ -91,7 +91,9 @@ function switchOnGoing(v: boolean) {
 <style scoped>
   .main-container {
     display: flex;
+    width: 100%;
     min-height: var(--hemo-page-min-height);
+    max-width: var(--hemo-page-max-width);
     flex-direction: column;
   }
   .summaryBox {
