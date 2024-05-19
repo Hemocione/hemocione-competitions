@@ -69,9 +69,7 @@
         </div>
       </div>
     </div>
-
     <div class="register-sticky">
-      <div class="f1" />
       <div class="register-button-strip">
         <NuxtLink :to="`/competition/${slug}/register`">
           <el-button class="register-button" type="primary">
@@ -79,7 +77,6 @@
           </el-button>
         </NuxtLink>
       </div>
-      <div class="f1" />
     </div>
   </div>
 </template>
@@ -179,7 +176,6 @@ const rankingTeamsClass = computed(() => [
 <style>
   .details-container {
     display: flex;
-    width: 100%;
     background-color: white;
   }
   .details-strip {
@@ -241,7 +237,7 @@ const rankingTeamsClass = computed(() => [
     border-top: solid #dbdde0 2px;
     background-color: white;
     height: 10vh;
-    width: 100%;
+    width: 70vw;
     bottom: 0;
     display: flex;
   }

@@ -139,7 +139,7 @@ function switchOnGoing(v: boolean) {
   }
   .summaries-list {
     padding: 20px;
-    width: 60vw;
+    width: 100vw;
     background-color: white;
   }
   .main-strip {
@@ -149,10 +149,5 @@ function switchOnGoing(v: boolean) {
     background-color: #f9f9fa;
     height: 100%;
     padding: 0px;
-  }
-  @media screen and (max-width: 753px) {
-    .summaries-list {
-      width: 100vw;
-    }
   }
 </style>
