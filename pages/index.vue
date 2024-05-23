@@ -3,9 +3,9 @@
     <el-main class="main-strip">
       <div class="summaries-list">
         <!-- Competition Header -->
-        <h1 class="summary-title">Competições</h1>
+        <h1 class="summary-title">Copas</h1>
         <p class="summary-subtitle">
-          Clique em uma competição para registrar sua doação ou acessar as
+          Clique em uma copa para registrar sua doação ou acessar as
           informações.
         </p>
 
