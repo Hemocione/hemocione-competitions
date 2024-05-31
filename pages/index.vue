@@ -3,9 +3,9 @@
     <el-main class="main-strip">
       <div class="summaries-list">
         <!-- Competition Header -->
-        <h1 class="summary-title">Competições</h1>
+        <h1 class="summary-title">Copas</h1>
         <p class="summary-subtitle">
-          Clique em uma competição para registrar sua doação ou acessar as
+          Clique em uma copa para registrar sua doação ou acessar as
           informações.
         </p>
 
@@ -13,7 +13,7 @@
           <!-- Competition Status Switch -->
           <div class="switch-content">
             <div :class="onGoingSwitchClass" @click="switchOnGoing(true)">
-              Em andamento
+              Disponíveis
             </div>
             <div :class="closedSwitchClass" @click="switchOnGoing(false)">
               Encerradas
@@ -25,7 +25,7 @@
             <p>
               {{
                 `Ainda não há competições ${
-                  onGoing ? "em andamento" : "encerradas"
+                  onGoing ? "disponíveis" : "encerradas"
                 }`
               }}
             </p>
@@ -51,7 +51,16 @@ import dayjs from "dayjs";
 
 const onGoing = ref(true);
 
-const { data: competitions } = await useFetch(`/api/v1/competitions`);
+const { data: competitions } = await useAsyncData(
+  "competitions",
+  async () =>
+    $fetch("/api/v1/competitions", {
+      params: {
+        sort: onGoing.value ? "start_at" : "-end_at",
+      },
+    }),
+  { watch: [onGoing] }
+);
 
 const summaries = (competitions.value ?? []).map((competition) => ({
   name: competition.name,
@@ -91,6 +100,7 @@ function switchOnGoing(v: boolean) {
 <style scoped>
   .main-container {
     display: flex;
+    width: 100%;
     min-height: var(--hemo-page-min-height);
     flex-direction: column;
   }
@@ -138,21 +148,18 @@ function switchOnGoing(v: boolean) {
     color: gray;
   }
   .summaries-list {
-    padding: 20px;
-    width: 60vw;
+    width: 100%;
+    max-width: var(--hemo-page-max-width);
+    height: 100%;
+    min-height: var(--hemo-page-min-height);
     background-color: white;
+    padding: 20px 5%;
   }
   .main-strip {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    background-color: #f9f9fa;
     height: 100%;
     padding: 0px;
-  }
-  @media screen and (max-width: 753px) {
-    .summaries-list {
-      width: 100vw;
-    }
   }
 </style>

@@ -333,6 +333,7 @@ async function handleSubmit(event: any) {
   align-items: center;
   justify-content: space-between;
   height: 100%;
+  min-height: var(--hemo-page-min-height);
   width: 100%;
   position: relative;
 }

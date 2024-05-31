@@ -1,9 +1,5 @@
 <template>
   <div class="details-container">
-    <NuxtLink class="back-arrow" to="/">
-      <img src="/images/arrow.svg" />
-    </NuxtLink>
-
     <div class="details-strip">
       <div class="details-title">
         <h1>{{ competitionName }}</h1>
@@ -69,18 +65,18 @@
         </div>
       </div>
     </div>
-
-    <div class="register-sticky">
-      <div class="f1" />
-      <div class="register-button-strip">
-        <NuxtLink :to="`/competition/${slug}/register`">
-          <el-button class="register-button" type="primary">
-            + Registrar nova doação
-          </el-button>
-        </NuxtLink>
-      </div>
-      <div class="f1" />
-    </div>
+    <common-cool-footer
+      v-if="donationsIsOpen"
+      hide-toggle
+      height="fit-content"
+      desktop-border-radius="0"
+    >
+      <NuxtLink :to="`/competition/${slug}/register`">
+        <el-button class="register-button" type="primary" size="large"
+          >+ Registrar nova doação</el-button
+        >
+      </NuxtLink>
+    </common-cool-footer>
   </div>
 </template>
 
@@ -88,7 +84,7 @@
 import _ from "lodash";
 import dayjs from "dayjs";
 
-const selectedType = ref("");
+const selectedType = ref<string>("");
 
 const route = useRoute();
 const slug = route.params.slug;
@@ -99,10 +95,21 @@ const competitionName = computed(
   () => competition?.value?.name ?? "Copa Hemocione"
 );
 
-const statusInfo = computed(() => {
+const importantDates = computed(() => {
   const now = dayjs();
   const end = dayjs(competition?.value?.end_at);
   const start = dayjs(competition?.value?.start_at);
+
+  return { now, end, start };
+});
+
+const donationsIsOpen = computed(() => {
+  const { now, end, start } = importantDates.value;
+  return now.isAfter(start) && now.isBefore(end);
+});
+
+const statusInfo = computed(() => {
+  const { now, end, start } = importantDates.value;
 
   if (now.isAfter(end))
     return {
@@ -135,10 +142,12 @@ const competitionTeams = computed(() =>
 
 const rankingTypes = computed(() => ["Equipe", "Instituição"]);
 const labelByType = computed(() => {
-  return {
-    Equipe: "Equipes",
-    Instituição: "Instituições",
-  }[selectedType.value] || "Equipes";
+  return (
+    {
+      Equipe: "Equipes",
+      Instituição: "Instituições",
+    }[selectedType?.value] || "Equipes"
+  );
 });
 
 const allInstitutionDonations = computed(() => {
@@ -157,7 +166,7 @@ const allInstitutionDonations = computed(() => {
     })
   );
 
-  return _.sortBy(newMap, "donation_count");
+  return _.orderBy(newMap, "donation_count", "desc");
 });
 
 const content = computed(() => {
@@ -176,16 +185,24 @@ const rankingTeamsClass = computed(() => [
 ]);
 </script>
 
-<style>
+<style scoped>
   .details-container {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    min-height: var(--hemo-page-min-height);
     width: 100%;
-    background-color: white;
+    position: relative;
   }
   .details-strip {
-    flex: 3;
-    margin-bottom: 15vh;
-    padding: 0 20%;
+    width: 100%;
+    max-width: var(--hemo-page-max-width);
+    height: 100%;
+    min-height: var(--hemo-page-min-height);
+    background-color: white;
+    padding: 20px 5%;
   }
   .details-title {
     text-align: center;
@@ -235,19 +252,6 @@ const rankingTeamsClass = computed(() => [
     display: flex;
     text-align: center;
     background-color: white;
-  }
-  .register-sticky {
-    position: fixed;
-    border-top: solid #dbdde0 2px;
-    background-color: white;
-    height: 10vh;
-    width: 100%;
-    bottom: 0;
-    display: flex;
-  }
-  .register-button-strip {
-    margin: auto;
-    flex: 4;
   }
   .register-button {
     height: 40px;
@@ -301,18 +305,11 @@ const rankingTeamsClass = computed(() => [
   .medal {
     height: 50px;
   }
-  .back-arrow {
-    position: absolute;
-    margin: 25px 0px 0px 15px;
-  }
   .f1 {
     flex: 1;
   }
 
   @media screen and (max-width: 753px) {
-    .details-strip {
-      padding: 0 10%;
-    }
     .podium {
       width: 100%;
     }

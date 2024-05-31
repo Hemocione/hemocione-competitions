@@ -1,6 +1,8 @@
 <template>
   <NuxtLayout>
-    <NuxtPage />
+    <div class="content-wrapper">
+      <NuxtPage />
+    </div>
   </NuxtLayout>
 </template>
 
@@ -39,3 +41,14 @@ useHead({
   ],
 });
 </script>
+<style scoped>
+  .content-wrapper {
+    width: 70vw;
+    max-width: 100%;
+  }
+  @media screen and (max-width: 753px) {
+    .content-wrapper {
+      width: 100vw;
+    }
+  }
+</style>

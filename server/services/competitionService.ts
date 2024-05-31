@@ -10,7 +10,18 @@ CASE
   ELSE 2
 END`;
 
-export const getCompetitions = async (includeUnpublished = false) => {
+export const getCompetitions = async (
+  includeUnpublished = false,
+  sort: string | null = null
+) => {
+  
+  const parseStringToOrderBy = (sort: string | null) => {
+    if (!sort) return {};
+    return sort.startsWith("-")
+      ? { [sort.slice(1)]: "desc" }
+      : { [sort]: "asc" };
+  };
+
   return dbClient.competitions.findMany({
     where: { published: true },
     select: {
@@ -20,10 +31,12 @@ export const getCompetitions = async (includeUnpublished = false) => {
       end_at: true,
       published: true,
       publication_date: true,
+      banner_background: true,
       extraFields: true,
       mandatory_proof: true,
       slug: true,
     },
+    orderBy: parseStringToOrderBy(sort),
   });
 };
 
@@ -37,6 +50,7 @@ const getCompetitionBySlugPromise = (slug: string) => {
       end_at: true,
       published: true,
       publication_date: true,
+      banner_background: true,
       extraFields: true,
       mandatory_proof: true,
       competitionTeams: {
@@ -114,6 +128,7 @@ export const createCompetition = async (
   startsAt: Date,
   endsAt: Date,
   mandatoryProof: boolean,
+  bannerLogoUrl?: string,
   extraFields?: ExtraFields
 ) => {
   const slug = slugify(name, {
@@ -128,6 +143,7 @@ export const createCompetition = async (
       start_at: startsAt,
       end_at: endsAt,
       mandatory_proof: mandatoryProof,
+      banner_background: bannerLogoUrl,
       extraFields: extraFields || ([] as any), // TODO: fix this to type ExtraFields as Prisma JSON Array type
       published: false,
     },
@@ -140,17 +156,26 @@ export const editCompetitionBySlug = async (
     name: string;
     startsAt: Date;
     endsAt: Date;
+    banner_background?: string;
     mandatoryProof: boolean;
     extraFields?: ExtraFields;
   }
 ) => {
-  const { name, startsAt, endsAt, extraFields, mandatoryProof } = payload;
+  const {
+    name,
+    startsAt,
+    endsAt,
+    extraFields,
+    banner_background,
+    mandatoryProof,
+  } = payload;
   const updatedCompetition = await dbClient.competitions.update({
     where: { slug },
     data: {
       name,
       start_at: startsAt,
       end_at: endsAt,
+      banner_background: banner_background,
       mandatory_proof: mandatoryProof,
       extraFields: extraFields || ([] as any), // TODO: fix this to type ExtraFields as Prisma JSON Array type
     },
