@@ -51,7 +51,16 @@ import dayjs from "dayjs";
 
 const onGoing = ref(true);
 
-const { data: competitions } = await useFetch(`/api/v1/competitions`);
+const { data: competitions } = await useAsyncData(
+  "competitions",
+  async () =>
+    $fetch("/api/v1/competitions", {
+      params: {
+        sort: onGoing.value ? "start_at" : "-end_at",
+      },
+    }),
+  { watch: [onGoing] }
+);
 
 const summaries = (competitions.value ?? []).map((competition) => ({
   name: competition.name,

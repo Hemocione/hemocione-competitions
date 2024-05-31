@@ -10,7 +10,18 @@ CASE
   ELSE 2
 END`;
 
-export const getCompetitions = async (includeUnpublished = false) => {
+export const getCompetitions = async (
+  includeUnpublished = false,
+  sort: string | null = null
+) => {
+  
+  const parseStringToOrderBy = (sort: string | null) => {
+    if (!sort) return {};
+    return sort.startsWith("-")
+      ? { [sort.slice(1)]: "desc" }
+      : { [sort]: "asc" };
+  };
+
   return dbClient.competitions.findMany({
     where: { published: true },
     select: {
@@ -25,6 +36,7 @@ export const getCompetitions = async (includeUnpublished = false) => {
       mandatory_proof: true,
       slug: true,
     },
+    orderBy: parseStringToOrderBy(sort),
   });
 };
 
@@ -149,7 +161,14 @@ export const editCompetitionBySlug = async (
     extraFields?: ExtraFields;
   }
 ) => {
-  const { name, startsAt, endsAt, extraFields, banner_background, mandatoryProof } = payload;
+  const {
+    name,
+    startsAt,
+    endsAt,
+    extraFields,
+    banner_background,
+    mandatoryProof,
+  } = payload;
   const updatedCompetition = await dbClient.competitions.update({
     where: { slug },
     data: {
