@@ -68,6 +68,7 @@ export const getCompetitionUserDonations = async (data: {
           id: true,
           name: true,
           mandatory_proof: true,
+          published: true,
         },
       },
     },
@@ -81,6 +82,10 @@ export const getCompetitionUserDonations = async (data: {
           user_email: email,
         },
       ],
+      // competition should be published to be taken into account
+      competitions: {
+        published: true,
+      },
     },
   });
 };
