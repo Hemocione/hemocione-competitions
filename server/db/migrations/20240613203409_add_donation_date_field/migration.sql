@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "donations" ADD COLUMN     "donationDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP;
