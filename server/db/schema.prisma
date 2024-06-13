@@ -72,10 +72,12 @@ model donations {
   extraFields       Json?
   proof             String?           @db.VarChar(255)
   createdAt         DateTime          @default(now())
+  donationDate      DateTime?         @default(now())
   updatedAt         DateTime          @updatedAt
   competitions      competitions      @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   competitionTeams  competitionTeams? @relation(fields: [competitionTeamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([user_email, competitionId])
   @@index([competitionId, hemocioneID], map: "donations_competitionId_hemocioneID") // HemocioneID is the unique identifier for the user in the competition. will be unique in the future, since there are donations with only emails in the database
+  @@index([hemocioneID, user_email], map: "donations_hemocioneID") // find donations by hemocioneID
 }

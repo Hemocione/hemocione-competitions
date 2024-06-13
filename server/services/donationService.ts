@@ -4,11 +4,11 @@ export const registerDonation = async (
   competitionId: number,
   competitionTeamId: number,
   payload: {
-    hemocioneID: string,
-    user_name: string,
-    user_email: string,
-    extraFields?: string
-    proof?: string
+    hemocioneID: string;
+    user_name: string;
+    user_email: string;
+    extraFields?: string;
+    proof?: string;
   }
 ) => {
   const { user_name, user_email, extraFields, hemocioneID, proof } = payload;
@@ -40,11 +40,47 @@ export const registerDonation = async (
   });
 };
 
-export const getUserDonation = async (competitionId: number, hemocioneID: string) => {
+export const getUserDonation = async (
+  competitionId: number,
+  hemocioneID: string
+) => {
   return await dbClient.donations.findFirst({
     where: {
       competitionId,
       hemocioneID,
     },
   });
-}
+};
+
+export const getCompetitionUserDonations = async (data: {
+  hemocioneId: string;
+  email: string;
+}) => {
+  const { hemocioneId, email } = data;
+  return await dbClient.donations.findMany({
+    select: {
+      id: true,
+      donationDate: true,
+      createdAt: true,
+      proof: true,
+      competitions: {
+        select: {
+          id: true,
+          name: true,
+          mandatory_proof: true,
+        },
+      },
+    },
+    where: {
+      OR: [
+        {
+          hemocioneID: hemocioneId,
+        },
+        {
+          hemocioneID: null,
+          user_email: email,
+        },
+      ],
+    },
+  });
+};

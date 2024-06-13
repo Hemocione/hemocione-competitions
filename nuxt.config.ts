@@ -26,15 +26,26 @@ const siteUrl = getSiteUrl();
 const currentEnv = getCurrentEnv();
 
 export default defineNuxtConfig({
-  css: ['~/assets/css/main.css', '~/assets/css/transitions.css', '~/assets/css/animations.css'],
-  modules: ['@element-plus/nuxt', '@nuxtjs/google-fonts', "@pinia/nuxt", "@nuxt/image", "nuxt-vercel-analytics", "nuxt-bugsnag"],
+  css: [
+    "~/assets/css/main.css",
+    "~/assets/css/transitions.css",
+    "~/assets/css/animations.css",
+  ],
+  modules: [
+    "@element-plus/nuxt",
+    "@nuxtjs/google-fonts",
+    "@pinia/nuxt",
+    "@nuxt/image",
+    "nuxt-vercel-analytics",
+    "nuxt-bugsnag",
+  ],
   googleFonts: {
     families: {
-      Roboto: true
-    }
+      Roboto: true,
+    },
   },
   nitro: {
-    preset: 'vercel'
+    preset: "vercel",
   },
   runtimeConfig: {
     public: {
@@ -42,11 +53,17 @@ export default defineNuxtConfig({
       hemocioneIdUrl:
         process.env.HEMOCIONE_ID_URL ?? "https://id.hemocione.com.br",
       hemocioneIdApiUrl:
-        process.env.HEMOCIONE_ID_API_URL ?? "https://hemocione-id.cpt.hemocione.com.br",
-      cdnUploadUrl: process.env.CDN_UPLOAD_URL ?? "http://localhost:3001/api/upload",
-      instagramUrl: process.env.INSTAGRAM_URL ?? "https://www.instagram.com/hemocione/",
+        process.env.HEMOCIONE_ID_API_URL ??
+        "https://hemocione-id.cpt.hemocione.com.br",
+      cdnUploadUrl:
+        process.env.CDN_UPLOAD_URL ?? "http://localhost:3001/api/upload",
+      instagramUrl:
+        process.env.INSTAGRAM_URL ?? "https://www.instagram.com/hemocione/",
     },
-    hemocioneIdJwtSecretKey: process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "hemocione",
+    hemocioneIdIntegrationSecret:
+      process.env.HEMOCIONE_ID_INTEGRATION_SECRET ?? "secret",
+    hemocioneIdJwtSecretKey:
+      process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "hemocione",
     secret: process.env.API_SECRET ?? "secret",
   },
   routeRules: {
@@ -85,4 +102,4 @@ export default defineNuxtConfig({
       cdn: "https://cdn.hemocione.com.br",
     },
   },
-})
+});
