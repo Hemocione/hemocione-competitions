@@ -52,8 +52,9 @@ export async function buildAndSendDonationToHemocioneIdQueue(
       donationDate: donation.donationDate || donation.createdAt,
     },
     user: {
-      hemocioneId: donation.hemocioneID,
-      email: donation.user_email,
+      ...(donation.hemocioneID
+        ? { hemocioneId: donation.hemocioneID }
+        : { email: donation.user_email }),
     },
   };
   await sendMessage(message);
