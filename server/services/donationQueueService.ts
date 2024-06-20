@@ -19,6 +19,7 @@ interface DonationQueueMessage {
 }
 
 export async function sendMessage(message: DonationQueueMessage) {
+  console.log(`Sending message ${message} to queue ${queueUrl}`);
   const command = new SendMessageCommand({
     QueueUrl: queueUrl,
     MessageBody: JSON.stringify(message),
