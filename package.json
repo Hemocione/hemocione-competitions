@@ -10,6 +10,7 @@
     "postinstall": "yarn migrate:deploy && npx prisma generate && nuxt prepare"
   },
   "devDependencies": {
+    "@aws-sdk/client-sqs": "^3.600.0",
     "@element-plus/icons-vue": "^2.3.1",
     "@element-plus/nuxt": "^1.0.7",
     "@nuxt/image": "^1.3.0",
@@ -32,6 +33,7 @@
     "schema": "server/db/schema.prisma"
   },
   "dependencies": {
+    "@vercel/functions": "^1.0.2",
     "prisma": "^5.9.1"
   }
 }
