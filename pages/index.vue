@@ -8,7 +8,7 @@
           Clique em uma copa para registrar sua doação ou acessar as
           informações.
         </p>
-
+        
         <div class="switch-container">
           <!-- Competition Status Switch -->
           <div class="switch-content">
@@ -162,4 +162,6 @@ function switchOnGoing(v: boolean) {
     height: 100%;
     padding: 0px;
   }
+
+ 
 </style>

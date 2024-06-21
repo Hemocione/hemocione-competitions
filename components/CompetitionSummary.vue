@@ -9,6 +9,9 @@
       <h5 class="card-letter">TÉRMINO: {{ formatDate(end) }}</h5>
     </div>
     <div class="arrow">
+      <div class="status-tag" :style="{ backgroundColor: statusColor }">
+        <span class="tag-label">{{ status }}</span>
+      </div>
       <img class="arrow-img" src="/images/bodylessArrow.svg" />
     </div>
   </NuxtLink>
@@ -17,7 +20,7 @@
 <script lang="ts" setup>
 import dayjs from "dayjs";
 
-defineProps({
+const props = defineProps({
   slug: {
     type: String,
     required: true,
@@ -39,6 +42,37 @@ defineProps({
 const formatDate = (date: any) => {
   return dayjs(date).format("DD/MM/YYYY [ÀS] HH:mm[H]");
 };
+
+const currentDate = dayjs();
+const status = computed(() => {
+  const startDate = dayjs(props.start);
+  const endDate = dayjs(props.end);
+
+  console.log(currentDate, startDate, endDate);
+  if (currentDate.isAfter(startDate) && currentDate.isBefore(endDate)) {
+    return 'ABERTO';
+  } 
+  else if (currentDate.isBefore(startDate)) {
+    return 'EM BREVE';
+  }
+
+  return 'ENCERRADO';
+
+});
+
+const statusColor = computed(() => {
+  switch (status.value) {
+    case 'ABERTO':
+      return '#40DD7F'; // Verde
+    case 'EM BREVE':
+      return '#FFBC1F'; // Amarelo
+    case 'ENCERRADO':
+      return '#F44336'; // Vermelho
+    default:
+      return '#40DD7F'; // Verde padrão
+  }
+});
+
 </script>
 
 <style>
@@ -67,5 +101,22 @@ const formatDate = (date: any) => {
   }
   .arrow-img {
     height: 50px;
+  }
+
+  .status-tag {
+    display: inline-block;
+    border-radius: 18px;
+    padding: 2px 15px;
+    margin: 10px 0;
+    white-space: nowrap;
+    width: 100px; 
+    text-align: center; 
+  }
+
+  .tag-label {
+    color: white;
+    font-weight: regular;
+    font-size: 14px;
+    display: inline-block;
   }
 </style>
