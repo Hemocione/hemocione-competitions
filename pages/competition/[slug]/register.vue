@@ -8,7 +8,11 @@
           <h4>{{ presentationText }}</h4>
         </div>
       </header>
-      <form class="form" @submit="handleSubmit" v-if="!isCompetitionInFuture && !isCompetitionInPast">
+      <form
+        class="form"
+        @submit="handleSubmit"
+        v-if="!isCompetitionInFuture && !isCompetitionInPast"
+      >
         <!-- Institution Select -->
         <TransitionGroup name="slide-fade-down" appear>
           <div class="column" key="institution" v-if="institutions.length > 1">
@@ -17,7 +21,7 @@
               v-model="(form.institutionId as number)"
               size="large"
               :placeholder="'Selecione sua Instituição'"
-              @change="() => form.competitionTeamId = null"
+              @change="() => (form.competitionTeamId = null)"
               required
               filterable
             >
@@ -32,13 +36,14 @@
             </el-select>
           </div>
 
-          <el-button class="grey-button"
+          <el-button
+            class="grey-button"
             type="primary"
             size="large"
             native-type="submit"
             @click="goToLogin()"
-
-            >{{ `Não é ${userName}? Entre como outro doador.` }}</el-button>
+            >{{ `Não é ${userName}? Entre como outro doador.` }}</el-button
+          >
           <!-- Team Select -->
           <div v-if="isInstitutionSelected" class="column" key="team">
             <label class="label-form">Equipe <span>*</span></label>
@@ -79,17 +84,39 @@
                 onclick="document.getElementById('file-input').click()"
                 v-if="!uploadingImage && !form.proof"
               >
-                <NuxtImg src="/images/cam.svg" alt="camera-icon"/>
+                <NuxtImg src="/images/cam.svg" alt="camera-icon" />
               </div>
-              <div class="camera-photo-taken-container" key="image-taken" v-else-if="form.proof && !uploadingImage">
-                <el-icon size="40" onclick="document.getElementById('file-input').click()" class="retry">
+              <div
+                class="camera-photo-taken-container"
+                key="image-taken"
+                v-else-if="form.proof && !uploadingImage"
+              >
+                <el-icon
+                  size="40"
+                  onclick="document.getElementById('file-input').click()"
+                  class="retry"
+                >
                   <ElIconCameraFilled
-                    style="position: absolute; right: 0; top: 0; padding: 0.5rem; cursor: pointer"
+                    style="
+                      position: absolute;
+                      right: 0;
+                      top: 0;
+                      padding: 0.5rem;
+                      cursor: pointer;
+                    "
                   />
                 </el-icon>
-                <img :src="form.proof" alt="Comprovante de Doação" class="taken-image"/>
+                <img
+                  :src="form.proof"
+                  alt="Comprovante de Doação"
+                  class="taken-image"
+                />
               </div>
-              <div class="camera-icon-container" key="loading" v-else-if="uploadingImage">
+              <div
+                class="camera-icon-container"
+                key="loading"
+                v-else-if="uploadingImage"
+              >
                 <CommonLogoLoader />
               </div>
             </Transition>
@@ -102,7 +129,9 @@
             :key="field.slug + idx"
             class="column"
           >
-            <label class="label-form">{{ field.label }} <span v-if="field.required">*</span></label>
+            <label class="label-form"
+              >{{ field.label }} <span v-if="field.required">*</span></label
+            >
             <el-input
               v-model="form.extraFields[field.slug]"
               size="large"
@@ -113,12 +142,21 @@
         </TransitionGroup>
       </form>
     </div>
-    <common-cool-footer hide-toggle height="fit-content" desktop-border-radius="0">
+    <common-cool-footer
+      hide-toggle
+      height="fit-content"
+      desktop-border-radius="0"
+    >
       <el-button
         type="primary"
         size="large"
         native-type="submit"
-        :disabled="!canRegisterDonation || registeringDonation || isCompetitionInFuture || isCompetitionInPast"
+        :disabled="
+          !canRegisterDonation ||
+          registeringDonation ||
+          isCompetitionInFuture ||
+          isCompetitionInPast
+        "
         :loading="registeringDonation"
         @click="handleSubmit"
         >{{ coolButtonText }}</el-button
@@ -137,7 +175,8 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-const { user, token, getDonationByCompetitionSlug, registerDonation } = useUserStore();
+const { user, token, getDonationByCompetitionSlug, registerDonation } =
+  useUserStore();
 
 if (!user) {
   navigateTo("/unauthorized");
@@ -151,7 +190,11 @@ const registeringDonation = ref(false);
 const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
 const donation = await getDonationByCompetitionSlug(String(slug));
 const goToSuccess = () => {
-  navigateTo(`/competition/${slug}/success?name=${encodeURIComponent(competition.value?.name ?? "Copa Hemocione")}`);
+  navigateTo(
+    `/competition/${slug}/success?name=${encodeURIComponent(
+      competition.value?.name ?? "Copa Hemocione"
+    )}`
+  );
 };
 
 const goToLogin = () => {
@@ -164,14 +207,17 @@ if (donation) {
 
 const extraFields = competition.value?.extraFields as unknown as ExtraField[];
 const extraFieldsSlugs = extraFields?.map((e) => e.slug) ?? [];
-const requiredExtraFieldsSlugs = extraFields?.filter((e) => e.required).map((e) => e.slug) ?? [];
+const requiredExtraFieldsSlugs =
+  extraFields?.filter((e) => e.required).map((e) => e.slug) ?? [];
 
-if (!competition.value?.published ) {
+if (!competition.value?.published) {
   navigateTo("https://hemocione.com.br", { external: true });
 }
 
-const isCompetitionInFuture = new Date(Date.parse(competition.value?.start_at as string)) > new Date();
-const isCompetitionInPast = new Date(Date.parse(competition.value?.end_at as string)) < new Date();
+const isCompetitionInFuture =
+  new Date(Date.parse(competition.value?.start_at as string)) > new Date();
+const isCompetitionInPast =
+  new Date(Date.parse(competition.value?.end_at as string)) < new Date();
 
 const initialDate = dayjs(competition.value?.start_at).format("DD/MM/YYYY");
 const finalDate = dayjs(competition.value?.end_at).format("DD/MM/YYYY");
@@ -179,7 +225,7 @@ const finalDate = dayjs(competition.value?.end_at).format("DD/MM/YYYY");
 const presentationText = isCompetitionInFuture
   ? `${competition.value?.name} ainda não começou. Aguarde até a data de início (${initialDate}) para registrar sua doação.`
   : isCompetitionInPast
-  ? "A competição já acabou. Obrigado por participar!"
+  ? "A copa já acabou. Obrigado por participar!"
   : "Selecione sua equipe para registrar sua doação.";
 
 export type Competition = typeof competition.value;
@@ -203,9 +249,15 @@ const institutions = computed(() =>
   )
 );
 
-const competitionTeams = computed(() => sortBy(competition.value?.competitionTeams.filter(
-  (compTeams) => compTeams.teams?.institutions?.id === form.value.institutionId
-), "teams.name"));
+const competitionTeams = computed(() =>
+  sortBy(
+    competition.value?.competitionTeams.filter(
+      (compTeams) =>
+        compTeams.teams?.institutions?.id === form.value.institutionId
+    ),
+    "teams.name"
+  )
+);
 
 const userName = computed(() => user?.givenName);
 
@@ -220,7 +272,11 @@ const allRequiredExtraFieldsFilled = computed(() =>
 );
 
 const canRegisterDonation = computed(() => {
-  return isTeamSelected.value && allRequiredExtraFieldsFilled.value && (!competition.value?.mandatory_proof || form.value.proof);
+  return (
+    isTeamSelected.value &&
+    allRequiredExtraFieldsFilled.value &&
+    (!competition.value?.mandatory_proof || form.value.proof)
+  );
 });
 
 const coolButtonText = computed(() => {
@@ -250,21 +306,21 @@ async function handleFileSelect(event: any) {
   }
 
   const file = files[0] as File;
-    // check if file is an image
+  // check if file is an image
   if (!file.type.includes("image")) {
     ElMessage.error("Envie uma imagem válida.");
     return;
   }
 
   // check if file is less than 5mb
-  if (file.size > 5*MB) {
+  if (file.size > 5 * MB) {
     ElMessage.error("Envie uma imagem menor que 5 MB");
     return;
   }
 
   // TODO: check if File is older than competition start
-  // TODO: check file location + add bloodbank to form 
-  
+  // TODO: check file location + add bloodbank to form
+
   const message = ElMessage({
     message: "Enviando imagem...",
     type: "info",
@@ -273,12 +329,20 @@ async function handleFileSelect(event: any) {
   try {
     const { url } = await uploadImage(file, { userToken: String(token) });
     message.close();
-    ElMessage({ message: "Imagem enviada com sucesso!", type: "success", duration: 3000 });
+    ElMessage({
+      message: "Imagem enviada com sucesso!",
+      type: "success",
+      duration: 3000,
+    });
     form.value.proof = url;
   } catch (error) {
     message.close();
     console.error("Error uploading image", error);
-    ElMessage({ type: "error", message: "Erro ao enviar imagem. Por favor, tente novamente.", duration: 3000 });
+    ElMessage({
+      type: "error",
+      message: "Erro ao enviar imagem. Por favor, tente novamente.",
+      duration: 3000,
+    });
   }
 
   uploadingImage.value = false;
@@ -286,10 +350,12 @@ async function handleFileSelect(event: any) {
 
 const extraFieldsResponse = computed(() => {
   const keys = Object.keys(form.value.extraFields);
-  return keys.map((key) => ({
-    slug: key,
-    value: form.value.extraFields[key],
-  })) ?? [];
+  return (
+    keys.map((key) => ({
+      slug: key,
+      value: form.value.extraFields[key],
+    })) ?? []
+  );
 });
 
 async function handleSubmit(event: any) {
@@ -307,7 +373,11 @@ async function handleSubmit(event: any) {
   try {
     await registerDonation(String(slug), payload);
   } catch (error) {
-    ElMessage({ type: "error", "message": "Erro ao registrar doação. Por favor, tente novamente.", duration: 3000 });
+    ElMessage({
+      type: "error",
+      message: "Erro ao registrar doação. Por favor, tente novamente.",
+      duration: 3000,
+    });
     registeringDonation.value = false;
     return;
   }
@@ -317,7 +387,6 @@ async function handleSubmit(event: any) {
 }
 </script>
 <style scoped>
-
 .retry {
   background-color: var(--hemo-color-secondary);
   position: absolute;
@@ -343,7 +412,7 @@ async function handleSubmit(event: any) {
   max-width: var(--hemo-page-max-width);
   min-height: var(--hemo-page-min-height);
   height: 100%;
-  align-items: center;  
+  align-items: center;
   background-color: white;
   padding: 1rem;
 }
@@ -360,7 +429,7 @@ async function handleSubmit(event: any) {
 .header h2 {
   text-align: center;
   color: #25282b;
-  margin: 0
+  margin: 0;
 }
 .header h3 {
   color: #52575c;
@@ -422,11 +491,10 @@ async function handleSubmit(event: any) {
 }
 
 .grey-button {
-  border: 1px solid #F3F2F1 !important;
+  border: 1px solid #f3f2f1 !important;
   color: var(--hemo-color-primary) !important;
-  background-color: #F3F2F1 !important;
+  background-color: #f3f2f1 !important;
   display: flex;
   text-wrap: wrap;
 }
 </style>
-  

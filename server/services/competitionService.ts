@@ -14,7 +14,6 @@ export const getCompetitions = async (
   includeUnpublished = false,
   sort: string | null = null
 ) => {
-  
   const parseStringToOrderBy = (sort: string | null) => {
     if (!sort) return {};
     return sort.startsWith("-")
@@ -204,4 +203,10 @@ export const unpublishCompetitionBySlug = async (slug: string) => {
     },
   });
   return unpublishedCompetition;
+};
+
+export const getCompetitionById = async (id: number) => {
+  return await dbClient.competitions.findUnique({
+    where: { id },
+  });
 };

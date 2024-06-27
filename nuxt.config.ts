@@ -65,6 +65,7 @@ export default defineNuxtConfig({
     hemocioneIdJwtSecretKey:
       process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "hemocione",
     secret: process.env.API_SECRET ?? "secret",
+    donationsQueueUrl: process.env.DONATIONS_QUEUE_URL ?? "queue-url",
   },
   routeRules: {
     "/competition/:slug/register": {

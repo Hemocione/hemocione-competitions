@@ -24,9 +24,7 @@
           <div v-if="!filteredSummaries.length" class="no-content">
             <p>
               {{
-                `Ainda não há competições ${
-                  onGoing ? "disponíveis" : "encerradas"
-                }`
+                `Ainda não há copas ${onGoing ? "disponíveis" : "encerradas"}`
               }}
             </p>
             <img src="../public/images/rafiki.svg" />
@@ -98,68 +96,68 @@ function switchOnGoing(v: boolean) {
 </script>
 
 <style scoped>
-  .main-container {
-    display: flex;
-    width: 100%;
-    min-height: var(--hemo-page-min-height);
-    flex-direction: column;
-  }
-  .summaryBox {
-    margin-bottom: 20px;
-  }
-  .switch-container {
-    display: flex;
-    flex-direction: column;
-  }
-  .switch-content {
-    display: flex;
-    flex-direction: row;
-  }
-  .no-content {
-    text-align: center;
-  }
-  .no-content p {
-    font-weight: 700;
-  }
-  .no-content img {
-    width: 60%;
-    margin-top: 16px;
-  }
-  .header {
-    padding: 0px;
-  }
-  .summary-title {
-    margin: 0;
-  }
-  .summary-subtitle {
-    margin: 10px 0 15px 0;
-  }
-  .switch {
-    display: inline-block;
-    height: 26px;
-    margin-right: 40px;
-    margin-bottom: 20px;
-    cursor: pointer;
-  }
-  .switch-on {
-    border-bottom: solid 5px #bb0a08;
-  }
-  .switch-off {
-    color: gray;
-  }
-  .summaries-list {
-    width: 100%;
-    max-width: var(--hemo-page-max-width);
-    height: 100%;
-    min-height: var(--hemo-page-min-height);
-    background-color: white;
-    padding: 20px 5%;
-  }
-  .main-strip {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    height: 100%;
-    padding: 0px;
-  }
+.main-container {
+  display: flex;
+  width: 100%;
+  min-height: var(--hemo-page-min-height);
+  flex-direction: column;
+}
+.summaryBox {
+  margin-bottom: 20px;
+}
+.switch-container {
+  display: flex;
+  flex-direction: column;
+}
+.switch-content {
+  display: flex;
+  flex-direction: row;
+}
+.no-content {
+  text-align: center;
+}
+.no-content p {
+  font-weight: 700;
+}
+.no-content img {
+  width: 60%;
+  margin-top: 16px;
+}
+.header {
+  padding: 0px;
+}
+.summary-title {
+  margin: 0;
+}
+.summary-subtitle {
+  margin: 10px 0 15px 0;
+}
+.switch {
+  display: inline-block;
+  height: 26px;
+  margin-right: 40px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+.switch-on {
+  border-bottom: solid 5px #bb0a08;
+}
+.switch-off {
+  color: gray;
+}
+.summaries-list {
+  width: 100%;
+  max-width: var(--hemo-page-max-width);
+  height: 100%;
+  min-height: var(--hemo-page-min-height);
+  background-color: white;
+  padding: 20px 5%;
+}
+.main-strip {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  height: 100%;
+  padding: 0px;
+}
 </style>

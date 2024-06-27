@@ -14,13 +14,13 @@ useHead({
       hid: "description",
       name: "description",
       content:
-        "Encontre competições de doação de sangue próximas a você e ajude a salvar vidas!",
+        "Encontre copas de doação de sangue próximas a você e ajude a salvar vidas!",
     },
     {
       hid: "og:description",
       property: "og:description",
       content:
-        "Encontre competições de doação de sangue próximas a você e ajude a salvar vidas!",
+        "Encontre copas de doação de sangue próximas a você e ajude a salvar vidas!",
     },
     {
       hid: "og:image",
@@ -42,13 +42,13 @@ useHead({
 });
 </script>
 <style scoped>
+.content-wrapper {
+  width: 70vw;
+  max-width: 100%;
+}
+@media screen and (max-width: 753px) {
   .content-wrapper {
-    width: 70vw;
-    max-width: 100%;
+    width: 100vw;
   }
-  @media screen and (max-width: 753px) {
-    .content-wrapper {
-      width: 100vw;
-    }
-  }
+}
 </style>

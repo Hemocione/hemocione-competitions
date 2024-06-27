@@ -1,4 +1,6 @@
 import { dbClient } from "../db";
+import { runAsync } from "~/utils/runAsync";
+import { buildAndSendDonationToHemocioneIdQueue } from "./hemocioneId";
 
 export const registerDonation = async (
   competitionId: number,
@@ -12,7 +14,7 @@ export const registerDonation = async (
   }
 ) => {
   const { user_name, user_email, extraFields, hemocioneID, proof } = payload;
-  return await dbClient.$transaction(async (db) => {
+  const donation = await dbClient.$transaction(async (db) => {
     const createdDonation = await db.donations.create({
       data: {
         hemocioneID,
@@ -35,9 +37,10 @@ export const registerDonation = async (
         },
       },
     });
-
     return createdDonation;
   });
+  runAsync(buildAndSendDonationToHemocioneIdQueue(donation, competitionId));
+  return donation;
 };
 
 export const getUserDonation = async (
