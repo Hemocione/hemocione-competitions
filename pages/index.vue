@@ -3,7 +3,10 @@
     <el-main class="main-strip">
       <div class="summaries-list">
         <!-- Competition Header -->
-        <h1 class="summary-title">Copas</h1>
+        <h1 class="summary-title">
+          <img class="icon" src="/images/icons/copa-icon.svg" alt="copa-icon" />
+          Copas
+        </h1>
         <p class="summary-subtitle">
           Clique em uma copa para registrar sua doação ou acessar as
           informações.
@@ -38,6 +41,7 @@
           :start="summary.start"
           :end="summary.end"
           :slug="summary.slug"
+          :banner_background="summary?.banner_background"
         />
       </div>
     </el-main>
@@ -54,7 +58,7 @@ const { data: competitions } = await useAsyncData(
   async () =>
     $fetch("/api/v1/competitions", {
       params: {
-        sort: onGoing.value ? "start_at" : "-end_at",
+        kindView: onGoing.value ? "available" : "finished",
       },
     }),
   { watch: [onGoing] }
@@ -65,6 +69,7 @@ const summaries = (competitions.value ?? []).map((competition) => ({
   start: dayjs(competition.start_at).toDate(),
   end: dayjs(competition.end_at).toDate(),
   slug: competition.slug,
+  banner_background: competition.banner_background ?? undefined,
 }));
 
 const closedSummaries = computed(() =>
@@ -159,5 +164,10 @@ function switchOnGoing(v: boolean) {
   justify-content: center;
   height: 100%;
   padding: 0px;
+}
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 2px;
 }
 </style>
