@@ -2,7 +2,8 @@
   <div class="details-container">
     <div class="details-strip">
       <div class="details-title">
-        <h1>{{ competitionName }}</h1>
+        <img class="back-arrow" src="/images/back-arrow.svg" @click="back()" />
+        <h2 class="competition-name">{{ competitionName }}</h2>
       </div>
       <div class="status-teams">
         <div
@@ -39,7 +40,16 @@
               <div :style="{ 'margin-bottom': '10px' }">
                 <img class="podium-user" src="/images/defaultAvatar.svg" />
               </div>
-              <div>{{ team.name }}</div>
+              <div
+                style="
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                  margin-top: 10px;
+                "
+              >
+                {{ team.name }}
+              </div>
             </div>
             <div :class="`${team.class} podium-step`">
               <img class="medal" :src="`/images/${team.medal}.svg`" />
@@ -49,7 +59,7 @@
         </div>
         <div class="ranking">
           <div class="ranking-title">
-            <span class="f1">Classificação</span>
+            <span class="f1">#</span>
             <span class="f1">{{ labelByType }}</span>
             <span class="f1">Doações</span>
           </div>
@@ -58,7 +68,7 @@
             v-for="(team, idx) in content"
             :key="team.id"
           >
-            <span class="f1">{{ idx + 1 }}</span>
+            <span class="f1">{{ idx + 1 + "°" }}</span>
             <span class="f1">{{ team.name }}</span>
             <span class="f1">{{ team.donation_count }}</span>
           </div>
@@ -87,6 +97,8 @@ import dayjs from "dayjs";
 const selectedType = ref<string>("");
 
 const route = useRoute();
+const router = useRouter();
+
 const slug = route.params.slug;
 
 const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
@@ -113,13 +125,13 @@ const statusInfo = computed(() => {
 
   if (now.isAfter(end))
     return {
-      status: "FINALIZADO",
+      status: "ENCERRADO",
       color: "#FB4E4E",
     };
   if (now.isAfter(start))
     return {
       status: "EM ANDAMENTO",
-      color: "#40DD7F",
+      color: "#2AC769",
     };
   return {
     status: "AGUARDANDO",
@@ -183,6 +195,8 @@ const rankingTeamsClass = computed(() => [
   { class: "st", medal: "gold", ...content.value[0] },
   { class: "rd", medal: "bronze", ...content.value[2] },
 ]);
+
+const back = () => router.back();
 </script>
 
 <style scoped>
@@ -205,8 +219,10 @@ const rankingTeamsClass = computed(() => [
   padding: 20px 5%;
 }
 .details-title {
+  display: flex;
+  align-items: center;
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 10px;
 }
 .details-status {
   display: flex;
@@ -214,7 +230,7 @@ const rankingTeamsClass = computed(() => [
   height: 30px;
   color: white;
   border-radius: 200px;
-  padding: 15px;
+  padding: 18px;
 }
 .status-teams {
   display: flex;
@@ -233,7 +249,7 @@ const rankingTeamsClass = computed(() => [
 }
 .ranking {
   border: solid #dbdde0 2px;
-  border-radius: 5px;
+  border-radius: 8px;
   border-bottom: 0px;
   margin-top: 30px;
   grid-column-start: 1;
@@ -241,7 +257,7 @@ const rankingTeamsClass = computed(() => [
 }
 .ranking-title {
   background-color: #f3f2f1;
-  padding: 20px;
+  padding: 10px;
   border-bottom: solid #dbdde0 2px;
   display: flex;
   text-align: center;
@@ -261,35 +277,35 @@ const rankingTeamsClass = computed(() => [
 .podium {
   border: solid #dbdde0 2px;
   width: 100%;
-  height: 380px;
+  min-height: 220px;
   background-color: #f9f9fa;
-  border-radius: 5px;
-  padding: 8px;
+  border-radius: 8px;
   display: flex;
-  gap: 3%;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8%;
 }
 .place-strip {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  flex: 1;
-  height: 100%;
+  gap: 24px;
+  width: 60px;
+  min-height: 280px;
 }
 .podium-step {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 15px 0px;
+  padding: 0px 20px;
   text-align: center;
-  border-top-right-radius: 30px;
-  border-top-left-radius: 30px;
+  border-top-right-radius: 20px;
+  border-top-left-radius: 20px;
 }
 .team-image-name {
   text-align: center;
 }
 .snd.podium-step {
   background-color: #efefef;
-  flex: 15;
+  flex: 5;
 }
 .st.podium-step {
   background-color: #ffebc2;
@@ -297,7 +313,7 @@ const rankingTeamsClass = computed(() => [
 }
 .rd.podium-step {
   background-color: #dfd0cc;
-  flex: 5;
+  flex: 0.8;
 }
 .podium-user {
   height: 60px;
@@ -307,6 +323,17 @@ const rankingTeamsClass = computed(() => [
 }
 .f1 {
   flex: 1;
+}
+
+.competition-name {
+  margin-left: 10px;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--hemo-text-color);
+}
+.back-arrow {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 @media screen and (max-width: 753px) {

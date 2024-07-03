@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { dbClient } from "../db";
 import slugify from "slugify";
 
@@ -12,17 +13,13 @@ END`;
 
 export const getCompetitions = async (
   includeUnpublished = false,
-  sort: string | null = null
+  kindView: "available" | "finished"
 ) => {
-  const parseStringToOrderBy = (sort: string | null) => {
-    if (!sort) return {};
-    return sort.startsWith("-")
-      ? { [sort.slice(1)]: "desc" }
-      : { [sort]: "asc" };
-  };
+  const orderBy: { [key: string]: string } =
+    kindView === "finished" ? { end_at: "desc" } : { start_at: "asc" };
 
-  return dbClient.competitions.findMany({
-    where: { published: true },
+  const query = {
+    where: includeUnpublished ? {} : { published: true },
     select: {
       id: true,
       name: true,
@@ -34,9 +31,12 @@ export const getCompetitions = async (
       extraFields: true,
       mandatory_proof: true,
       slug: true,
+      status: statusCaseWhenClause,
     },
-    orderBy: parseStringToOrderBy(sort),
-  });
+    orderBy,
+  };
+
+  return dbClient.competitions.findMany(query);
 };
 
 const getCompetitionBySlugPromise = (slug: string) => {
