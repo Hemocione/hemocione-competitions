@@ -186,141 +186,137 @@ const rankingTeamsClass = computed(() => [
 </script>
 
 <style scoped>
-  .details-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    height: 100%;
-    min-height: var(--hemo-page-min-height);
-    width: 100%;
-    position: relative;
-  }
-  .details-strip {
-    width: 100%;
-    max-width: var(--hemo-page-max-width);
-    height: 100%;
-    min-height: var(--hemo-page-min-height);
-    background-color: white;
-    padding: 20px 5%;
-  }
-  .details-title {
-    text-align: center;
-    margin-bottom: 60px;
-  }
-  .details-status {
-    display: flex;
-    align-items: center;
-    height: 30px;
-    color: white;
-    border-radius: 200px;
-    padding: 15px;
-  }
-  .status-teams {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 18px;
-  }
-  .details-grid {
-    display: flex;
-    flex-direction: column;
-  }
+.details-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  min-height: var(--hemo-page-min-height);
+  width: 100%;
+  position: relative;
+}
+.details-strip {
+  width: 100%;
+  max-width: var(--hemo-page-max-width);
+  height: 100%;
+  min-height: var(--hemo-page-min-height);
+  background-color: white;
+  padding: 20px 5%;
+}
+.details-title {
+  text-align: center;
+  margin-bottom: 60px;
+}
+.details-status {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  color: white;
+  border-radius: 200px;
+  padding: 15px;
+}
+.status-teams {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+.details-grid {
+  display: flex;
+  flex-direction: column;
+}
+.detail-team-select {
+  height: 48px;
+  width: 30%;
+}
+.ranking {
+  border: solid #dbdde0 2px;
+  border-radius: 5px;
+  border-bottom: 0px;
+  margin-top: 30px;
+  grid-column-start: 1;
+  grid-column-end: 3;
+}
+.ranking-title {
+  background-color: #f3f2f1;
+  padding: 20px;
+  border-bottom: solid #dbdde0 2px;
+  display: flex;
+  text-align: center;
+}
+.ranking-row {
+  padding: 20px;
+  border-bottom: solid #dbdde0 2px;
+  display: flex;
+  text-align: center;
+  background-color: white;
+}
+.register-button {
+  height: 40px;
+  background-color: #e93c3c;
+  width: 100%;
+}
+.podium {
+  border: solid #dbdde0 2px;
+  width: 100%;
+  height: 380px;
+  background-color: #f9f9fa;
+  border-radius: 5px;
+  padding: 8px;
+  display: flex;
+  gap: 3%;
+}
+.place-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex: 1;
+  height: 100%;
+}
+.podium-step {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 15px 0px;
+  text-align: center;
+  border-top-right-radius: 30px;
+  border-top-left-radius: 30px;
+}
+.team-image-name {
+  text-align: center;
+}
+.snd.podium-step {
+  background-color: #efefef;
+  flex: 15;
+}
+.st.podium-step {
+  background-color: #ffebc2;
+  flex: 100;
+}
+.rd.podium-step {
+  background-color: #dfd0cc;
+  flex: 5;
+}
+.podium-user {
+  height: 60px;
+}
+.medal {
+  height: 50px;
+}
+.f1 {
+  flex: 1;
+}
+
+@media screen and (max-width: 753px) {
   .detail-team-select {
     height: 48px;
-    width: 30%;
-  }
-  .ranking {
-    border: solid #dbdde0 2px;
-    border-radius: 5px;
-    border-bottom: 0px;
-    margin-top: 30px;
-    grid-column-start: 1;
-    grid-column-end: 3;
-  }
-  .ranking-title {
-    background-color: #f3f2f1;
-    padding: 20px;
-    border-bottom: solid #dbdde0 2px;
-    display: flex;
-    text-align: center;
-  }
-  .ranking-row {
-    padding: 20px;
-    border-bottom: solid #dbdde0 2px;
-    display: flex;
-    text-align: center;
-    background-color: white;
+    width: 40%;
   }
   .register-button {
-    height: 40px;
-    background-color: #e93c3c;
-    width: 100%;
+    height: 48px;
+    flex: 10;
   }
-  .podium {
-    border: solid #dbdde0 2px;
-    width: 60%;
-    height: 380px;
-    background-color: #f9f9fa;
-    border-radius: 5px;
-    padding: 8px;
-    display: flex;
-    gap: 3%;
-  }
-  .place-strip {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    flex: 1;
-    height: 100%;
-  }
-  .podium-step {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    padding: 15px 0px;
-    text-align: center;
-    border-top-right-radius: 30px;
-    border-top-left-radius: 30px;
-  }
-  .team-image-name {
-    text-align: center;
-  }
-  .snd.podium-step {
-    background-color: #efefef;
-    flex: 15;
-  }
-  .st.podium-step {
-    background-color: #ffebc2;
-    flex: 100;
-  }
-  .rd.podium-step {
-    background-color: #dfd0cc;
-    flex: 5;
-  }
-  .podium-user {
-    height: 60px;
-  }
-  .medal {
-    height: 50px;
-  }
-  .f1 {
-    flex: 1;
-  }
-
-  @media screen and (max-width: 753px) {
-    .podium {
-      width: 100%;
-    }
-    .detail-team-select {
-      height: 48px;
-      width: 40%;
-    }
-    .register-button {
-      height: 48px;
-      flex: 10;
-    }
-  }
+}
 </style>
-
