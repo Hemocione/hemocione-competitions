@@ -182,9 +182,14 @@ const isClosed = computed(() => status.value === "ENCERRADO");
 }
 
 .status-tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  height: 1.5rem;
   border-radius: 16px;
   padding: 1px 15px;
-  text-align: center;
 }
 
 .tag-label {
