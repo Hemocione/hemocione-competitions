@@ -28,17 +28,8 @@
           />
         </el-select>
       </div>
-      <TemplateCompetitionContent
-        :ranking="{
-          contents: content.map((c) => ({
-            name: c.name,
-            value: c.donation_count,
-          })),
-          labelByType,
-          labelByValue: 'Doações',
-        }"
-      >
-        <template #podium-content>
+      <div class="details-grid">
+        <div class="podium">
           <div
             class="place-strip"
             v-for="(team, idx) in rankingTeamsClass"
@@ -65,8 +56,24 @@
               <span>{{ team.donation_count }}</span>
             </div>
           </div>
-        </template>
-      </TemplateCompetitionContent>
+        </div>
+        <div class="ranking">
+          <div class="ranking-title">
+            <span class="f1">#</span>
+            <span class="f1">{{ labelByType }}</span>
+            <span class="f1">Doações</span>
+          </div>
+          <div
+            class="ranking-row"
+            v-for="(team, idx) in content"
+            :key="team.id"
+          >
+            <span class="f1">{{ idx + 1 + "°" }}</span>
+            <span class="f1">{{ team.name }}</span>
+            <span class="f1">{{ team.donation_count }}</span>
+          </div>
+        </div>
+      </div>
     </div>
     <common-cool-footer
       v-if="donationsIsOpen"
