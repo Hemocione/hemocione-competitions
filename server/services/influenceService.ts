@@ -6,6 +6,10 @@ export interface CreateBody {
   competitionId: number;
   competitionTeamId: number;
 }
+export interface UpdateBody {
+  userEmail: string;
+  competitionTeamId: number;
+}
 
 export const getInfluences = async (competitionTeamId: number) => {
   const influence = await dbClient.influence.findMany({
@@ -17,28 +21,33 @@ export const getInfluences = async (competitionTeamId: number) => {
   return influence;
 };
 
-export const incrementOrCreateInfluence = async (data: CreateBody) => {
-
-  const createdInfluence = await dbClient.influence.upsert({
-    where: {
-      influence_user_email_competitionTeamId: {
-        user_email: data.userEmail,
-        competitionTeamId: data.competitionTeamId,
-      }
-    },
-    create: {
+export const createInfluence = async (data: CreateBody) => {
+  const createdInfluence = await dbClient.influence.create({
+    data: {
       user_email: data.userEmail,
       hemocioneID: data.hemocioneID,
       competitionId: data.competitionId,
       competitionTeamId: data.competitionTeamId,
-      amountInfluence: 1,
     },
-    update: {
+  });
+
+  return createdInfluence;
+};
+
+export const incrementInfluence = async (data: UpdateBody) => {
+  const updatedInfluence = await dbClient.influence.update({
+    where: {
+      influence_user_email_competitionTeamId: {
+        user_email: data.userEmail,
+        competitionTeamId: data.competitionTeamId,
+      },
+    },
+    data: {
       amountInfluence: {
         increment: 1,
       },
     },
   });
 
-  return createdInfluence;
+  return updatedInfluence;
 };

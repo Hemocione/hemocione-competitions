@@ -86,6 +86,15 @@
           >+ Registrar nova doação</el-button
         >
       </NuxtLink>
+      <el-button
+        class="share-button"
+        type="primary"
+        size="large"
+        @click="redirectToShare"
+      >
+        <img src="/images/share.svg" style="margin-right: 10px" />
+        <label>Compartilhe e influencie doar</label>
+      </el-button>
     </common-cool-footer>
   </div>
 </template>
@@ -106,6 +115,13 @@ const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
 const competitionName = computed(
   () => competition?.value?.name ?? "Copa Hemocione"
 );
+
+const competitionId = computed(() => competition?.value?.id);
+// TODO: o usuário deveria escolher o time antes de criar o link ?
+const redirectToShare = () =>
+  router.push(
+    `/share?competitionId=${competitionId.value}&competitionSlug=${slug}`
+  );
 
 const importantDates = computed(() => {
   const now = dayjs();
@@ -268,6 +284,12 @@ const back = () => router.back();
   display: flex;
   text-align: center;
   background-color: white;
+}
+.share-button {
+  height: 40px;
+  background-color: white;
+  color: black;
+  width: 100%;
 }
 .register-button {
   height: 40px;

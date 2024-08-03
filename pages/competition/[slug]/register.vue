@@ -175,14 +175,21 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-const { user, token, getDonationByCompetitionSlug, registerDonation } =
-  useUserStore();
+const {
+  user,
+  token,
+  getDonationByCompetitionSlug,
+  registerDonation,
+  incrementInfluence,
+} = useUserStore();
 
 if (!user) {
   navigateTo("/unauthorized");
 }
 const route = useRoute();
 const slug = route.params.slug;
+const email_influencer = route.query.email_influencer as string;
+const competition_team_id = Number(route.query.competition_team_id);
 
 const uploadingImage = ref(false);
 const registeringDonation = ref(false);
@@ -263,6 +270,18 @@ const userName = computed(() => user?.givenName);
 
 if (institutions.value.length === 1) {
   form.value.institutionId = institutions?.value[0]?.id;
+}
+
+// Should filled if has email influencer and extrafields has email influencer
+if (email_influencer && extraFieldsSlugs.includes("email_influencer")) {
+  form.value.extraFields.email_influencer = email_influencer;
+}
+// Should filled if has competition_team_id and is in competitionTeams
+const hasCompetitionTeamId = competitionTeams.value.find(
+  (compTeam) => compTeam.id === competition_team_id
+);
+if (hasCompetitionTeamId) {
+  form.value.competitionTeamId = competition_team_id;
 }
 
 const isTeamSelected = computed(() => form.value.competitionTeamId);
@@ -371,6 +390,14 @@ async function handleSubmit(event: any) {
     extraFields: extraFieldsResponse.value,
   };
   try {
+    const userInfluencerEmail = form.value.extraFields?.email_influencer;
+    if (userInfluencerEmail) {
+      await incrementInfluence(
+        String(slug),
+        userInfluencerEmail,
+        payload.competitionTeamId
+      );
+    }
     await registerDonation(String(slug), payload);
   } catch (error) {
     ElMessage({
