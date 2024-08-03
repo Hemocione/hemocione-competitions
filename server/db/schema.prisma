@@ -51,16 +51,18 @@ model competitions {
 }
 
 model competitionTeams {
-  id             Int          @id @default(autoincrement())
-  donation_count Int?         @default(0)
-  teamId         Int
-  competitionId  Int
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  competitions   competitions @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  teams          teams        @relation(fields: [teamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  donations      donations[]
-  influence      influence[]
+  id               Int  @id @default(autoincrement())
+  donation_count   Int? @default(0)
+  teamId           Int
+  competitionId    Int
+  amountEngagement Int? @default(0)
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  competitions competitions @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  teams        teams        @relation(fields: [teamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  donations    donations[]
+  influence    influence[]
 
   @@unique([competitionId, teamId])
 }
@@ -87,17 +89,17 @@ model donations {
 }
 
 model influence {
-  id                  Int    @id @default(autoincrement())
-  user_email          String @db.VarChar(255)
-  hemocioneID         String @db.VarChar(255)
-  competitionId       Int
-  competitionTeamId   Int
-  amountInfluence Int    @default(0)
+  id                Int    @id @default(autoincrement())
+  user_email        String @db.VarChar(255)
+  hemocioneID       String @db.VarChar(255)
+  competitionId     Int
+  competitionTeamId Int
+  amountInfluence   Int    @default(0)
 
   competitions     competitions      @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   competitionTeams competitionTeams? @relation(fields: [competitionTeamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@unique([user_email, competitionId])
+  @@unique([user_email, competitionTeamId], name: "influence_user_email_competitionTeamId")
 }
 
 enum ProofType {

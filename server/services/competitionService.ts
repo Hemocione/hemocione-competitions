@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { dbClient } from "../db";
 import slugify from "slugify";
 
@@ -121,6 +120,24 @@ export const getCompetitionRanking = async (competitionId: number) => {
 
   return result;
 };
+
+export const getCompetitionEngagement = async (competitionId: number) => {
+  const result = await dbClient.competitionTeams.findMany({
+    where: {
+      competitionId: competitionId,
+    },
+    select: {
+      teamId: true,
+      amountEngagement: true,
+      teams: { select: { name: true } },
+    },
+    orderBy: {
+      amountEngagement: "desc",
+    },
+  });
+
+  return result;
+}
 
 export const createCompetition = async (
   name: string,
