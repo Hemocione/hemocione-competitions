@@ -28,17 +28,8 @@
           />
         </el-select>
       </div>
-      <TemplateCompetitionContent
-        :ranking="{
-          contents: content.map((c) => ({
-            name: c.name,
-            value: c.donation_count,
-          })),
-          labelByType,
-          labelByValue: 'Doações',
-        }"
-      >
-        <template #podium-content>
+      <div class="details-grid">
+        <div class="podium">
           <div
             class="place-strip"
             v-for="(team, idx) in rankingTeamsClass"
@@ -65,8 +56,24 @@
               <span>{{ team.donation_count }}</span>
             </div>
           </div>
-        </template>
-      </TemplateCompetitionContent>
+        </div>
+        <div class="ranking">
+          <div class="ranking-title">
+            <span class="f1">#</span>
+            <span class="f1">{{ labelByType }}</span>
+            <span class="f1">Doações</span>
+          </div>
+          <div
+            class="ranking-row"
+            v-for="(team, idx) in content"
+            :key="team.id"
+          >
+            <span class="f1">{{ idx + 1 + "°" }}</span>
+            <span class="f1">{{ team.name }}</span>
+            <span class="f1">{{ team.donation_count }}</span>
+          </div>
+        </div>
+      </div>
     </div>
     <common-cool-footer
       v-if="donationsIsOpen"
@@ -79,15 +86,6 @@
           >+ Registrar nova doação</el-button
         >
       </NuxtLink>
-      <el-button
-        class="share-button"
-        type="primary"
-        size="large"
-        @click="redirectToShare"
-      >
-        <img src="/images/share.svg" style="margin-right: 10px" />
-        <label>Compartilhe e influencie doar</label>
-      </el-button>
     </common-cool-footer>
   </div>
 </template>
@@ -108,13 +106,6 @@ const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
 const competitionName = computed(
   () => competition?.value?.name ?? "Copa Hemocione"
 );
-
-const competitionId = computed(() => competition?.value?.id);
-// TODO: o usuário deveria escolher o time antes de criar o link ?
-const redirectToShare = () =>
-  router.push(
-    `/share?competitionId=${competitionId.value}&competitionSlug=${slug}`
-  );
 
 const importantDates = computed(() => {
   const now = dayjs();
@@ -277,12 +268,6 @@ const back = () => router.back();
   display: flex;
   text-align: center;
   background-color: white;
-}
-.share-button {
-  height: 40px;
-  background-color: white;
-  color: black;
-  width: 100%;
 }
 .register-button {
   height: 40px;
