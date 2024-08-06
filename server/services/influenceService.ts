@@ -78,3 +78,17 @@ export const getOrCreateUserInfluence = async (user: HemocioneUserAuthTokenData,
   return createdInfluence;
 
 }
+
+export const getInfluenceByCodeAndCompetitionSlug = async (competitionSlug: string, code: string) => {
+  const influence = await dbClient.influence.findFirst({
+    where: {
+      code,
+      competitions: {
+        slug: competitionSlug,
+        has_influence: true,
+      },
+    },
+  });
+
+  return influence;
+}

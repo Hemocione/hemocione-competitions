@@ -35,15 +35,17 @@ export const registerDonation = async (
     proof: string;
     extraFields: ExtraFieldsResponse;
     competitionTeamId: number;
+    influenceId?: number;
   }
 ) => {
-  const { proof, extraFields, competitionTeamId } = payload;
+  const { proof, extraFields, competitionTeamId, influenceId } = payload;
   return await $fetch(`/api/v1/competitions/${competitionSlug}/donations`, {
     method: "POST",
     body: {
       competitionTeamId,
       proof,
       extraFields,
+      influenceId,
     },
     headers: {
       Authorization: `Bearer ${token}`,
@@ -132,6 +134,7 @@ export const useUserStore = defineStore("user", {
         proof: string;
         extraFields: ExtraFieldsResponse;
         competitionTeamId: number;
+        influenceId?: number;
       }
     ) {
       if (!this.token) return;

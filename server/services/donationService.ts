@@ -11,6 +11,7 @@ export const registerDonation = async (
     user_email: string;
     extraFields?: string;
     proof?: string;
+    influenceId?: number;
   }
 ) => {
   const { user_name, user_email, extraFields, hemocioneID, proof } = payload;
@@ -22,6 +23,7 @@ export const registerDonation = async (
         user_email,
         competitionTeamId: competitionTeamId,
         competitionId: competitionId,
+        influenceId: payload.influenceId,
         ...(extraFields ? { extraFields } : {}),
         ...(proof ? { proof } : {}),
       },
@@ -37,6 +39,19 @@ export const registerDonation = async (
         },
       },
     });
+
+    if (payload.influenceId) {
+      await db.influence.update({
+        where: {
+          id: payload.influenceId,
+        },
+        data: {
+          amountInfluence: {
+            increment: 1,
+          },
+        },
+      });
+    }
     return createdDonation;
   });
   runAsync(buildAndSendDonationToHemocioneIdQueue(donation, competitionId));
