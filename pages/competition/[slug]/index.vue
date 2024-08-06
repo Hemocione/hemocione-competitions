@@ -76,18 +76,19 @@
     >
       <NuxtLink :to="`/competition/${slug}/register`">
         <el-button class="register-button" type="primary" size="large"
-          >+ Registrar nova doação</el-button
+          ><template #icon>
+            <el-icon><ElIconCirclePlusFilled /></el-icon>
+          </template>Registrar doação</el-button
         >
       </NuxtLink>
-      <el-button
-        class="share-button"
-        type="primary"
-        size="large"
-        @click="redirectToShare"
-      >
-        <img src="/images/share.svg" style="margin-right: 10px" />
-        <label>Compartilhe e influencie doar</label>
-      </el-button>
+      <NuxtLink :to="`/competition/${slug}/share`">
+        <el-button size="large">
+          <template #icon>
+            <el-icon><ElIconShare /></el-icon>
+          </template>
+          Compartilhe e influencie doar
+        </el-button>
+      </NuxtLink>
     </common-cool-footer>
   </div>
 </template>
@@ -209,6 +210,11 @@ const back = () => router.back();
 </script>
 
 <style scoped>
+button {
+  cursor: pointer;
+  width: 100%;
+}
+
 .details-container {
   display: flex;
   flex-direction: column;
@@ -289,6 +295,7 @@ const back = () => router.back();
   background-color: #e93c3c;
   width: 100%;
 }
+
 .podium {
   border: solid #dbdde0 2px;
   width: 100%;
