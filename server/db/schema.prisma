@@ -64,7 +64,6 @@ model competitionTeams {
   competitions competitions @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   teams        teams        @relation(fields: [teamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   donations    donations[]
-  influence    influence[]
 
   @@unique([competitionId, teamId])
 }
@@ -100,10 +99,8 @@ model influence {
   code            String @db.VarChar(255)
   amountInfluence Int    @default(0)
 
-  competitions       competitions      @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  donations          donations[]
-  competitionTeams   competitionTeams? @relation(fields: [competitionTeamsId], references: [id])
-  competitionTeamsId Int?
+  competitions competitions @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  donations    donations[]
 
   @@unique([hemocioneID, competitionId], name: "influence_competitionId_hemocioneID")
   @@unique([code, competitionId], name: "influence_code_competitionId")

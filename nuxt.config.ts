@@ -38,6 +38,7 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "nuxt-vercel-analytics",
     "nuxt-bugsnag",
+    '@vueuse/nuxt',
   ],
   googleFonts: {
     families: {
@@ -59,6 +60,7 @@ export default defineNuxtConfig({
         process.env.CDN_UPLOAD_URL ?? "http://localhost:3001/api/upload",
       instagramUrl:
         process.env.INSTAGRAM_URL ?? "https://www.instagram.com/hemocione/",
+      siteUrl
     },
     hemocioneIdIntegrationSecret:
       process.env.HEMOCIONE_ID_INTEGRATION_SECRET ?? "secret",
@@ -74,7 +76,7 @@ export default defineNuxtConfig({
     "/competition/:slug/success": {
       ssr: false,
     },
-    "/competition/:slug/share": {
+    "/competition/:slug/influence": {
       ssr: false,
     },
   },

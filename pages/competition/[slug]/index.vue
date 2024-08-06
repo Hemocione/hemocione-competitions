@@ -2,7 +2,9 @@
   <div class="details-container">
     <div class="details-strip">
       <div class="details-title">
-        <img class="back-arrow" src="/images/back-arrow.svg" @click="back()" />
+        <NuxtLink to="/">
+          <img class="back-arrow" src="/images/back-arrow.svg" />
+        </NuxtLink>
         <h2 class="competition-name">{{ competitionName }}</h2>
       </div>
       <div class="status-teams">
@@ -74,20 +76,20 @@
       height="fit-content"
       desktop-border-radius="0"
     >
-      <NuxtLink :to="`/competition/${slug}/register`">
-        <el-button class="register-button" type="primary" size="large"
-          ><template #icon>
-            <el-icon><ElIconCirclePlusFilled /></el-icon>
-          </template>Registrar doação</el-button
-        >
-      </NuxtLink>
-      <NuxtLink :to="`/competition/${slug}/share`">
+      <NuxtLink :to="`/competition/${slug}/influence`" v-if="competition?.has_influence">
         <el-button size="large">
           <template #icon>
             <el-icon><ElIconShare /></el-icon>
           </template>
-          Compartilhe e influencie doar
+          Influencie mais pessoas a doarem sangue
         </el-button>
+      </NuxtLink>
+      <NuxtLink :to="`/competition/${slug}/register`">
+        <el-button type="primary" size="large"
+          ><template #icon>
+            <el-icon><ElIconCirclePlusFilled /></el-icon>
+          </template>Registrar doação</el-button
+        >
       </NuxtLink>
     </common-cool-footer>
   </div>
@@ -111,11 +113,6 @@ const competitionName = computed(
 );
 
 const competitionId = computed(() => competition?.value?.id);
-// TODO: o usuário deveria escolher o time antes de criar o link ?
-const redirectToShare = () =>
-  router.push(
-    `/share?competitionId=${competitionId.value}&competitionSlug=${slug}`
-  );
 
 const importantDates = computed(() => {
   const now = dayjs();

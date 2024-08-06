@@ -14,6 +14,20 @@ export const getUserDonation = async (
   );
 };
 
+export const getUserInfluence = async (
+  competitionSlug: string,
+  token: string
+) => {
+  return await $fetch(
+    `/api/v1/competitions/${competitionSlug}/influence/mine`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+}
+
 export const registerDonation = async (
   competitionSlug: string,
   token: string,
@@ -80,12 +94,14 @@ export const incrementInfluence = async (
 };
 
 export type UserDonation = Awaited<ReturnType<typeof getUserDonation>>;
+export type InfluenceData = Awaited<ReturnType<typeof getUserInfluence>>;
 
 export const useUserStore = defineStore("user", {
   state: () => ({
     user: null as CurrentUserData | null,
     token: null as string | null,
     donationsByCompetitionSlug: new Map<string, UserDonation>(),
+    influenceByCompetitionSlug: new Map<string, InfluenceData>(),
   }),
   actions: {
     setUser(user: CurrentUserData | null) {
@@ -157,5 +173,20 @@ export const useUserStore = defineStore("user", {
 
       return influenced;
     },
+    async getCompetitionInfluence(competitionSlug: string) {
+      if (!this.token) return;
+
+      if (this.influenceByCompetitionSlug.has(competitionSlug)) {
+        return this.influenceByCompetitionSlug.get(competitionSlug);
+      }
+
+      try {
+        const influence = await getUserInfluence(competitionSlug, this.token);
+        this.influenceByCompetitionSlug.set(competitionSlug, influence);
+        return influence;
+      } catch (error) {
+        return;
+      }
+    }
   },
 });

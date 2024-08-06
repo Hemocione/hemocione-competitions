@@ -51,6 +51,9 @@ const getCompetitionBySlugPromise = (slug: string) => {
       banner_background: true,
       extraFields: true,
       mandatory_proof: true,
+      proof_type: true,
+      has_influence: true,
+      has_likes: true,
       competitionTeams: {
         select: {
           id: true,

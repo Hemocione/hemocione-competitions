@@ -9,6 +9,9 @@
   --hemo-color-text-secondary: #25282b;
   --hemo-color-text-secondary-opaque: rgba(37, 40, 43, 0.2);
   --hemo-color-text-primary: #f2f2f2;
+  --zap: #32D851;
+  --crazy-gray: #D9D9D9;
+  --black-80: #52575C;
   --black-100: #25282b;
   --el-color-primary: var(--hemo-color-primary) !important;
   --el-color-primary-light-3: var(--hemo-color-primary) !important;
@@ -31,7 +34,7 @@
   --hemo-page-min-height: 93dvh;
 }
 
-.el-button + .el-button {
+.el-button+.el-button {
   margin: 0 !important;
 }
 
