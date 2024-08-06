@@ -28,19 +28,21 @@ model teams {
 }
 
 model competitions {
-  id                Int       @id @default(autoincrement())
-  name              String    @db.VarChar(255)
-  slug              String    @unique @db.VarChar(255)
-  mandatory_proof   Boolean?  @default(false)
-  start_at          DateTime  @db.Timestamptz(6)
-  end_at            DateTime  @db.Timestamptz(6)
+  id                Int        @id @default(autoincrement())
+  name              String     @db.VarChar(255)
+  slug              String     @unique @db.VarChar(255)
+  mandatory_proof   Boolean?   @default(false)
+  proof_type        ProofType? @default(selfie)
+  start_at          DateTime   @db.Timestamptz(6)
+  end_at            DateTime   @db.Timestamptz(6)
   extraFields       Json?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  published         Boolean?  @default(false)
-  publication_date  DateTime? @db.Timestamptz(6)
-  banner_background String?   @db.VarChar(255)
-  has_influence     Boolean?  @default(false)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  published         Boolean?   @default(false)
+  publication_date  DateTime?  @db.Timestamptz(6)
+  banner_background String?    @db.VarChar(255)
+  has_influence     Boolean?   @default(false)
+  has_likes         Boolean?   @default(false)
 
   competitionTeams competitionTeams[]
   donations        donations[]
@@ -51,11 +53,11 @@ model competitions {
 }
 
 model competitionTeams {
-  id               Int  @id @default(autoincrement())
-  donation_count   Int? @default(0)
-  teamId           Int
-  competitionId    Int
-  amountEngagement Int? @default(0)
+  id             Int  @id @default(autoincrement())
+  donation_count Int? @default(0)
+  teamId         Int
+  competitionId  Int
+  amountLikes    Int? @default(0)
 
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -74,12 +76,13 @@ model donations {
   hemocioneID       String?           @db.VarChar(255)
   competitionTeamId Int
   competitionId     Int
+  influenceId       Int?
   extraFields       Json?
   proof             String?           @db.VarChar(255)
-  proofType         ProofType?        @default(document)
   createdAt         DateTime          @default(now())
   donationDate      DateTime?         @default(now())
   updatedAt         DateTime          @updatedAt
+  influence         influence?        @relation(fields: [influenceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   competitions      competitions      @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   competitionTeams  competitionTeams? @relation(fields: [competitionTeamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
@@ -89,17 +92,21 @@ model donations {
 }
 
 model influence {
-  id                Int    @id @default(autoincrement())
-  user_email        String @db.VarChar(255)
-  hemocioneID       String @db.VarChar(255)
-  competitionId     Int
-  competitionTeamId Int
-  amountInfluence   Int    @default(0)
+  id              Int    @id @default(autoincrement())
+  hemocioneID     String @db.VarChar(255)
+  user_email      String @db.VarChar(255)
+  user_name       String @db.VarChar(255)
+  competitionId   Int
+  code            String @db.VarChar(255)
+  amountInfluence Int    @default(0)
 
-  competitions     competitions      @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  competitionTeams competitionTeams? @relation(fields: [competitionTeamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  competitions       competitions      @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  donations          donations[]
+  competitionTeams   competitionTeams? @relation(fields: [competitionTeamsId], references: [id])
+  competitionTeamsId Int?
 
-  @@unique([user_email, competitionTeamId], name: "influence_user_email_competitionTeamId")
+  @@unique([hemocioneID, competitionId], name: "influence_competitionId_hemocioneID")
+  @@unique([code, competitionId], name: "influence_code_competitionId")
 }
 
 enum ProofType {

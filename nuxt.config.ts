@@ -51,10 +51,10 @@ export default defineNuxtConfig({
     public: {
       authCookieKey: process.env.HEMOCIONE_AUTH_COOKIE_KEY ?? "hemocioneId",
       hemocioneIdUrl:
-        process.env.HEMOCIONE_ID_URL ?? "https://id.hemocione.com.br",
+        process.env.HEMOCIONE_ID_URL ?? "https://id.d.hemocione.com.br",
       hemocioneIdApiUrl:
         process.env.HEMOCIONE_ID_API_URL ??
-        "https://hemocione-id.cpt.hemocione.com.br",
+        "https://hemocione-id-dev.cpt.hemocione.com.br",
       cdnUploadUrl:
         process.env.CDN_UPLOAD_URL ?? "http://localhost:3001/api/upload",
       instagramUrl:
@@ -72,6 +72,9 @@ export default defineNuxtConfig({
       ssr: false,
     },
     "/competition/:slug/success": {
+      ssr: false,
+    },
+    "/competition/:slug/share": {
       ssr: false,
     },
   },

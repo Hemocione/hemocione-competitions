@@ -6,6 +6,8 @@
     "migrate-dev": "npx prisma migrate dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "utils:reset-db": "npx prisma db push --force-reset && npx prisma db push",
+    "utils:populate": "docker cp sql-scripts/populate_tables.sql my-postgres:/populate.sql && docker exec -i my-postgres psql -U postgres -d competitions -f /populate.sql",
     "migrate:deploy": "if [ \"$ENABLE_MIGRATIONS\" = \"1\" ]; then npx prisma migrate deploy; else echo \"no migrations enabled\"; fi",
     "postinstall": "yarn migrate:deploy && npx prisma generate && nuxt prepare"
   },

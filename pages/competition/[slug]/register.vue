@@ -389,6 +389,7 @@ async function handleSubmit(event: any) {
     proof: form.value.proof,
     extraFields: extraFieldsResponse.value,
   };
+  // TODO: do this inside registerDonation. pass this info in payload.
   try {
     const userInfluencerEmail = form.value.extraFields?.email_influencer;
     if (userInfluencerEmail) {

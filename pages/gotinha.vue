@@ -83,7 +83,7 @@
     >
       <NuxtLink :to="`/competition/${slug}/register`">
         <el-button class="register-button" type="primary" size="large"
-          >+ Registrar nova doação</el-button
+          >Registrar doação</el-button
         >
       </NuxtLink>
     </common-cool-footer>
