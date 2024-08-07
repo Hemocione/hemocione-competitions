@@ -58,6 +58,7 @@ const getCompetitionBySlugPromise = (slug: string) => {
         select: {
           id: true,
           donation_count: true,
+          amountLikes: true,
           teams: {
             select: {
               name: true,
