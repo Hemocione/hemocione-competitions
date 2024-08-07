@@ -12,14 +12,38 @@ export interface UpdateBody {
   competitionTeamId: number;
 }
 
-export const getInfluences = async (competitionId: number) => {
-  const influence = await dbClient.influence.findMany({
+const getCompetitionInfluencesPromise = (competitionSlug: string) => {
+  return dbClient.influence.findMany({
+    select: {
+      amountInfluence: true,
+      user_name: true,
+      code: true,
+    },
     where: {
-      competitionId,
+      competitions: {
+        slug: competitionSlug,
+        has_influence: true,
+      },
+    },
+    orderBy: {
+      amountInfluence: "desc",
     },
   });
+}
 
-  return influence;
+type CompetitionInfluences = Awaited<ReturnType<typeof getCompetitionInfluencesPromise>>;
+const CompetititionInfluencesCache = new Map<string, { generatedAt: Date, influences: CompetitionInfluences }>();
+const CACHE_TTL = 60 * 1000 * 5; // 5 minutes
+
+export const getCompetitionInfluences = async (competitionSlug: string) => {
+  const cacheHit = CompetititionInfluencesCache.get(competitionSlug);
+  if (cacheHit && cacheHit.generatedAt.getTime() + CACHE_TTL > Date.now()) {
+    return cacheHit.influences;
+  }
+
+  const influences = await getCompetitionInfluencesPromise(competitionSlug);
+  CompetititionInfluencesCache.set(competitionSlug, { generatedAt: new Date(), influences });
+  return influences;
 };
 
 export const createInfluence = async (data: CreateBody) => {
