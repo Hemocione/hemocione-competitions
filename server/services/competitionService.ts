@@ -78,16 +78,17 @@ const getCompetitionBySlugPromise = (slug: string) => {
 };
 
 type Competition = Awaited<ReturnType<typeof getCompetitionBySlugPromise>>;
-const CompetitionsBySlugCache = new Map<string, Competition>();
+const CompetitionsBySlugCache = new Map<string, { generatedAt: Date, competition: Competition }>();
+const cacheTTL = 1000 * 60 * 10; // 10 minutes
 
 export const getCompetitionBySlug = async (slug: string) => {
   const cachedCompetition = CompetitionsBySlugCache.get(slug);
-  if (cachedCompetition) {
-    return cachedCompetition;
+  if (cachedCompetition && Date.now() - cachedCompetition.generatedAt.getTime() < cacheTTL) {
+    return cachedCompetition.competition;
   }
 
   const competition = await getCompetitionBySlugPromise(slug);
-  CompetitionsBySlugCache.set(slug, competition);
+  CompetitionsBySlugCache.set(slug, { generatedAt: new Date(), competition });
   return competition;
 };
 
