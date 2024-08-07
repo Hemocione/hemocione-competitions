@@ -78,12 +78,18 @@ const getCompetitionBySlugPromise = (slug: string) => {
 };
 
 type Competition = Awaited<ReturnType<typeof getCompetitionBySlugPromise>>;
-const CompetitionsBySlugCache = new Map<string, { generatedAt: Date, competition: Competition }>();
+const CompetitionsBySlugCache = new Map<
+  string,
+  { generatedAt: Date; competition: Competition }
+>();
 const cacheTTL = 1000 * 60 * 10; // 10 minutes
 
 export const getCompetitionBySlug = async (slug: string) => {
   const cachedCompetition = CompetitionsBySlugCache.get(slug);
-  if (cachedCompetition && Date.now() - cachedCompetition.generatedAt.getTime() < cacheTTL) {
+  if (
+    cachedCompetition &&
+    Date.now() - cachedCompetition.generatedAt.getTime() < cacheTTL
+  ) {
     return cachedCompetition.competition;
   }
 
@@ -126,23 +132,34 @@ export const getCompetitionRanking = async (competitionId: number) => {
   return result;
 };
 
-export const getCompetitionEngagement = async (competitionId: number) => {
+export const getCompetitionEngagement = async (competitionSlug: string) => {
+  const competition = await dbClient.competitions.findUnique({
+    where: { slug: competitionSlug },
+  });
+
+  if (!competition) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Not Found - Competition not found",
+    });
+  }
+
   const result = await dbClient.competitionTeams.findMany({
     where: {
-      competitionId: competitionId,
+      competitionId: competition?.id,
     },
     select: {
       teamId: true,
-      amountEngagement: true,
+      amountLikes: true,
       teams: { select: { name: true } },
     },
     orderBy: {
-      amountEngagement: "desc",
+      amountLikes: "desc",
     },
   });
 
   return result;
-}
+};
 
 export const createCompetition = async (
   name: string,
