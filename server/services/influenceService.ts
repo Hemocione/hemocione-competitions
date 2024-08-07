@@ -22,7 +22,6 @@ const getCompetitionInfluencesPromise = (competitionSlug: string) => {
     where: {
       competitions: {
         slug: competitionSlug,
-        has_influence: true,
       },
     },
     orderBy: {
