@@ -149,17 +149,6 @@
       height="fit-content"
       desktop-border-radius="0"
     >
-      <NuxtLink :to="`/competition/${slug}`">
-        <el-button
-          type="default"
-          size="large"
-          :disabled="
-            registeringDonation
-          "
-          style="width: 100%"
-        >Voltar para {{ competition?.name }}</el-button
-      >
-      </NuxtLink>
       <el-button
         type="primary"
         size="large"
