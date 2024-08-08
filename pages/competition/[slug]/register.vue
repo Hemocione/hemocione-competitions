@@ -3,10 +3,13 @@
     <div class="main-form-container column">
       <header class="header">
         <h2>{{ competition?.name }}</h2>
-        <div>
+        <div class="user-name-wrapper">
           <h3>Olá, {{ user?.givenName }}!</h3>
-          <h4>{{ presentationText }}</h4>
+          <span v-if="influencedByFirstName" class="influenced-by"
+            >Influenciado por <b>{{ influencedByFirstName }}</b></span
+          >
         </div>
+        <h4>{{ presentationText }}</h4>
       </header>
       <form
         class="form"
@@ -77,6 +80,7 @@
               >Comprovante de doação
               <span v-if="competition?.mandatory_proof">*</span></label
             >
+            <span class="proof-type-text">{{ proofText }}</span>
             <Transition name="fade" appear mode="out-in">
               <div
                 class="camera-icon-container"
@@ -183,27 +187,49 @@ if (!user) {
 }
 const route = useRoute();
 const slug = route.params.slug;
+const code = route.query.code ? String(route.query.code) : null;
 
 const uploadingImage = ref(false);
 const registeringDonation = ref(false);
 
-const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
-const donation = await getDonationByCompetitionSlug(String(slug));
+const [{ data: competition }, { data: influence }, donation] =
+  await Promise.all([
+    useFetch(`/api/v1/competitions/${slug}`),
+    code
+      ? useFetch(`/api/v1/competitions/${slug}/influence/codes/${code}`)
+      : { data: ref(null) },
+    getDonationByCompetitionSlug(String(slug)),
+  ]);
+
 const goToSuccess = () => {
-  navigateTo(
+  return navigateTo(
     `/competition/${slug}/success?name=${encodeURIComponent(
       competition.value?.name ?? "Copa Hemocione"
     )}`
   );
 };
 
-const goToLogin = () => {
-  redirectToID(`/competition/${slug}/register`);
+const goToLogin = async () => {
+  let redirectPath = `/competition/${slug}/register`;
+  if (influencedBy.value) redirectPath += `?code=${influencedBy.value.code}`;
+
+  await redirectToID(redirectPath);
 };
 
 if (donation) {
-  goToSuccess();
+  await goToSuccess();
 }
+
+const influencedBy = computed(() =>
+  influence.value && influence.value.hemocioneID !== user?.id
+    ? influence.value
+    : null
+);
+const influencedByFirstName = computed(
+  () =>
+    influencedBy.value?.user_name?.split(" ")[0] ||
+    influencedBy.value?.user_name
+);
 
 const extraFields = competition.value?.extraFields as unknown as ExtraField[];
 const extraFieldsSlugs = extraFields?.map((e) => e.slug) ?? [];
@@ -227,6 +253,11 @@ const presentationText = isCompetitionInFuture
   : isCompetitionInPast
   ? "A copa já acabou. Obrigado por participar!"
   : "Selecione sua equipe para registrar sua doação.";
+
+const proofText =
+  competition.value?.proof_type === "document"
+    ? "Envie uma foto do comprovante de doação de sangue"
+    : "Envie uma foto sua realizando a doação de sangue (pode ser uma selfie!)";
 
 export type Competition = typeof competition.value;
 
@@ -364,12 +395,15 @@ async function handleSubmit(event: any) {
   if (!canRegisterDonation.value || !form.value.competitionTeamId) {
     return;
   }
+  const influenceId = influencedBy?.value?.id;
 
   const payload = {
     competitionTeamId: form.value.competitionTeamId,
     proof: form.value.proof,
     extraFields: extraFieldsResponse.value,
+    influenceId,
   };
+  // TODO: do this inside registerDonation. pass this info in payload.
   try {
     await registerDonation(String(slug), payload);
   } catch (error) {
@@ -383,10 +417,16 @@ async function handleSubmit(event: any) {
   }
 
   registeringDonation.value = false;
-  goToSuccess();
+  await goToSuccess();
 }
 </script>
 <style scoped>
+.user-name-wrapper {
+  width: 100%;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
 .retry {
   background-color: var(--hemo-color-secondary);
   position: absolute;
@@ -425,6 +465,8 @@ async function handleSubmit(event: any) {
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
+  gap: 1rem;
+  padding-bottom: 1rem;
 }
 .header h2 {
   text-align: center;
@@ -434,10 +476,14 @@ async function handleSubmit(event: any) {
 .header h3 {
   color: #52575c;
   font-weight: 600;
+  margin: 0;
+  display: flex;
+  width: 100%;
 }
 .header h4 {
   color: #52575c;
   font-weight: normal;
+  margin: 0;
 }
 .form {
   display: flex;
@@ -450,6 +496,13 @@ async function handleSubmit(event: any) {
   color: #52575c;
   margin-bottom: 0.8rem;
 }
+
+.proof-type-text {
+  font-size: 0.8rem;
+  color: #52575c;
+  margin-bottom: 0.8rem;
+}
+
 .label-form span {
   color: red;
 }
@@ -463,6 +516,18 @@ async function handleSubmit(event: any) {
   width: 100%;
   aspect-ratio: 4/1;
   padding: 1rem;
+}
+
+.influenced-by {
+  padding: 0.35rem 0.7em;
+  background-color: var(--midsummer-dream);
+  color: var(--cornflower-blue);
+  border-radius: 0.5rem;
+  width: 100%;
+  font-size: 0.75rem;
+  font-weight: bold;
+  flex-grow: 1;
+  text-align: center;
 }
 
 .camera-photo-taken-container {

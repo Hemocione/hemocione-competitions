@@ -27,9 +27,10 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody(event);
   const {
-    proof, 
+    proof,
     extraFields,
     competitionTeamId,
+    influenceId
   } = body;
 
 
@@ -47,6 +48,12 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  if (influenceId && !competition.has_influence) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Bad Request - Competition does not have influence",
+    });
+  }
   // TODO: validate extraFields with competition.extraFields
   const payload = {
     user_name: getPrettyFullName(user.givenName, user.surName),
@@ -54,6 +61,7 @@ export default defineEventHandler(async (event) => {
     hemocioneID: user.id,
     extraFields,
     proof,
+    influenceId
   }
 
   const createdDonation = await registerDonation(

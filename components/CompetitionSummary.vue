@@ -117,12 +117,13 @@ const isClosed = computed(() => status.value === "ENCERRADO");
 .content {
   display: flex;
   flex-direction: column;
+  gap: 10px;
   padding: 0 10px;
 }
 
 .card-title {
   font-size: 18px;
-  margin: 10px 0;
+  margin: 0;
 }
 
 .card-dates {
@@ -182,9 +183,14 @@ const isClosed = computed(() => status.value === "ENCERRADO");
 }
 
 .status-tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  height: 1.5rem;
   border-radius: 16px;
   padding: 1px 15px;
-  text-align: center;
 }
 
 .tag-label {

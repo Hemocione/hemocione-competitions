@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   const isLoggedIn = await evaluateCurrentLogin(from.query);
   if (!isLoggedIn) {
-    redirectToID(to.fullPath);
+    await redirectToID(to.fullPath);
     return;
   }
 
@@ -37,7 +37,7 @@ export async function evaluateCurrentLogin(query?: LocationQuery) {
       },
       onResponseError: (_error) => {
         tokenIsValid = false;
-      }
+      },
     });
   } catch (error) {
     tokenIsValid = false;
@@ -77,5 +77,5 @@ export function getCurrentToken(query?: LocationQuery): string | null {
 
 export function redirectToID(fullPath: string) {
   const redirectUrl = `${window.location.origin}${fullPath}`;
-  navigateTo(getHemocioneIdUrl(redirectUrl), { external: true });
+  return navigateTo(getHemocioneIdUrl(redirectUrl), { external: true });
 }
