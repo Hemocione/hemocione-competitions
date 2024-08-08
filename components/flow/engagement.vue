@@ -7,7 +7,7 @@
           <h4>TOTAL DE CURTIDAS</h4>
           <h1 class="engagement-amount-likes">{{ engagementAmount }}</h1>
           <img src="/images/curtidas_icon.svg" />
-          <p>curtidas</p>
+          <p>Curtidas</p>
         </div>
       </template>
       <template #ranking-content>
