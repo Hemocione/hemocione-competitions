@@ -73,7 +73,9 @@
               id="file-input"
               type="file"
               accept="image/*"
-              capture="environment"
+              :capture="
+                competition?.proof_type === 'document' ? 'environment' : 'user'
+              "
               @change="handleFileSelect($event)"
             />
             <label class="label-form"
@@ -174,6 +176,7 @@ import { useUserStore } from "~/store/user";
 import { uniqBy, sortBy } from "lodash";
 import dayjs from "dayjs";
 import { redirectToID } from "~/middleware/auth";
+import type { MessageHandler } from "element-plus";
 
 definePageMeta({
   middleware: ["auth"],
@@ -325,39 +328,46 @@ const coolButtonText = computed(() => {
 
 const MB = 1024 * 1024;
 
+class ImageUploadError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ImageUploadError";
+  }
+}
+
 async function handleFileSelect(event: any) {
   uploadingImage.value = true;
   const files = event.target?.files;
-  if (!files.length) {
-    return;
-  }
-  if (files.length > 1) {
-    ElMessage.error("Envie apenas uma imagem.");
-    return;
-  }
+  let message: MessageHandler | null = null;
 
-  const file = files[0] as File;
-  // check if file is an image
-  if (!file.type.includes("image")) {
-    ElMessage.error("Envie uma imagem válida.");
-    return;
-  }
-
-  // check if file is less than 5mb
-  if (file.size > 5 * MB) {
-    ElMessage.error("Envie uma imagem menor que 5 MB");
-    return;
-  }
-
-  // TODO: check if File is older than competition start
-  // TODO: check file location + add bloodbank to form
-
-  const message = ElMessage({
-    message: "Enviando imagem...",
-    type: "info",
-    duration: 0,
-  });
   try {
+    if (!files.length) {
+      throw new ImageUploadError("Envie ao menos uma imagem.");
+    }
+
+    if (files.length > 1) {
+      throw new ImageUploadError("Envie apenas uma imagem.");
+    }
+
+    const file = files[0] as File;
+    // check if file is an image
+    if (!file.type.includes("image")) {
+      throw new ImageUploadError("Envie uma imagem válida.");
+    }
+
+    // check if file is less than 10mb
+    if (file.size > 10 * MB) {
+      throw new ImageUploadError("Envie uma imagem menor que 10 MB");
+    }
+
+    // TODO: check if File is older than competition start
+    // TODO: check file location + add bloodbank to form
+
+    message = ElMessage({
+      message: "Enviando imagem...",
+      type: "info",
+      duration: 0,
+    });
     const { url } = await uploadImage(file, { userToken: String(token) });
     message.close();
     ElMessage({
@@ -366,12 +376,15 @@ async function handleFileSelect(event: any) {
       duration: 3000,
     });
     form.value.proof = url;
-  } catch (error) {
-    message.close();
-    console.error("Error uploading image", error);
+  } catch (error: any) {
+    message?.close();
+    const errorMessage =
+      error instanceof ImageUploadError
+        ? error.message
+        : "Erro ao enviar imagem. Por favor, tente novamente.";
     ElMessage({
       type: "error",
-      message: "Erro ao enviar imagem. Por favor, tente novamente.",
+      message: errorMessage,
       duration: 3000,
     });
   }
