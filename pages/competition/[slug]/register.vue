@@ -2,10 +2,12 @@
   <div class="main">
     <div class="main-form-container column">
       <header class="header">
-        <h2>{{ competition?.name }}
-        </h2>
+        <h2>{{ competition?.name }}</h2>
         <div class="user-name-wrapper">
-          <h3>Olá, {{ user?.givenName }}!</h3><span v-if="influencedByFirstName" class="influenced-by">Influenciado por <b>{{ influencedByFirstName }}</b></span>
+          <h3>Olá, {{ user?.givenName }}!</h3>
+          <span v-if="influencedByFirstName" class="influenced-by"
+            >Influenciado por <b>{{ influencedByFirstName }}</b></span
+          >
         </div>
         <h4>{{ presentationText }}</h4>
       </header>
@@ -177,12 +179,8 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-const {
-  user,
-  token,
-  getDonationByCompetitionSlug,
-  registerDonation,
-} = useUserStore();
+const { user, token, getDonationByCompetitionSlug, registerDonation } =
+  useUserStore();
 
 if (!user) {
   navigateTo("/unauthorized");
@@ -194,14 +192,17 @@ const code = route.query.code ? String(route.query.code) : null;
 const uploadingImage = ref(false);
 const registeringDonation = ref(false);
 
-const [{ data: competition }, { data: influence }, donation] = await Promise.all([
-  useFetch(`/api/v1/competitions/${slug}`),
-  code ? useFetch(`/api/v1/competitions/${slug}/influence/codes/${code}`) : { data: ref(null) },
-  getDonationByCompetitionSlug(String(slug)),
-]);
+const [{ data: competition }, { data: influence }, donation] =
+  await Promise.all([
+    useFetch(`/api/v1/competitions/${slug}`),
+    code
+      ? useFetch(`/api/v1/competitions/${slug}/influence/codes/${code}`)
+      : { data: ref(null) },
+    getDonationByCompetitionSlug(String(slug)),
+  ]);
 
 const goToSuccess = () => {
-  navigateTo(
+  return navigateTo(
     `/competition/${slug}/success?name=${encodeURIComponent(
       competition.value?.name ?? "Copa Hemocione"
     )}`
@@ -209,18 +210,26 @@ const goToSuccess = () => {
 };
 
 const goToLogin = () => {
-  let redirectPath = `/competition/${slug}/register`
-  if (influencedBy.value) redirectPath += `?code=${influencedBy.value.code}`
+  let redirectPath = `/competition/${slug}/register`;
+  if (influencedBy.value) redirectPath += `?code=${influencedBy.value.code}`;
 
   redirectToID(redirectPath);
 };
 
 if (donation) {
-  goToSuccess();
+  await goToSuccess();
 }
 
-const influencedBy = computed(() => influence.value && influence.value.hemocioneID !== user?.id ? influence.value : null);
-const influencedByFirstName = computed(() => influencedBy.value?.user_name?.split(" ")[0] || influencedBy.value?.user_name);
+const influencedBy = computed(() =>
+  influence.value && influence.value.hemocioneID !== user?.id
+    ? influence.value
+    : null
+);
+const influencedByFirstName = computed(
+  () =>
+    influencedBy.value?.user_name?.split(" ")[0] ||
+    influencedBy.value?.user_name
+);
 
 const extraFields = competition.value?.extraFields as unknown as ExtraField[];
 const extraFieldsSlugs = extraFields?.map((e) => e.slug) ?? [];
@@ -245,7 +254,10 @@ const presentationText = isCompetitionInFuture
   ? "A copa já acabou. Obrigado por participar!"
   : "Selecione sua equipe para registrar sua doação.";
 
-const proofText = competition.value?.proof_type === 'document' ? 'Envie uma foto do comprovante de doação de sangue' : 'Envie uma foto sua realizando a doação de sangue (pode ser uma selfie!)';
+const proofText =
+  competition.value?.proof_type === "document"
+    ? "Envie uma foto do comprovante de doação de sangue"
+    : "Envie uma foto sua realizando a doação de sangue (pode ser uma selfie!)";
 
 export type Competition = typeof competition.value;
 
@@ -405,7 +417,7 @@ async function handleSubmit(event: any) {
   }
 
   registeringDonation.value = false;
-  goToSuccess();
+  await goToSuccess();
 }
 </script>
 <style scoped>
@@ -515,7 +527,7 @@ async function handleSubmit(event: any) {
   font-size: 0.75rem;
   font-weight: bold;
   flex-grow: 1;
-  text-align: center
+  text-align: center;
 }
 
 .camera-photo-taken-container {

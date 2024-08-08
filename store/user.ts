@@ -26,7 +26,7 @@ export const getUserInfluence = async (
       },
     }
   );
-}
+};
 
 export const registerDonation = async (
   competitionSlug: string,
@@ -105,6 +105,9 @@ export const useUserStore = defineStore("user", {
     donationsByCompetitionSlug: new Map<string, UserDonation>(),
     influenceByCompetitionSlug: new Map<string, InfluenceData>(),
   }),
+  getters: {
+    loggedIn: (state) => Boolean(state.user),
+  },
   actions: {
     setUser(user: CurrentUserData | null) {
       this.user = user;
@@ -190,6 +193,6 @@ export const useUserStore = defineStore("user", {
       } catch (error) {
         return;
       }
-    }
+    },
   },
 });
