@@ -45,7 +45,7 @@ const filteredContents = computed(() => {
 
 // Check if the content's id matches the user's id
 const isUserContent = (content: Record<string, string | number | null>) =>
-  user?.id === content.hemocioneID;
+  !!user?.id && !!content.hemocioneID && user?.id === content.hemocioneID;
 </script>
 
 <style scoped>
