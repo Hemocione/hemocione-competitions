@@ -15,6 +15,7 @@ export interface UpdateBody {
 const getCompetitionInfluencesPromise = (competitionSlug: string) => {
   return dbClient.influence.findMany({
     select: {
+      hemocioneID: true,
       amountInfluence: true,
       user_name: true,
       code: true,

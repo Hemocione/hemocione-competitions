@@ -19,7 +19,7 @@ export const registerDonation = async (
     const createdDonation = await db.donations.create({
       data: {
         hemocioneID,
-        user_name,
+        user_name: user_name.split(" ")[0],
         user_email,
         competitionTeamId: competitionTeamId,
         competitionId: competitionId,

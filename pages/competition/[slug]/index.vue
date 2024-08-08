@@ -107,6 +107,7 @@ const influenceRanking = {
     "#": idx + 1 + "°",
     Influenciador: c.user_name,
     "Doações Influenciadas": c.amountInfluence,
+    hemocioneID: c.hemocioneID,
   })) ?? [],
 };
 
