@@ -14,8 +14,9 @@
         >
           {{ statusInfo.status }}
         </div>
+
         <el-select
-          v-if="allInstitutionDonations.length > 1 && isGeneralView"
+          v-if="allInstitutionDonations.length > 1"
           v-model="selectedType"
           class="detail-team-select"
           placeholder="Ranking"
@@ -29,29 +30,45 @@
           />
         </el-select>
       </div>
-      <Switch
-        v-if="mappedSwitchsByCompetition"
-        :items="mappedSwitchsByCompetition"
-        @update:selected="currentView = $event"
-        class="switch-content"
-      />
-      <Transition name="slide-fade-right" mode="out-in" appear>
-        <FlowGeneral
-          v-if="isGeneralView"
-          :mappedRankByCompetition="mappedRankByCompetition"
-          :donationsAmount="donationsAmount"
-        />
-        <FlowEngagement
-          v-else-if="isEngagementView"
-          :mappedRankByCompetition="mappedRankByCompetition"
-          :engagementAmount="engagementAmount"
-        />
-        <FlowInfluence
-          v-else-if="isInfluenceView"
-          :influenceRanking="influenceRanking"
-          :slug="slug"
-        />
-      </Transition>
+      <TemplateCompetitionContent
+        :ranking="{
+          contents: content.map((c) => ({
+            name: c.name,
+            value: c.donation_count,
+          })),
+          labelByType,
+          labelByValue: 'Doações',
+        }"
+      >
+        <template #podium-content>
+          <div
+            class="place-strip"
+            v-for="(team, idx) in rankingTeamsClass"
+            :key="idx"
+          >
+            <div :style="{ flex: 5 }" />
+            <div class="team-image-name">
+              <div :style="{ 'margin-bottom': '10px' }">
+                <img class="podium-user" src="/images/defaultAvatar.svg" />
+              </div>
+              <div
+                style="
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                  margin-top: 10px;
+                "
+              >
+                {{ team.name }}
+              </div>
+            </div>
+            <div :class="`${team.class} podium-step`">
+              <img class="medal" :src="`/images/${team.medal}.svg`" />
+              <span>{{ team.donation_count }}</span>
+            </div>
+          </div>
+        </template>
+      </TemplateCompetitionContent>
     </div>
     <common-cool-footer
       v-if="donationsIsOpen"
@@ -59,10 +76,7 @@
       height="fit-content"
       desktop-border-radius="0"
     >
-      <NuxtLink
-        :to="`/competition/${slug}/influence`"
-        v-if="competition?.has_influence"
-      >
+      <NuxtLink :to="`/competition/${slug}/influence`" v-if="competition?.has_influence">
         <el-button size="large">
           <template #icon>
             <el-icon><ElIconShare /></el-icon>
@@ -73,8 +87,8 @@
       <NuxtLink :to="`/competition/${slug}/register`">
         <el-button type="primary" size="large"
           ><template #icon>
-            <el-icon><ElIconCirclePlusFilled /></el-icon> </template
-          >Registrar doação</el-button
+            <el-icon><ElIconCirclePlusFilled /></el-icon>
+          </template>Registrar doação</el-button
         >
       </NuxtLink>
     </common-cool-footer>
@@ -86,7 +100,6 @@ import _ from "lodash";
 import dayjs from "dayjs";
 
 const selectedType = ref<string>("");
-const currentView = ref("Geral");
 
 const route = useRoute();
 const router = useRouter();
@@ -94,79 +107,12 @@ const router = useRouter();
 const slug = route.params.slug;
 
 const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
-const { data: engagements } = competition.value?.has_likes
-  ? await useFetch(`/api/v1/competitions/${slug}/engagements`)
-  : [];
-const { data: influences } = competition.value?.has_influence
-  ? await useFetch(`/api/v1/competitions/${slug}/influence`)
-  : [];
-
-const influenceRanking = {
-  labels: ["#", "Influenciador", "Doações Influenciadas"],
-  contents: influences.value.map((c, idx) => ({
-    "#": idx + 1 + "°",
-    Influenciador: c.user_name,
-    "Doações Influenciadas": c.amountInfluence,
-  })),
-};
-
-const mappedSwitchsByCompetition = computed(() => {
-  const items = [];
-
-  const has_influence = competition.value?.has_influence;
-  const has_likes = competition.value?.has_likes;
-
-  if (!has_likes && !has_influence) return null;
-
-  items.push({ name: "Geral" });
-
-  if (has_likes) {
-    items.push({ name: "Engajamento" });
-  }
-
-  if (has_influence) {
-    items.push({ name: "Influência" });
-  }
-
-  return items;
-});
-
-const mappedRankByCompetition = computed(() => {
-  const generalRanking = {
-    labels: ["#", labelByType.value, "Doações"],
-    contents: content.value.map((c, idx) => ({
-      "#": idx + 1 + "°",
-      [labelByType.value]: c.name,
-      Doações: c.donation_count,
-    })),
-  };
-
-  const likesRanking = {
-    labels: ["#", "Doações", "Engajamento"],
-    contents: engagements.value.map((c, idx) => ({
-      "#": idx + 1 + "°",
-      Doações: c.teams.name,
-      Engajamento: c.amountLikes,
-    })),
-  };
-
-  return {
-    Geral: generalRanking,
-    Engajamento: likesRanking,
-    Influência: null,
-  }[currentView.value];
-});
-
-const engagementAmount = computed(() =>
-  engagements.value.reduce((acc, curr) => acc + curr.amountLikes, 0)
-);
-const donationsAmount = computed(() =>
-  competitionTeams.value.reduce((acc, curr) => acc + (curr?.donation_count || 0), 0)
-);
 
 const competitionName = computed(
   () => competition?.value?.name ?? "Copa Hemocione"
 );
+
+const competitionId = computed(() => competition?.value?.id);
 
 const importantDates = computed(() => {
   const now = dayjs();
@@ -251,9 +197,12 @@ const content = computed(() => {
   );
 });
 
-const isGeneralView = computed(() => currentView.value === "Geral");
-const isEngagementView = computed(() => currentView.value === "Engajamento");
-const isInfluenceView = computed(() => currentView.value === "Influência");
+const rankingTeamsClass = computed(() => [
+  { class: "snd", medal: "silver", ...content.value[1] },
+  { class: "st", medal: "gold", ...content.value[0] },
+  { class: "rd", medal: "bronze", ...content.value[2] },
+]);
+
 const back = () => router.back();
 </script>
 
@@ -404,37 +353,6 @@ button {
 .back-arrow {
   width: 1.5rem;
   height: 1.5rem;
-}
-
-.switch-content {
-  margin-top: 24px;
-}
-
-.general-view {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-.engagement-view {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-
-  position: relative;
-}
-
-.engagement-amount-likes {
-  position: absolute;
-  margin-left: 1%;
-  margin-top: 24%;
-  color: white;
-}
-
-.view-img {
-  margin-bottom: 30%;
 }
 
 @media screen and (max-width: 753px) {

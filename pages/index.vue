@@ -108,6 +108,9 @@ function switchOnGoing(v: boolean) {
   flex-direction: column;
 }
 .summaryBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 20px;
 }
 .switch-container {

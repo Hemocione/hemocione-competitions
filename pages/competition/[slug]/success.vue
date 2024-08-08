@@ -10,42 +10,54 @@
       </div>
     </div>
     <common-cool-footer hide-toggle height="fit-content" desktop-border-radius="0">
-      <el-button type="default" size="large" @click="openInstagram"
-        >Siga o Hemocione no Instagram
-        <el-icon class="el-icon--right" size="30"
-          ><NuxtImg src="/images/icons/instagram.svg" style="height: 100%"/></el-icon
-      ></el-button>
-      <el-button
-        type="primary"
-        size="large"
-        @click="openHemocionePage"
-        >Conheça mais o Hemocione</el-button
+      <NuxtLink :to="`/competition/${slug}`">
+        <el-button
+          type="default"
+          size="large"
+          style="width: 100%"
+        >Voltar para {{ name }}</el-button
       >
+      </NuxtLink>
+      <NuxtLink :to="`/competition/${slug}/influence`" v-if="competition?.has_influence">
+        <el-button size="large" type="primary" style="width: 100%;">
+          <template #icon>
+            <el-icon><ElIconShare /></el-icon>
+          </template>
+          Influencie mais pessoas a doarem sangue
+        </el-button>
+      </NuxtLink>
+      <NuxtLink :to="instagramUrl" v-else target="_blank" rel="noopener noreferrer" external>
+        <el-button size="large" type="primary" style="width: 100%;">
+          Siga o Hemocione no Instagram
+          <el-icon class="el-icon--right" size="30">
+            <NuxtImg src="/images/icons/instagram.svg" style="height: 100%"/>
+          </el-icon>
+        </el-button>
+      </NuxtLink>
     </common-cool-footer>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from '~/store/user';
-const config = useRuntimeConfig();
+const { instagramUrl } = useRuntimeConfig().public
 definePageMeta({
   middleware: "auth",
 })
 const route = useRoute();
+const slug = route.params.slug;
 const name = route.query.name;
 const { getDonationByCompetitionSlug } = useUserStore();
-const openHemocionePage = () => {
-  navigateTo("https://hemocione.com.br", { external: true });
-};
 
+const [donation, { data: competition }] = await Promise.all([getDonationByCompetitionSlug(String(slug)), useFetch(`/api/v1/competitions/${slug}`)]);
+
+if (!donation) {
+  navigateTo(`/competition/${slug}/register`);
+}
 const openInstagram = () => {
   navigateTo(config.public.instagramUrl, { external: true });
 };
 
-const donation = await getDonationByCompetitionSlug(String(route.params.slug));
-if (!donation) {
-  navigateTo(`/competition/${route.params.slug}/register`);
-}
 </script>
 
 <style scoped>

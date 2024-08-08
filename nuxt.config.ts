@@ -38,6 +38,7 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "nuxt-vercel-analytics",
     "nuxt-bugsnag",
+    '@vueuse/nuxt',
   ],
   googleFonts: {
     families: {
@@ -51,14 +52,15 @@ export default defineNuxtConfig({
     public: {
       authCookieKey: process.env.HEMOCIONE_AUTH_COOKIE_KEY ?? "hemocioneId",
       hemocioneIdUrl:
-        process.env.HEMOCIONE_ID_URL ?? "https://id.hemocione.com.br",
+        process.env.HEMOCIONE_ID_URL ?? "https://id.d.hemocione.com.br",
       hemocioneIdApiUrl:
         process.env.HEMOCIONE_ID_API_URL ??
-        "https://hemocione-id.cpt.hemocione.com.br",
+        "https://hemocione-id-dev.cpt.hemocione.com.br",
       cdnUploadUrl:
         process.env.CDN_UPLOAD_URL ?? "http://localhost:3001/api/upload",
       instagramUrl:
         process.env.INSTAGRAM_URL ?? "https://www.instagram.com/hemocione/",
+      siteUrl
     },
     hemocioneIdIntegrationSecret:
       process.env.HEMOCIONE_ID_INTEGRATION_SECRET ?? "secret",
@@ -72,6 +74,9 @@ export default defineNuxtConfig({
       ssr: false,
     },
     "/competition/:slug/success": {
+      ssr: false,
+    },
+    "/competition/:slug/influence": {
       ssr: false,
     },
   },

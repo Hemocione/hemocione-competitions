@@ -9,9 +9,11 @@ INSERT INTO
     publication_date,
     "extraFields",
     mandatory_proof,
+    proof_type,
     slug,
     banner_background,
-    has_influence
+    has_influence,
+    has_likes
   )
 VALUES
   (
@@ -24,8 +26,10 @@ VALUES
     '2024-04-03 01:15:17.771699-03',
     '{}',
     true,
+    'selfie',
     'competicao_saudavel_entre_everson_defante_e_diego_zoio',
     'https://i.pinimg.com/736x/8e/d4/04/8ed4040e06e68818a07c3e15ac7c18dc.jpg',
+    true,
     true
   ),
   (
@@ -38,9 +42,11 @@ VALUES
     '2024-04-03 01:17:56.037029-03',
     '{}',
     true,
+    'document',
     'competicao_saudavel_entre_serjao_d',
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6wN66SELW_vxFFWDzJDuB5mFnhSNvgDAzag&usqp=CAU',
-    false
+    false,
+    true
   ),
   (
     'IDOR: Enfermagem x Radiologia',
@@ -52,8 +58,10 @@ VALUES
     '2024-04-03 01:17:56.037-03',
     NULL,
     false,
+    'selfie',
     'competicao_saudavel_entre_caracol_raivoso_e_felipistando',
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRu6_84c4JGJLyzwzbsaiSYLllLwN9jGSaK2A&usqp=CAU',
+    false,
     false
   );
 
@@ -103,6 +111,7 @@ INSERT INTO
     donation_count,
     "teamId",
     "competitionId",
+    "amountLikes",
     "createdAt",
     "updatedAt"
   )
@@ -111,6 +120,7 @@ VALUES
     4,
     2,
     1,
+    30,
     '2024-04-03 04:19:47.611',
     '2024-04-03 04:19:47.611'
   ),
@@ -118,6 +128,7 @@ VALUES
     5,
     3,
     1,
+    25,
     '2024-04-03 04:19:55.104',
     '2024-04-03 04:19:55.104'
   ),
@@ -125,6 +136,7 @@ VALUES
     5,
     1,
     1,
+    20,
     '2024-04-03 04:19:33.812',
     '2024-04-03 06:03:16.306'
   );

@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { dbClient } from "../db";
 import slugify from "slugify";
 
@@ -52,10 +51,14 @@ const getCompetitionBySlugPromise = (slug: string) => {
       banner_background: true,
       extraFields: true,
       mandatory_proof: true,
+      proof_type: true,
+      has_influence: true,
+      has_likes: true,
       competitionTeams: {
         select: {
           id: true,
           donation_count: true,
+          amountLikes: true,
           teams: {
             select: {
               name: true,
@@ -75,16 +78,23 @@ const getCompetitionBySlugPromise = (slug: string) => {
 };
 
 type Competition = Awaited<ReturnType<typeof getCompetitionBySlugPromise>>;
-const CompetitionsBySlugCache = new Map<string, Competition>();
+const CompetitionsBySlugCache = new Map<
+  string,
+  { generatedAt: Date; competition: Competition }
+>();
+const cacheTTL = 1000 * 60 * 10; // 10 minutes
 
 export const getCompetitionBySlug = async (slug: string) => {
   const cachedCompetition = CompetitionsBySlugCache.get(slug);
-  if (cachedCompetition) {
-    return cachedCompetition;
+  if (
+    cachedCompetition &&
+    Date.now() - cachedCompetition.generatedAt.getTime() < cacheTTL
+  ) {
+    return cachedCompetition.competition;
   }
 
   const competition = await getCompetitionBySlugPromise(slug);
-  CompetitionsBySlugCache.set(slug, competition);
+  CompetitionsBySlugCache.set(slug, { generatedAt: new Date(), competition });
   return competition;
 };
 
@@ -122,11 +132,41 @@ export const getCompetitionRanking = async (competitionId: number) => {
   return result;
 };
 
+export const getCompetitionEngagement = async (competitionSlug: string) => {
+  const competition = await dbClient.competitions.findUnique({
+    where: { slug: competitionSlug },
+  });
+
+  if (!competition) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Not Found - Competition not found",
+    });
+  }
+
+  const result = await dbClient.competitionTeams.findMany({
+    where: {
+      competitionId: competition?.id,
+    },
+    select: {
+      teamId: true,
+      amountLikes: true,
+      teams: { select: { name: true } },
+    },
+    orderBy: {
+      amountLikes: "desc",
+    },
+  });
+
+  return result;
+};
+
 export const createCompetition = async (
   name: string,
   startsAt: Date,
   endsAt: Date,
   mandatoryProof: boolean,
+  has_influence = false,
   bannerLogoUrl?: string,
   extraFields?: ExtraFields
 ) => {
@@ -142,6 +182,7 @@ export const createCompetition = async (
       start_at: startsAt,
       end_at: endsAt,
       mandatory_proof: mandatoryProof,
+      has_influence: has_influence,
       banner_background: bannerLogoUrl,
       extraFields: extraFields || ([] as any), // TODO: fix this to type ExtraFields as Prisma JSON Array type
       published: false,
