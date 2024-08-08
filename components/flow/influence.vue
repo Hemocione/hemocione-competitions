@@ -29,7 +29,7 @@ defineProps<{
   slug: string | string[];
 }>();
 </script>
-<style>
+<style scoped>
 .highlight-link {
   color: #ff5733;
   font-weight: bold;

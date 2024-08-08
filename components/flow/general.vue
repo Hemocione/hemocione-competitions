@@ -32,7 +32,7 @@ defineProps<{
   mappedRankByCompetition: any;
 }>();
 </script>
-<style>
+<style scoped>
 .general-view {
   display: flex;
   justify-content: center;

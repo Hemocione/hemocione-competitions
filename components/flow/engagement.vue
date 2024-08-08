@@ -22,7 +22,7 @@ defineProps<{
   engagementAmount: number;
 }>();
 </script>
-<style>
+<style scoped>
 .engagement-view {
   display: flex;
   flex-direction: column;
