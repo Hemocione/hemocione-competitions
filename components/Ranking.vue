@@ -1,28 +1,51 @@
 <template>
   <div class="ranking">
     <div class="ranking-title">
-      <span v-for="label in ranking.labels" :key="label" class="f1">{{
-        label
-      }}</span>
+      <span v-for="label in ranking.labels" :key="label" class="f1">
+        {{ label }}
+      </span>
     </div>
     <div
       class="ranking-row"
-      v-for="content in ranking.contents"
-      :key="content.position"
+      v-for="(content, idx) in filteredContents"
+      :key="idx"
     >
-      <span v-for="(value, key) in content" :key="key" class="f1">{{
-        value
-      }}</span>
+      <span
+        v-for="label in ranking.labels"
+        :key="label"
+        :class="{ 'bold-text': isUserContent(content) }"
+        class="f1"
+      >
+        {{ content[label] || "" }}
+      </span>
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
+import { computed } from "vue";
+import { useUserStore } from "~/store/user";
+
+// Get the user from the store
+const { user } = useUserStore();
+
 const props = defineProps<{
   ranking: {
     labels: string[];
     contents: Record<string, string | number | null>[];
   };
 }>();
+
+// Computed property to filter contents based on labels
+const filteredContents = computed(() => {
+  return props.ranking.contents.filter((content) =>
+    props.ranking.labels.every((label) => label in content)
+  );
+});
+
+// Check if the content's id matches the user's id
+const isUserContent = (content: Record<string, string | number | null>) =>
+  user?.id === content.hemocioneID;
 </script>
 
 <style scoped>
@@ -48,5 +71,8 @@ const props = defineProps<{
 }
 .f1 {
   flex: 1;
+}
+.bold-text {
+  font-weight: bold;
 }
 </style>
