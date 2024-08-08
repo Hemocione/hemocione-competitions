@@ -94,16 +94,16 @@ const router = useRouter();
 const slug = route.params.slug;
 
 const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
-const { data: engagements } = competition.value?.has_likes
+const { data: engagements } = competition?.value?.has_likes
   ? await useFetch(`/api/v1/competitions/${slug}/engagements`)
   : [];
-const { data: influences } = competition.value?.has_influence
+const { data: influences } = competition?.value?.has_influence
   ? await useFetch(`/api/v1/competitions/${slug}/influence`)
   : [];
 
 const influenceRanking = {
   labels: ["#", "Influenciador", "Doações Influenciadas"],
-  contents: influences.value?.map((c, idx) => ({
+  contents: influences?.value?.map((c, idx) => ({
     "#": idx + 1 + "°",
     Influenciador: c.user_name,
     "Doações Influenciadas": c.amountInfluence,
@@ -113,8 +113,8 @@ const influenceRanking = {
 const mappedSwitchsByCompetition = computed(() => {
   const items = [];
 
-  const has_influence = competition.value?.has_influence;
-  const has_likes = competition.value?.has_likes;
+  const has_influence = competition?.value?.has_influence;
+  const has_likes = competition?.value?.has_likes;
 
   if (!has_likes && !has_influence) return null;
 
@@ -134,7 +134,7 @@ const mappedSwitchsByCompetition = computed(() => {
 const mappedRankByCompetition = computed(() => {
   const generalRanking = {
     labels: ["#", labelByType.value, "Doações"],
-    contents: content.value.map((c, idx) => ({
+    contents: content?.value?.map((c, idx) => ({
       "#": idx + 1 + "°",
       [labelByType.value]: c.name,
       Doações: c.donation_count,
@@ -143,7 +143,7 @@ const mappedRankByCompetition = computed(() => {
 
   const likesRanking = {
     labels: ["#", "Doações", "Engajamento"],
-    contents: engagements.value?.map((c, idx) => ({
+    contents: engagements?.value?.map((c, idx) => ({
       "#": idx + 1 + "°",
       Doações: c.teams.name,
       Engajamento: c.amountLikes,
@@ -158,10 +158,10 @@ const mappedRankByCompetition = computed(() => {
 });
 
 const engagementAmount = computed(() =>
-  engagements.value?.reduce((acc, curr) => acc + curr.amountLikes, 0) ?? 0
+  engagements?.value?.reduce((acc, curr) => acc + curr.amountLikes, 0) ?? 0
 );
 const donationsAmount = computed(() =>
-  competitionTeams.value?.reduce((acc, curr) => acc + (curr?.donation_count || 0), 0) ?? 0
+  competitionTeams?.value?.reduce((acc, curr) => acc + (curr?.donation_count || 0), 0) 
 );
 
 const competitionName = computed(
@@ -251,9 +251,9 @@ const content = computed(() => {
   );
 });
 
-const isGeneralView = computed(() => currentView.value === "Geral");
-const isEngagementView = computed(() => currentView.value === "Engajamento");
-const isInfluenceView = computed(() => currentView.value === "Influência");
+const isGeneralView = computed(() => currentView?.value === "Geral");
+const isEngagementView = computed(() => currentView?.value === "Engajamento");
+const isInfluenceView = computed(() => currentView?.value === "Influência");
 const back = () => router.back();
 </script>
 
