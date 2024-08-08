@@ -104,8 +104,6 @@ const { data: influences } = competition?.value?.has_influence
   ? await useFetch(`/api/v1/competitions/${slug}/influence`)
   : [];
 
-console.log(influences);
-
 const influenceRanking = computed(() => {
   return {
     labels: ["#", "Influenciador", "Influenciados"],
