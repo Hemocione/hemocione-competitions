@@ -209,11 +209,11 @@ const goToSuccess = () => {
   );
 };
 
-const goToLogin = () => {
+const goToLogin = async () => {
   let redirectPath = `/competition/${slug}/register`;
   if (influencedBy.value) redirectPath += `?code=${influencedBy.value.code}`;
 
-  redirectToID(redirectPath);
+  await redirectToID(redirectPath);
 };
 
 if (donation) {
