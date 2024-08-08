@@ -15,7 +15,7 @@
           {{ statusInfo.status }}
         </div>
         <el-select
-          v-if="allInstitutionDonations.length > 1"
+          v-if="allInstitutionDonations.length > 1 && isGeneralView"
           v-model="selectedType"
           class="detail-team-select"
           placeholder="Ranking"
@@ -35,30 +35,23 @@
         @update:selected="currentView = $event"
         class="switch-content"
       />
-      <p v-if="isEngagementView">Dados atualizados ao final de cada dia.</p>
-      <TemplateCompetitionContent2 :ranking="mappedRankByCompetition" :disablePodium="isInfluenceView">
-        <template #podium-content>
-          <!-- General View -->
-          <div v-if="isGeneralView" class="general-view">
-            <img
-              src="/images/HemoLogo.svg"
-              class="view-img"
-              style="width: 60%"
-            />
-          </div>
-          <!-- Engagement View -->
-          <div v-if="isEngagementView" class="engagement-view">
-            <h4>TOTAL DE CURTIDAS</h4>
-            <h1 class="engagement-amount-likes">{{ engagementAmount }}</h1>
-            <img src="/images/curtidas_icon.svg" />
-            <p>curtidas</p>
-          </div>
-          <!-- Influence View -->
-          <div v-if="isInfluenceView">
-            <Ranking :ranking="influenceRanking" />
-          </div>
-        </template>
-      </TemplateCompetitionContent2>
+      <Transition name="slide-fade-right" mode="out-in" appear>
+        <FlowGeneral
+          v-if="isGeneralView"
+          :mappedRankByCompetition="mappedRankByCompetition"
+          :donationsAmount="donationsAmount"
+        />
+        <FlowEngagement
+          v-else-if="isEngagementView"
+          :mappedRankByCompetition="mappedRankByCompetition"
+          :engagementAmount="engagementAmount"
+        />
+        <FlowInfluence
+          v-else-if="isInfluenceView"
+          :influenceRanking="influenceRanking"
+          :slug="slug"
+        />
+      </Transition>
     </div>
     <common-cool-footer
       v-if="donationsIsOpen"
@@ -104,22 +97,24 @@ const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
 const { data: engagements } = competition.value?.has_likes
   ? await useFetch(`/api/v1/competitions/${slug}/engagements`)
   : [];
-const { data: influences } = competition.value?.has_influence ? await useFetch(`/api/v1/competitions/${slug}/influence`) : [];
+const { data: influences } = competition.value?.has_influence
+  ? await useFetch(`/api/v1/competitions/${slug}/influence`)
+  : [];
 
 const influenceRanking = {
-  labels: ["#", "Hemocionador", "Hemocionado"],
+  labels: ["#", "Influenciador", "Doações Influenciadas"],
   contents: influences.value.map((c, idx) => ({
     "#": idx + 1 + "°",
-    Hemocionador: c.user_name,
-    Hemocionado: c.amountInfluence,
+    Influenciador: c.user_name,
+    "Doações Influenciadas": c.amountInfluence,
   })),
 };
 
 const mappedSwitchsByCompetition = computed(() => {
   const items = [];
 
-  const has_influence = competition.value?.has_influence; 
-  const has_likes = competition.value?.has_likes; 
+  const has_influence = competition.value?.has_influence;
+  const has_likes = competition.value?.has_likes;
 
   if (!has_likes && !has_influence) return null;
 
@@ -164,6 +159,9 @@ const mappedRankByCompetition = computed(() => {
 
 const engagementAmount = computed(() =>
   engagements.value.reduce((acc, curr) => acc + curr.amountLikes, 0)
+);
+const donationsAmount = computed(() =>
+  competitionTeams.value.reduce((acc, curr) => acc + (curr?.donation_count || 0), 0)
 );
 
 const competitionName = computed(

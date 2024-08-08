@@ -3,17 +3,13 @@
     <div :class="{ podium: !disablePodium }">
       <slot name="podium-content"></slot>
     </div>
-    <Ranking v-if="ranking" :ranking="ranking" />
+    <slot name="ranking-content"></slot>
   </div>
 </template>
 
 <script setup lang="ts">
 defineProps<{
-  ranking: {
-    labels: string[],
-    contents: Record<string, string | number | null>[]
-  } | null
-  disablePodium: boolean
+  disablePodium: boolean;
 }>();
 </script>
 
