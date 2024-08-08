@@ -15,9 +15,13 @@
           <Ranking
             :ranking="influenceRanking"
             v-if="influenceRanking.contents.length"
-            style="width: 100%;"
+            style="width: 100%"
           />
-          <img v-else src="/images/illustrations/hemo-friends.png" class="empty-image"/>
+          <img
+            v-else
+            src="/images/illustrations/hemo-friends.png"
+            class="empty-image"
+          />
         </div>
       </template>
     </TemplateCompetitionContent2>
@@ -42,7 +46,7 @@ defineProps<{
   align-items: center;
   height: 100%;
   width: 100%;
-  margin-top: 28px;
+  margin-top: 1rem;
 }
 .empty-image {
   max-width: 90%;

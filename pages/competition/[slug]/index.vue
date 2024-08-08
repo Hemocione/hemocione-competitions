@@ -84,12 +84,15 @@
 <script setup lang="ts">
 import _ from "lodash";
 import dayjs from "dayjs";
+import { useUserStore } from "~/store/user";
 
 const selectedType = ref<string>("");
 const currentView = ref("Geral");
 
 const route = useRoute();
 const router = useRouter();
+const userStore = useUserStore();
+const user = computed(() => userStore.user);
 
 const slug = route.params.slug;
 
@@ -101,15 +104,21 @@ const { data: influences } = competition?.value?.has_influence
   ? await useFetch(`/api/v1/competitions/${slug}/influence`)
   : [];
 
-const influenceRanking = {
-  labels: ["#", "Influenciador", "Doações Influenciadas"],
-  contents: influences?.value?.map((c, idx) => ({
-    "#": idx + 1 + "°",
-    Influenciador: c.user_name,
-    "Doações Influenciadas": c.amountInfluence,
-    hemocioneID: c.hemocioneID,
-  })) ?? [],
-};
+console.log(influences);
+
+const influenceRanking = computed(() => {
+  return {
+    labels: ["#", "Influenciador", "Influenciados"],
+    contents:
+      influences?.value?.map((c, idx) => ({
+        "#": `${idx + 1}°`,
+        Influenciador: c.user_name.split(" ")[0].trim(),
+        Influenciados: c.amountInfluence,
+        hemocioneID: c.hemocioneID,
+        shouldHighlight: c.hemocioneID === user.value?.id,
+      })) ?? [],
+  };
+});
 
 const mappedSwitchsByCompetition = computed(() => {
   const items = [];
@@ -143,12 +152,13 @@ const mappedRankByCompetition = computed(() => {
   };
 
   const likesRanking = {
-    labels: ["#", "Doações", "Engajamento"],
-    contents: engagements?.value?.map((c, idx) => ({
-      "#": idx + 1 + "°",
-      Doações: c.teams.name,
-      Engajamento: c.amountLikes,
-    })) ?? [],
+    labels: ["#", "Doações", "Curtidas"],
+    contents:
+      engagements?.value?.map((c: any, idx: number) => ({
+        "#": idx + 1 + "°",
+        Doações: c.teams.name,
+        Curtidas: c.amountLikes,
+      })) ?? [],
   };
 
   return {
@@ -158,11 +168,18 @@ const mappedRankByCompetition = computed(() => {
   }[currentView.value];
 });
 
-const engagementAmount = computed(() =>
-  engagements?.value?.reduce((acc, curr) => acc + curr.amountLikes, 0) ?? 0
+const engagementAmount = computed(
+  () =>
+    engagements?.value?.reduce(
+      (acc: number, curr: any) => acc + curr.amountLikes,
+      0
+    ) ?? 0
 );
 const donationsAmount = computed(() =>
-  competitionTeams?.value?.reduce((acc, curr) => acc + (curr?.donation_count || 0), 0) 
+  competitionTeams?.value?.reduce(
+    (acc, curr) => acc + (curr?.donation_count || 0),
+    0
+  )
 );
 
 const competitionName = computed(

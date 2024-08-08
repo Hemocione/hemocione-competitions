@@ -26,6 +26,7 @@ const siteUrl = getSiteUrl();
 const currentEnv = getCurrentEnv();
 
 export default defineNuxtConfig({
+  devtools: true,
   css: [
     "~/assets/css/main.css",
     "~/assets/css/transitions.css",
@@ -38,11 +39,11 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "nuxt-vercel-analytics",
     "nuxt-bugsnag",
-    '@vueuse/nuxt',
+    "@vueuse/nuxt",
   ],
   googleFonts: {
     families: {
-      Roboto: true,
+      Roboto: [400, 500, 700, 900],
     },
   },
   nitro: {
@@ -60,7 +61,7 @@ export default defineNuxtConfig({
         process.env.CDN_UPLOAD_URL ?? "http://localhost:3001/api/upload",
       instagramUrl:
         process.env.INSTAGRAM_URL ?? "https://www.instagram.com/hemocione/",
-      siteUrl
+      siteUrl,
     },
     hemocioneIdIntegrationSecret:
       process.env.HEMOCIONE_ID_INTEGRATION_SECRET ?? "secret",

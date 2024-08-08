@@ -17,6 +17,7 @@ defineProps<{
 .details-grid {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 }
 .podium {
   border: solid #dbdde0 2px;
