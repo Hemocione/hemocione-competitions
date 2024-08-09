@@ -3,34 +3,46 @@
     <div class="main-container">
       <header class="header">
         <h2>{{ name || "Copa Hemocione" }}</h2>
-      </header> 
+      </header>
       <div class="success">
-        <img src="/images/check-donation.svg" alt="checked-icon">
-        <span>Doação registrada com sucesso! Obrigado por salvar 4 vidas :)</span>
+        <img src="/images/check-donation.svg" alt="checked-icon" />
+        <span
+          >Doação registrada com sucesso! Obrigado por salvar 4 vidas :)</span
+        >
       </div>
     </div>
-    <common-cool-footer hide-toggle height="fit-content" desktop-border-radius="0">
+    <common-cool-footer
+      hide-toggle
+      height="fit-content"
+      desktop-border-radius="0"
+    >
       <NuxtLink :to="`/competition/${slug}`">
-        <el-button
-          type="default"
-          size="large"
-          style="width: 100%"
-        >Voltar para {{ name }}</el-button
-      >
+        <el-button type="default" size="large" style="width: 100%"
+          >Voltar para {{ name }}</el-button
+        >
       </NuxtLink>
-      <NuxtLink :to="`/competition/${slug}/influence`" v-if="competition?.has_influence">
-        <el-button size="large" type="primary" style="width: 100%;">
+      <NuxtLink
+        :to="`/competition/${slug}/influence`"
+        v-if="competition?.has_influence"
+      >
+        <el-button size="large" type="primary" style="width: 100%">
           <template #icon>
             <el-icon><ElIconShare /></el-icon>
           </template>
           Influencie mais pessoas a doarem sangue
         </el-button>
       </NuxtLink>
-      <NuxtLink :to="instagramUrl" v-else target="_blank" rel="noopener noreferrer" external>
-        <el-button size="large" type="primary" style="width: 100%;">
+      <NuxtLink
+        :to="instagramUrl"
+        v-else
+        target="_blank"
+        rel="noopener noreferrer"
+        external
+      >
+        <el-button size="large" type="primary" style="width: 100%">
           Siga o Hemocione no Instagram
           <el-icon class="el-icon--right" size="30">
-            <NuxtImg src="/images/icons/instagram.svg" style="height: 100%"/>
+            <NuxtImg src="/images/icons/instagram.svg" style="height: 100%" />
           </el-icon>
         </el-button>
       </NuxtLink>
@@ -39,29 +51,30 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '~/store/user';
-const { instagramUrl } = useRuntimeConfig().public
+import { useUserStore } from "~/store/user";
+const { instagramUrl } = useRuntimeConfig().public;
 definePageMeta({
   middleware: "auth",
-})
+});
 const route = useRoute();
 const slug = route.params.slug;
 const name = route.query.name;
 const { getDonationByCompetitionSlug } = useUserStore();
 
-const [donation, { data: competition }] = await Promise.all([getDonationByCompetitionSlug(String(slug)), useFetch(`/api/v1/competitions/${slug}`)]);
+const [donation, { data: competition }] = await Promise.all([
+  getDonationByCompetitionSlug(String(slug)),
+  useFetch(`/api/v1/competitions/${slug}`),
+]);
 
 if (!donation) {
   navigateTo(`/competition/${slug}/register`);
 }
 const openInstagram = () => {
-  navigateTo(config.public.instagramUrl, { external: true });
+  navigateTo(instagramUrl, { external: true });
 };
-
 </script>
 
 <style scoped>
-
 .success {
   display: flex;
   flex-direction: column;
