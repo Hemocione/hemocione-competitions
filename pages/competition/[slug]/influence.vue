@@ -7,7 +7,7 @@
         </ElIcon>
       </NuxtLink>
       <h2>Influencie pessoas a doarem sangue</h2>
-    </header> 
+    </header>
     <div class="main-container">
       <div class="success">
         <img src="/images/illustrations/hemo-friends.png" class="friends" />
@@ -17,7 +17,13 @@
             <NuxtImg src="/images/icons/copy-link.svg" class="action-img" />
             Copiar Link
           </div>
-          <NuxtLink :href="zapUrl" target="_blank" rel="noopener noreferrer" external class="action">
+          <NuxtLink
+            :href="zapUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            external
+            class="action"
+          >
             <NuxtImg src="/images/icons/zap.svg" class="action-img zap" />
             WhatsApp
           </NuxtLink>
@@ -32,21 +38,24 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '~/store/user';
+import { useUserStore } from "~/store/user";
 definePageMeta({
   middleware: "auth",
-})
+});
 const route = useRoute();
 const userStore = useUserStore();
 const competitionSlug = String(route.params.slug);
-const competitionInfluence = await userStore.getCompetitionInfluence(competitionSlug);
+const competitionInfluence = await userStore.getCompetitionInfluence(
+  competitionSlug
+);
 if (!competitionInfluence) {
-  navigateTo(`/competition/${competitionSlug}`);
+  await navigateTo(`/competition/${competitionSlug}`);
   throw new Error("Competition not found");
 }
 
-
-const { data: competition } = await useFetch(`/api/v1/competitions/${competitionSlug}`);
+const { data: competition } = await useFetch(
+  `/api/v1/competitions/${competitionSlug}`
+);
 const { influence, shareUrl } = competitionInfluence;
 
 const influencedMessage = computed(() => {
@@ -59,7 +68,9 @@ const influencedMessage = computed(() => {
     return "Até agora você influenciou <b>1 pessoa</b> a doar sangue, salvando <b>4 vidas</b>! Continue compartilhando seu link e influenciando mais pessoas 😀";
   }
 
-  return `Até agora você influenciou <b>${amountInfluence} pessoas</b> a doar sangue, salvando <b>${amountInfluence * 4} vidas</b>! Continue compartilhando seu link e influenciando mais pessoas 😀`;
+  return `Até agora você influenciou <b>${amountInfluence} pessoas</b> a doar sangue, salvando <b>${
+    amountInfluence * 4
+  } vidas</b>! Continue compartilhando seu link e influenciando mais pessoas 😀`;
 });
 
 const copyLink = useDebounceFn(() => {
@@ -70,7 +81,10 @@ const copyLink = useDebounceFn(() => {
   });
 }, 300);
 
-const zapUrl = getInfluenceWhatsappUrl(shareUrl, competition.value?.name || "Copa Hemocione");
+const zapUrl = getInfluenceWhatsappUrl(
+  shareUrl,
+  competition.value?.name || "Copa Hemocione"
+);
 
 const more = async () => {
   const sharePayload = {
@@ -87,11 +101,10 @@ const more = async () => {
     console.error("Error sharing", error);
     copyLink();
   }
-}
+};
 </script>
 
 <style scoped>
-
 .success {
   display: flex;
   flex-direction: column;
@@ -143,7 +156,7 @@ const more = async () => {
   cursor: pointer;
   color: var(--hemo-color-primary-dark);
   font-weight: bold;
-  word-wrap:break-word;
+  word-wrap: break-word;
   white-space: wrap;
   text-align: center;
   max-width: 80%;
