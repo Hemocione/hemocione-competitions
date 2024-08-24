@@ -161,15 +161,27 @@ export const getCompetitionEngagement = async (competitionSlug: string) => {
   return result;
 };
 
-export const createCompetition = async (
-  name: string,
-  startsAt: Date,
-  endsAt: Date,
-  mandatoryProof: boolean,
+interface CreateCompetitionPayload {
+  name: string;
+  startsAt: Date;
+  endsAt: Date;
+  mandatoryProof: boolean;
+  has_influence: boolean;
+  has_likes: boolean;
+  banner_background?: string;
+  extraFields?: ExtraFields;
+}
+
+export const createCompetition = async ({
+  name,
+  startsAt,
+  endsAt,
+  mandatoryProof,
   has_influence = false,
-  bannerLogoUrl?: string,
-  extraFields?: ExtraFields
-) => {
+  has_likes = false,
+  banner_background,
+  extraFields,
+}: CreateCompetitionPayload) => {
   const slug = slugify(name, {
     lower: true,
     strict: true,
@@ -183,7 +195,8 @@ export const createCompetition = async (
       end_at: endsAt,
       mandatory_proof: mandatoryProof,
       has_influence: has_influence,
-      banner_background: bannerLogoUrl,
+      has_likes: has_likes,
+      banner_background: banner_background,
       extraFields: extraFields || ([] as any), // TODO: fix this to type ExtraFields as Prisma JSON Array type
       published: false,
     },
