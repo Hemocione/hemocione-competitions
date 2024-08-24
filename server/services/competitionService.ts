@@ -210,6 +210,8 @@ export const editCompetitionBySlug = async (
     startsAt: Date;
     endsAt: Date;
     banner_background?: string;
+    has_influence: boolean;
+    has_likes: boolean;
     mandatoryProof: boolean;
     extraFields?: ExtraFields;
   }
@@ -220,6 +222,8 @@ export const editCompetitionBySlug = async (
     endsAt,
     extraFields,
     banner_background,
+    has_influence,
+    has_likes,
     mandatoryProof,
   } = payload;
   const updatedCompetition = await dbClient.competitions.update({
@@ -228,7 +232,9 @@ export const editCompetitionBySlug = async (
       name,
       start_at: startsAt,
       end_at: endsAt,
-      banner_background: banner_background,
+      banner_background,
+      has_influence,
+      has_likes,
       mandatory_proof: mandatoryProof,
       extraFields: extraFields || ([] as any), // TODO: fix this to type ExtraFields as Prisma JSON Array type
     },
