@@ -27,7 +27,7 @@ const currentEnv = getCurrentEnv();
 
 export default defineNuxtConfig({
   css: ['~/assets/css/main.css', '~/assets/css/transitions.css', '~/assets/css/animations.css'],
-  modules: ['@element-plus/nuxt', '@nuxtjs/google-fonts', "@pinia/nuxt", "@nuxt/image", "nuxt-vercel-analytics", "nuxt-bugsnag"],
+  modules: ['@element-plus/nuxt', '@nuxtjs/google-fonts', "@pinia/nuxt", "nuxt-vercel-analytics", "nuxt-bugsnag"],
   googleFonts: {
     families: {
       Roboto: true
