@@ -10,20 +10,15 @@
     </header>
     <div class="main-container">
       <div class="success">
+        <p v-html="influencedTitle" />
         <img src="/images/illustrations/hemo-friends.png" class="friends" />
-        <p v-html="influencedMessage" />
+        <p v-html="influencedMessage" class="subtitle" />
         <div class="actions">
           <div class="action" @click="copyLink">
             <NuxtImg src="/images/icons/copy-link.svg" class="action-img" />
             Copiar Link
           </div>
-          <NuxtLink
-            :href="zapUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            external
-            class="action"
-          >
+          <NuxtLink :href="zapUrl" target="_blank" rel="noopener noreferrer" external class="action">
             <NuxtImg src="/images/icons/zap.svg" class="action-img zap" />
             WhatsApp
           </NuxtLink>
@@ -58,19 +53,27 @@ const { data: competition } = await useFetch(
 );
 const { influence, shareUrl } = competitionInfluence;
 
-const influencedMessage = computed(() => {
+const influencedTitle = computed(() => {
   const amountInfluence = influence.amountInfluence || 0;
   if (amountInfluence === 0) {
-    return "Você ainda não influenciou ninguém a doar sangue 🥲. Compartilhe seu link e influencie outras pessoas a salvarem vidas!";
+    return "<b>Você ainda não influenciou ninguém a doar sangue 🥲</b>";
   }
 
   if (amountInfluence === 1) {
-    return "Até agora você influenciou <b>1 pessoa</b> a doar sangue, salvando <b>4 vidas</b>! Continue compartilhando seu link e influenciando mais pessoas 😀";
+    return "Até agora você influenciou <b>1 pessoa</b> a doarem sangue, salvando até <b>4 vidas</b>!";
   }
 
-  return `Até agora você influenciou <b>${amountInfluence} pessoas</b> a doar sangue, salvando <b>${
-    amountInfluence * 4
-  } vidas</b>! Continue compartilhando seu link e influenciando mais pessoas 😀`;
+  return `Até agora você influenciou <b>${amountInfluence} pessoas</b> a doarem sangue, salvando até <b>${amountInfluence * 4
+    } vidas</b>!`;
+});
+
+const influencedMessage = computed(() => {
+  const amountInfluence = influence.amountInfluence || 0;
+  if (!amountInfluence) {
+    return "Compartilhe seu link e influencie outras pessoas a salvarem vidas!";
+  }
+
+  return "Continue compartilhando seu link e influenciando mais pessoas 😀";
 });
 
 const copyLink = useDebounceFn(() => {
@@ -200,5 +203,9 @@ const more = async () => {
   width: 100%;
   max-width: 300px;
   height: auto;
+}
+
+.subtitle {
+  font-size: 1rem !important;
 }
 </style>
