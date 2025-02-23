@@ -67,7 +67,7 @@
           <template #icon>
             <el-icon><ElIconShare /></el-icon>
           </template>
-          Influencie mais pessoas a doarem sangue
+          Indique mais pessoas a doarem sangue
         </el-button>
       </NuxtLink>
       <NuxtLink :to="`/competition/${slug}/register`">
@@ -106,12 +106,12 @@ const { data: influences } = competition?.value?.has_influence
 
 const influenceRanking = computed(() => {
   return {
-    labels: ["#", "Influenciador", "Influenciados"],
+    labels: ["#", "Indicador", "Indicados"],
     contents:
       influences?.value?.map((c, idx) => ({
         "#": `${idx + 1}°`,
-        Influenciador: c.user_name.split(" ")[0].trim(),
-        Influenciados: c.amountInfluence,
+        Indicador: c.user_name.split(" ")[0].trim(),
+        Indicados: c.amountInfluence,
         hemocioneID: c.hemocioneID,
         shouldHighlight: c.hemocioneID === user.value?.id,
       })) ?? [],
@@ -133,7 +133,7 @@ const mappedSwitchsByCompetition = computed(() => {
   }
 
   if (has_influence) {
-    items.push({ name: "Influência" });
+    items.push({ name: "Indicação" });
   }
 
   return items;
@@ -162,7 +162,7 @@ const mappedRankByCompetition = computed(() => {
   return {
     Geral: generalRanking,
     Engajamento: likesRanking,
-    Influência: null,
+    Indicação: null,
   }[currentView.value];
 });
 
@@ -269,7 +269,7 @@ const content = computed(() => {
 
 const isGeneralView = computed(() => currentView?.value === "Geral");
 const isEngagementView = computed(() => currentView?.value === "Engajamento");
-const isInfluenceView = computed(() => currentView?.value === "Influência");
+const isInfluenceView = computed(() => currentView?.value === "Indicação");
 const back = () => router.back();
 </script>
 

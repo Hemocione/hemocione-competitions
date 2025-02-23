@@ -61,16 +61,16 @@ const { influence, shareUrl } = competitionInfluence;
 const influencedMessage = computed(() => {
   const amountInfluence = influence.amountInfluence || 0;
   if (amountInfluence === 0) {
-    return "Você ainda não influenciou ninguém a doar sangue 🥲. Compartilhe seu link e influencie outras pessoas a salvarem vidas!";
+    return "Você ainda não indicou ninguém a doar sangue 🥲. Compartilhe seu link e influencie outras pessoas a salvarem vidas!";
   }
 
   if (amountInfluence === 1) {
-    return "Até agora você influenciou <b>1 pessoa</b> a doar sangue, salvando <b>4 vidas</b>! Continue compartilhando seu link e influenciando mais pessoas 😀";
+    return "Até agora você indicou <b>1 pessoa</b> a doar sangue, salvando <b>4 vidas</b>! Continue compartilhando seu link e indicando mais pessoas 😀";
   }
 
-  return `Até agora você influenciou <b>${amountInfluence} pessoas</b> a doar sangue, salvando <b>${
+  return `Até agora você indicou <b>${amountInfluence} pessoas</b> a doar sangue, salvando <b>${
     amountInfluence * 4
-  } vidas</b>! Continue compartilhando seu link e influenciando mais pessoas 😀`;
+  } vidas</b>! Continue compartilhando seu link e indicando mais pessoas 😀`;
 });
 
 const copyLink = useDebounceFn(() => {
