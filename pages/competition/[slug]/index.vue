@@ -139,11 +139,25 @@ const mappedSwitchsByCompetition = computed(() => {
   return items;
 });
 
+const emojiMatcher = {
+  1: "🥇",
+  2: "🥈",
+  3: "🥉"
+}
+
+const rankingPosition = (idx: number) => {
+  if (idx < 3) {
+    return emojiMatcher[idx + 1]
+  }
+
+  return idx + 1 + "°"
+}
+
 const mappedRankByCompetition = computed(() => {
   const generalRanking = {
     labels: ["#", labelByType.value, "Doações"],
     contents: content?.value?.map((c, idx) => ({
-      "#": idx + 1 + "°",
+      "#": rankingPosition(idx),
       [labelByType.value]: c.name,
       Doações: c.donation_count,
     })),
