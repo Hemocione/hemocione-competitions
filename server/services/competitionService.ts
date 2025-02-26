@@ -54,6 +54,7 @@ const getCompetitionBySlugPromise = (slug: string) => {
       proof_type: true,
       has_influence: true,
       has_likes: true,
+      influence_controls_team: true,
       competitionTeams: {
         select: {
           id: true,

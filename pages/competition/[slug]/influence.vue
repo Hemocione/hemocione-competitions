@@ -11,6 +11,10 @@
     <div class="main-container">
       <div class="success">
         <p v-html="influencedTitle" />
+        <button v-if="competition?.influence_controls_team" @click="openTeamDrawer" class="hemo-button"> 
+          <NuxtImg src="/images/icons/team.svg" class="action-img" />
+          Qual seu time?
+        </button>
         <img src="/images/illustrations/hemo-friends.png" class="friends" />
         <p v-html="influencedMessage" class="subtitle" />
         <div class="actions">
@@ -33,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import { uniqBy, sortBy } from "lodash";
 import { useUserStore } from "~/store/user";
 definePageMeta({
   middleware: "auth",
@@ -66,6 +71,35 @@ const influencedTitle = computed(() => {
   return `Até agora você influenciou <b>${amountInfluence} pessoas</b> a doarem sangue, salvando até <b>${amountInfluence * 4
     } vidas</b>!`;
 });
+
+const institutions = computed(() =>
+  sortBy(
+    uniqBy(
+      competition.value?.competitionTeams.map((e) => e.teams?.institutions),
+      "id"
+    ),
+    "name"
+  )
+);
+
+const selectedInstitution = ref<number | null>(null);
+if (institutions.value.length === 1) {
+  selectedInstitution.value = institutions.value[0].id;
+}
+
+const competitionTeams = computed(() =>
+  sortBy(
+    competition.value?.competitionTeams.filter(
+      (compTeams) =>
+        compTeams.teams?.institutions?.id === selectedInstitution.value
+    ),
+    "teams.name"
+  )
+);
+
+const openTeamDrawer = () => {
+  console.log("abrindo")
+}
 
 const influencedMessage = computed(() => {
   const amountInfluence = influence.amountInfluence || 0;
