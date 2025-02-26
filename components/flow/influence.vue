@@ -17,7 +17,7 @@
       <template #podium-content>
         <div class="content">
           <Ranking :ranking="influenceRanking" v-if="influenceRanking.contents.length" style="width: 100%" />
-          <NuxtImg v-else src="/images/illustrations/hemo-friends.png" class="empty-image" />
+          <img v-else src="/images/illustrations/hemo-friends.png" class="empty-image" />
         </div>
       </template>
     </TemplateCompetitionContent2>
