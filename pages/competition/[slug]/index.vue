@@ -87,6 +87,13 @@ const influenceRanking = computed(() => {
   };
 });
 
+const canShowInfluence = computed(() => {
+  return (
+    competition?.value?.has_influence &&
+    (influenceRanking.value.contents.length > 0 || !competitionEnded.value)
+  );
+});
+
 const mappedSwitchsByCompetition = computed(() => {
   const items = [];
 
@@ -101,7 +108,7 @@ const mappedSwitchsByCompetition = computed(() => {
     items.push({ name: "Engajamento" });
   }
 
-  if (has_influence) {
+  if (canShowInfluence.value) {
     items.push({ name: "Influência" });
   }
 
