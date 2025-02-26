@@ -8,74 +8,43 @@
         <h2 class="competition-name">{{ competitionName }}</h2>
       </div>
       <div class="status-teams">
-        <div
-          class="details-status"
-          :style="`background-color:${statusInfo.color}`"
-        >
+        <div class="details-status" :style="`background-color:${statusInfo.color}`">
           {{ statusInfo.status }}
         </div>
-        <el-select
-          v-if="allInstitutionDonations.length > 1 && isGeneralView"
-          v-model="selectedType"
-          class="detail-team-select"
-          placeholder="Ranking"
-          value-key="id"
-        >
-          <el-option
-            v-for="(type, idx) in rankingTypes"
-            :label="type"
-            :value="type"
-            :key="idx"
-          />
-        </el-select>
+        <Transition name="fade" mode="out-in" appear>
+          <el-select v-if="allInstitutionDonations.length > 1 && isGeneralView" v-model="selectedType"
+            class="detail-team-select" placeholder="Ranking" value-key="id">
+            <el-option v-for="(type, idx) in rankingTypes" :label="type" :value="type" :key="idx" />
+          </el-select>
+        </Transition>
       </div>
-      <Switch
-        v-if="mappedSwitchsByCompetition"
-        :items="mappedSwitchsByCompetition"
-        @update:selected="currentView = $event"
-        class="switch-content"
-      />
+      <Switch v-if="mappedSwitchsByCompetition" :items="mappedSwitchsByCompetition"
+        @update:selected="currentView = $event" class="switch-content" />
       <Transition name="slide-fade-right" mode="out-in" appear>
-        <FlowGeneral
-          v-if="isGeneralView"
-          :mappedRankByCompetition="mappedRankByCompetition"
-          :donationsAmount="donationsAmount"
-        />
-        <FlowEngagement
-          v-else-if="isEngagementView"
-          :mappedRankByCompetition="mappedRankByCompetition"
-          :engagementAmount="engagementAmount"
-        />
-        <FlowInfluence
-          v-else-if="isInfluenceView"
-          :influenceRanking="influenceRanking"
-          :slug="slug"
-        />
+        <FlowGeneral v-if="isGeneralView" :mappedRankByCompetition="mappedRankByCompetition"
+          :donationsAmount="donationsAmount" />
+        <FlowEngagement v-else-if="isEngagementView" :mappedRankByCompetition="mappedRankByCompetition"
+          :engagementAmount="engagementAmount" />
+        <FlowInfluence v-else-if="isInfluenceView" :influenceRanking="influenceRanking" :slug="slug"
+          :competition-ended="competitionEnded" />
       </Transition>
     </div>
-    <common-cool-footer
-      v-if="donationsIsOpen"
-      hide-toggle
-      height="fit-content"
-      desktop-border-radius="0"
-    >
-      <NuxtLink
-        :to="`/competition/${slug}/influence`"
-        v-if="competition?.has_influence"
-      >
+    <common-cool-footer v-if="donationsIsOpen" hide-toggle height="fit-content" desktop-border-radius="0">
+      <NuxtLink :to="`/competition/${slug}/influence`" v-if="competition?.has_influence">
         <el-button size="large">
           <template #icon>
-            <el-icon><ElIconShare /></el-icon>
+            <el-icon>
+              <ElIconShare />
+            </el-icon>
           </template>
           Influencie mais pessoas a doarem sangue
         </el-button>
       </NuxtLink>
       <NuxtLink :to="`/competition/${slug}/register`">
-        <el-button type="primary" size="large"
-          ><template #icon>
-            <el-icon><ElIconCirclePlusFilled /></el-icon> </template
-          >Registrar doação</el-button
-        >
+        <el-button type="primary" size="large"><template #icon>
+            <el-icon>
+              <ElIconCirclePlusFilled />
+            </el-icon> </template>Registrar doação</el-button>
       </NuxtLink>
     </common-cool-footer>
   </div>
@@ -192,6 +161,11 @@ const importantDates = computed(() => {
   return { now, end, start };
 });
 
+const competitionEnded = computed(() => {
+  const { now, end } = importantDates.value;
+  return now.isAfter(end);
+});
+
 const donationsIsOpen = computed(() => {
   const { now, end, start } = importantDates.value;
   return now.isAfter(start) && now.isBefore(end);
@@ -289,6 +263,7 @@ button {
   width: 100%;
   position: relative;
 }
+
 .details-strip {
   width: 100%;
   max-width: var(--hemo-page-max-width);
@@ -297,12 +272,14 @@ button {
   background-color: white;
   padding: 20px 5%;
 }
+
 .details-title {
   display: flex;
   align-items: center;
   text-align: center;
   margin-bottom: 10px;
 }
+
 .details-status {
   display: flex;
   align-items: center;
@@ -311,21 +288,25 @@ button {
   border-radius: 200px;
   padding: 18px;
 }
+
 .status-teams {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 18px;
+  height: 50px;
 }
+
 .details-grid {
   display: flex;
   flex-direction: column;
 }
+
 .detail-team-select {
   height: 48px;
   width: 30%;
 }
+
 .ranking {
   border: solid #dbdde0 2px;
   border-radius: 8px;
@@ -334,6 +315,7 @@ button {
   grid-column-start: 1;
   grid-column-end: 3;
 }
+
 .ranking-title {
   background-color: #f3f2f1;
   padding: 10px;
@@ -341,6 +323,7 @@ button {
   display: flex;
   text-align: center;
 }
+
 .ranking-row {
   padding: 20px;
   border-bottom: solid #dbdde0 2px;
@@ -348,12 +331,14 @@ button {
   text-align: center;
   background-color: white;
 }
+
 .share-button {
   height: 40px;
   background-color: white;
   color: black;
   width: 100%;
 }
+
 .register-button {
   height: 40px;
   background-color: #e93c3c;
@@ -371,6 +356,7 @@ button {
   justify-content: center;
   gap: 8%;
 }
+
 .place-strip {
   display: flex;
   flex-direction: column;
@@ -378,6 +364,7 @@ button {
   width: 60px;
   min-height: 280px;
 }
+
 .podium-step {
   display: flex;
   flex-direction: column;
@@ -386,27 +373,34 @@ button {
   border-top-right-radius: 20px;
   border-top-left-radius: 20px;
 }
+
 .team-image-name {
   text-align: center;
 }
+
 .snd.podium-step {
   background-color: #efefef;
   flex: 5;
 }
+
 .st.podium-step {
   background-color: #ffebc2;
   flex: 100;
 }
+
 .rd.podium-step {
   background-color: #dfd0cc;
   flex: 0.8;
 }
+
 .podium-user {
   height: 60px;
 }
+
 .medal {
   height: 50px;
 }
+
 .f1 {
   flex: 1;
 }
@@ -417,6 +411,7 @@ button {
   font-weight: 500;
   color: var(--hemo-text-color);
 }
+
 .back-arrow {
   width: 1.5rem;
   height: 1.5rem;
@@ -432,6 +427,7 @@ button {
   align-items: center;
   height: 100%;
 }
+
 .engagement-view {
   display: flex;
   flex-direction: column;
@@ -458,6 +454,7 @@ button {
     height: 48px;
     width: 40%;
   }
+
   .register-button {
     height: 48px;
     flex: 10;
