@@ -11,10 +11,21 @@
     <div class="main-container">
       <div class="success">
         <p v-html="influencedTitle" />
-        <button v-if="competition?.influence_controls_team" @click="openTeamDrawer" class="hemo-button"> 
-          <NuxtImg src="/images/icons/team.svg" class="action-img" />
-          Qual seu time?
-        </button>
+        <div v-if="competition?.influence_controls_team" style="width: 100%">
+          <ElButton
+            @click="toggleTeamDrawer"
+            :icon="ElIconFlag"
+            class="hemo-button"
+            type="primary"
+            size="large"
+          >
+            {{ teamButtonLabel }}
+          </ElButton>
+          <span class="disclaimer-copy"
+            >As próximas doações feitas por pessoas influenciadas por você serão
+            computadas para o time selecionado!</span
+          >
+        </div>
         <img src="/images/illustrations/hemo-friends.png" class="friends" />
         <p v-html="influencedMessage" class="subtitle" />
         <div class="actions">
@@ -22,7 +33,13 @@
             <NuxtImg src="/images/icons/copy-link.svg" class="action-img" />
             Copiar Link
           </div>
-          <NuxtLink :href="zapUrl" target="_blank" rel="noopener noreferrer" external class="action">
+          <NuxtLink
+            :href="zapUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            external
+            class="action"
+          >
             <NuxtImg src="/images/icons/zap.svg" class="action-img zap" />
             WhatsApp
           </NuxtLink>
@@ -33,6 +50,62 @@
         </div>
       </div>
     </div>
+    <ElDrawer
+      v-model="teamDrawer"
+      title="Escolha o time para o qual as doações serão computadas"
+      :visible="teamDrawer"
+      direction="btt"
+      @close="teamDrawer = false"
+    >
+      <TransitionGroup name="slide-fade-down" appear>
+        <ElSelect
+          v-model="selectedInstitution"
+          placeholder="Selecione a instituição"
+          clearable
+          style="width: 100%"
+          v-if="institutions.length > 1"
+          key="select-institution"
+          :disabled="loadingSaveTeam"
+        >
+          <ElOption
+            v-for="institution in institutions"
+            :key="institution.id"
+            :label="institution.name"
+            :value="institution.id"
+          />
+        </ElSelect>
+        <ElSelect
+          v-model="selectedCompTeamId"
+          size="large"
+          :placeholder="'Selecione sua equipe'"
+          required
+          filterable
+          style="width: 100%"
+          :disabled="loadingSaveTeam"
+        >
+          <ElOption
+            v-for="compTeam in competitionTeams"
+            :key="compTeam.id"
+            :label="compTeam?.teams?.name ?? compTeam.id"
+            :value="compTeam.id"
+          >
+            {{ compTeam.teams?.name }}
+          </ElOption>
+        </ElSelect>
+        <ElButton
+          @click="saveTeam"
+          type="success"
+          size="large"
+          style="width: 100%; margin-top: 1rem"
+          :loading="loadingSaveTeam"
+          :disabled="
+            !selectedCompTeamId || !selectedInstitution || loadingSaveTeam
+          "
+        >
+          Salvar
+        </ElButton>
+      </TransitionGroup>
+    </ElDrawer>
   </div>
 </template>
 
@@ -45,10 +118,10 @@ definePageMeta({
 const route = useRoute();
 const userStore = useUserStore();
 const competitionSlug = String(route.params.slug);
-const competitionInfluence = await userStore.getCompetitionInfluence(
-  competitionSlug
+const competitionInfluence = ref(
+  await userStore.getCompetitionInfluence(competitionSlug)
 );
-if (!competitionInfluence) {
+if (!competitionInfluence.value) {
   await navigateTo(`/competition/${competitionSlug}`);
   throw new Error("Competition not found");
 }
@@ -56,10 +129,10 @@ if (!competitionInfluence) {
 const { data: competition } = await useFetch(
   `/api/v1/competitions/${competitionSlug}`
 );
-const { influence, shareUrl } = competitionInfluence;
 
 const influencedTitle = computed(() => {
-  const amountInfluence = influence.amountInfluence || 0;
+  const amountInfluence =
+    competitionInfluence.value?.influence.amountInfluence || 0;
   if (amountInfluence === 0) {
     return "<b>Você ainda não influenciou ninguém a doar sangue 🥲</b>";
   }
@@ -68,8 +141,9 @@ const influencedTitle = computed(() => {
     return "Até agora você influenciou <b>1 pessoa</b> a doarem sangue, salvando até <b>4 vidas</b>!";
   }
 
-  return `Até agora você influenciou <b>${amountInfluence} pessoas</b> a doarem sangue, salvando até <b>${amountInfluence * 4
-    } vidas</b>!`;
+  return `Até agora você influenciou <b>${amountInfluence} pessoas</b> a doarem sangue, salvando até <b>${
+    amountInfluence * 4
+  } vidas</b>!`;
 });
 
 const institutions = computed(() =>
@@ -82,9 +156,22 @@ const institutions = computed(() =>
   )
 );
 
-const selectedInstitution = ref<number | null>(null);
+const selectedInstitution = ref<number>();
 if (institutions.value.length === 1) {
   selectedInstitution.value = institutions.value[0].id;
+}
+
+const getCompTeamInstitutionid = (compTeamId: number) =>
+  competition.value?.competitionTeams.find((e) => e.id === compTeamId)?.teams
+    ?.institutions?.id;
+
+const selectedCompTeamId = ref<number>();
+if (competitionInfluence.value?.influence.competitionTeamId) {
+  selectedCompTeamId.value =
+    competitionInfluence.value?.influence.competitionTeamId;
+  selectedInstitution.value = getCompTeamInstitutionid(
+    selectedCompTeamId.value
+  );
 }
 
 const competitionTeams = computed(() =>
@@ -97,12 +184,24 @@ const competitionTeams = computed(() =>
   )
 );
 
-const openTeamDrawer = () => {
-  console.log("abrindo")
-}
+const teamDrawer = ref(false);
+const toggleTeamDrawer = () => {
+  teamDrawer.value = !teamDrawer.value;
+};
+
+const teamButtonLabel = computed(() => {
+  const influenceCompetitionTeamId =
+    competitionInfluence.value?.influence.competitionTeamId;
+  if (!influenceCompetitionTeamId) {
+    return "Qual seu time?";
+  }
+  return competitionTeams.value.find((e) => e.id === influenceCompetitionTeamId)
+    ?.teams?.name;
+});
 
 const influencedMessage = computed(() => {
-  const amountInfluence = influence.amountInfluence || 0;
+  const amountInfluence =
+    competitionInfluence.value?.influence.amountInfluence || 0;
   if (!amountInfluence) {
     return "Compartilhe seu link e influencie outras pessoas a salvarem vidas!";
   }
@@ -110,8 +209,10 @@ const influencedMessage = computed(() => {
   return "Continue compartilhando seu link e influenciando mais pessoas 😀";
 });
 
+const shareUrl = computed(() => competitionInfluence.value?.shareUrl || "");
+
 const copyLink = useDebounceFn(() => {
-  navigator.clipboard.writeText(shareUrl);
+  navigator.clipboard.writeText(shareUrl.value);
   ElMessage({
     message: "Link copiado para a área de transferência!",
     type: "success",
@@ -119,7 +220,7 @@ const copyLink = useDebounceFn(() => {
 }, 300);
 
 const zapUrl = getInfluenceWhatsappUrl(
-  shareUrl,
+  shareUrl.value,
   competition.value?.name || "Copa Hemocione"
 );
 
@@ -127,7 +228,7 @@ const more = async () => {
   const sharePayload = {
     title: competition.value?.name || "Copa Hemocione",
     text: `Me ajude a salvar vidas! Doe sangue e participe da Copa Hemocione "${competition.value?.name}" de doação de sangue.`,
-    url: shareUrl,
+    url: shareUrl.value,
   };
   try {
     if (!navigator.share) {
@@ -139,13 +240,49 @@ const more = async () => {
     copyLink();
   }
 };
+
+const loadingSaveTeam = ref(false);
+const saveTeam = async () => {
+  loadingSaveTeam.value = true;
+  try {
+    if (!selectedCompTeamId.value) {
+      throw new Error("Selecione um time");
+    }
+    await userStore.setInfluenceCompTeam(
+      competitionSlug,
+      selectedCompTeamId.value
+    );
+    ElMessage({
+      message: "Time salvo com sucesso!",
+      type: "success",
+    });
+    const newInfluence = {
+      ...competitionInfluence.value!,
+      influence: {
+        ...competitionInfluence.value!.influence,
+        competitionTeamId: selectedCompTeamId.value!,
+      },
+    };
+    competitionInfluence.value = newInfluence;
+    nextTick(() => {
+      toggleTeamDrawer();
+    });
+  } catch (error) {
+    ElMessage({
+      message: "Erro ao salvar time",
+      type: "error",
+    });
+  } finally {
+    loadingSaveTeam.value = false;
+  }
+};
 </script>
 
 <style scoped>
 .success {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 1rem;
   justify-content: center;
   align-items: center;
   width: 80%;
@@ -210,7 +347,7 @@ const more = async () => {
 }
 
 .header h2 {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   margin: 0;
 }
 
@@ -241,5 +378,23 @@ const more = async () => {
 
 .subtitle {
   font-size: 1rem !important;
+}
+
+.hemo-button {
+  width: 100%;
+}
+
+.hemo-button:deep(span) {
+  max-width: 80%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block; /* ou block, se necessário */
+}
+
+.disclaimer-copy {
+  font-size: 0.75rem;
+  color: var(--hemo-color-text-secondary);
+  text-align: center;
 }
 </style>

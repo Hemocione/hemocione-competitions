@@ -95,6 +95,25 @@ export const incrementInfluence = async (
   });
 };
 
+export const setInfluenceCompetitionTeamId = async (
+  token: string,
+  competitionSlug: string,
+  competitionTeamId: number
+) => {
+  return await $fetch(
+    `/api/v1/competitions/${competitionSlug}/influence/mine`,
+    {
+      method: "PUT",
+      body: {
+        competitionTeamId,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
 export type UserDonation = Awaited<ReturnType<typeof getUserDonation>>;
 export type InfluenceData = Awaited<ReturnType<typeof getUserInfluence>>;
 
@@ -193,6 +212,21 @@ export const useUserStore = defineStore("user", {
       } catch (error) {
         return;
       }
+    },
+    async setInfluenceCompTeam(
+      competitionSlug: string,
+      competitionTeamId: number
+    ) {
+      if (!this.token) return;
+
+      const influence = await setInfluenceCompetitionTeamId(
+        this.token,
+        competitionSlug,
+        competitionTeamId
+      );
+
+      this.influenceByCompetitionSlug.set(competitionSlug, influence);
+      return influence;
     },
   },
 });
