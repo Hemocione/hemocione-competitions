@@ -29,6 +29,15 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  const competitionTeamIdBelongsToCompetition =
+    competition.competitionTeams.some((team) => team.id === competitionTeamId);
+  if (!competitionTeamIdBelongsToCompetition) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Bad Request - Competition team not found",
+    });
+  }
+
   let influence = await getOrCreateUserInfluence(user, competition.id);
   if (influence.competitionTeamId !== competitionTeamId) {
     influence = await setInfluenceCompetitionTeamId(
