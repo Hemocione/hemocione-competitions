@@ -9,15 +9,6 @@
             >Influenciado por <b>{{ influencedByFirstName }}</b></span
           >
         </div>
-        <!-- <el-button
-          class="grey-button"
-          type="primary"
-          size="large"
-          native-type="submit"
-          style="width: 100%"
-          @click="goToLogin()"
-          >{{ `Não é ${userName}? Entre como outro doador.` }}</el-button
-        > -->
         <h4 v-if="presentationText">{{ presentationText }}</h4>
       </header>
       <form
