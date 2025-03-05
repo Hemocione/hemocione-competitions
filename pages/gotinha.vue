@@ -6,48 +6,29 @@
         <h2 class="competition-name">{{ competitionName }}</h2>
       </div>
       <div class="status-teams">
-        <div
-          class="details-status"
-          :style="`background-color:${statusInfo.color}`"
-        >
+        <div class="details-status" :style="`background-color:${statusInfo.color}`">
           {{ statusInfo.status }}
         </div>
 
-        <el-select
-          v-if="allInstitutionDonations.length > 1"
-          v-model="selectedType"
-          class="detail-team-select"
-          placeholder="Ranking"
-          value-key="id"
-        >
-          <el-option
-            v-for="(type, idx) in rankingTypes"
-            :label="type"
-            :value="type"
-            :key="idx"
-          />
+        <el-select v-if="allInstitutionDonations.length > 1" v-model="selectedType" class="detail-team-select"
+          placeholder="Ranking" value-key="id">
+          <el-option v-for="(type, idx) in rankingTypes" :label="type" :value="type" :key="idx" />
         </el-select>
       </div>
       <div class="details-grid">
         <div class="podium">
-          <div
-            class="place-strip"
-            v-for="(team, idx) in rankingTeamsClass"
-            :key="idx"
-          >
+          <div class="place-strip" v-for="(team, idx) in rankingTeamsClass" :key="idx">
             <div :style="{ flex: 5 }" />
             <div class="team-image-name">
               <div :style="{ 'margin-bottom': '10px' }">
                 <img class="podium-user" src="/images/defaultAvatar.svg" />
               </div>
-              <div
-                style="
+              <div style="
                   overflow: hidden;
                   text-overflow: ellipsis;
                   white-space: nowrap;
                   margin-top: 10px;
-                "
-              >
+                ">
                 {{ team.name }}
               </div>
             </div>
@@ -63,11 +44,7 @@
             <span class="f1">{{ labelByType }}</span>
             <span class="f1">Doações</span>
           </div>
-          <div
-            class="ranking-row"
-            v-for="(team, idx) in content"
-            :key="team.id"
-          >
+          <div class="ranking-row" v-for="(team, idx) in content" :key="team.id">
             <span class="f1">{{ idx + 1 + "°" }}</span>
             <span class="f1">{{ team.name }}</span>
             <span class="f1">{{ team.donation_count }}</span>
@@ -75,16 +52,9 @@
         </div>
       </div>
     </div>
-    <common-cool-footer
-      v-if="donationsIsOpen"
-      hide-toggle
-      height="fit-content"
-      desktop-border-radius="0"
-    >
+    <common-cool-footer v-if="donationsIsOpen" hide-toggle height="fit-content" desktop-border-radius="0">
       <NuxtLink :to="`/competition/${slug}/register`">
-        <el-button class="register-button" type="primary" size="large"
-          >Registrar doação</el-button
-        >
+        <el-button class="register-button" type="primary" size="large">Registrar doação</el-button>
       </NuxtLink>
     </common-cool-footer>
   </div>
@@ -210,6 +180,7 @@ const back = () => router.back();
   width: 100%;
   position: relative;
 }
+
 .details-strip {
   width: 100%;
   max-width: var(--hemo-page-max-width);
@@ -218,12 +189,14 @@ const back = () => router.back();
   background-color: white;
   padding: 20px 5%;
 }
+
 .details-title {
   display: flex;
   align-items: center;
   text-align: center;
   margin-bottom: 10px;
 }
+
 .details-status {
   display: flex;
   align-items: center;
@@ -232,21 +205,25 @@ const back = () => router.back();
   border-radius: 200px;
   padding: 18px;
 }
+
 .status-teams {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 18px;
+  height: 50px;
 }
+
 .details-grid {
   display: flex;
   flex-direction: column;
 }
+
 .detail-team-select {
   height: 48px;
   width: 30%;
 }
+
 .ranking {
   border: solid #dbdde0 2px;
   border-radius: 8px;
@@ -255,6 +232,7 @@ const back = () => router.back();
   grid-column-start: 1;
   grid-column-end: 3;
 }
+
 .ranking-title {
   background-color: #f3f2f1;
   padding: 10px;
@@ -262,6 +240,7 @@ const back = () => router.back();
   display: flex;
   text-align: center;
 }
+
 .ranking-row {
   padding: 20px;
   border-bottom: solid #dbdde0 2px;
@@ -269,11 +248,13 @@ const back = () => router.back();
   text-align: center;
   background-color: white;
 }
+
 .register-button {
   height: 40px;
   background-color: #e93c3c;
   width: 100%;
 }
+
 .podium {
   border: solid #dbdde0 2px;
   width: 100%;
@@ -285,6 +266,7 @@ const back = () => router.back();
   justify-content: center;
   gap: 8%;
 }
+
 .place-strip {
   display: flex;
   flex-direction: column;
@@ -292,6 +274,7 @@ const back = () => router.back();
   width: 60px;
   min-height: 280px;
 }
+
 .podium-step {
   display: flex;
   flex-direction: column;
@@ -300,27 +283,34 @@ const back = () => router.back();
   border-top-right-radius: 20px;
   border-top-left-radius: 20px;
 }
+
 .team-image-name {
   text-align: center;
 }
+
 .snd.podium-step {
   background-color: #efefef;
   flex: 5;
 }
+
 .st.podium-step {
   background-color: #ffebc2;
   flex: 100;
 }
+
 .rd.podium-step {
   background-color: #dfd0cc;
   flex: 0.8;
 }
+
 .podium-user {
   height: 60px;
 }
+
 .medal {
   height: 50px;
 }
+
 .f1 {
   flex: 1;
 }
@@ -331,6 +321,7 @@ const back = () => router.back();
   font-weight: 500;
   color: var(--hemo-text-color);
 }
+
 .back-arrow {
   width: 1.5rem;
   height: 1.5rem;
@@ -341,6 +332,7 @@ const back = () => router.back();
     height: 48px;
     width: 40%;
   }
+
   .register-button {
     height: 48px;
     flex: 10;

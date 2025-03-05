@@ -28,7 +28,7 @@ defineProps<{
       value: number | null
     }[]
   }
-}>() 
+}>()
 
 </script>
 <style scoped>
@@ -42,6 +42,7 @@ defineProps<{
   width: 100%;
   position: relative;
 }
+
 .details-strip {
   width: 100%;
   max-width: var(--hemo-page-max-width);
@@ -50,12 +51,14 @@ defineProps<{
   background-color: white;
   padding: 20px 5%;
 }
+
 .details-title {
   display: flex;
   align-items: center;
   text-align: center;
   margin-bottom: 10px;
 }
+
 .details-status {
   display: flex;
   align-items: center;
@@ -64,21 +67,25 @@ defineProps<{
   border-radius: 200px;
   padding: 18px;
 }
+
 .status-teams {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 18px;
+  height: 50px;
 }
+
 .details-grid {
   display: flex;
   flex-direction: column;
 }
+
 .detail-team-select {
   height: 48px;
   width: 30%;
 }
+
 .ranking {
   border: solid #dbdde0 2px;
   border-radius: 8px;
@@ -87,6 +94,7 @@ defineProps<{
   grid-column-start: 1;
   grid-column-end: 3;
 }
+
 .ranking-title {
   background-color: #f3f2f1;
   padding: 10px;
@@ -94,6 +102,7 @@ defineProps<{
   display: flex;
   text-align: center;
 }
+
 .ranking-row {
   padding: 20px;
   border-bottom: solid #dbdde0 2px;
@@ -101,11 +110,13 @@ defineProps<{
   text-align: center;
   background-color: white;
 }
+
 .register-button {
   height: 40px;
   background-color: #e93c3c;
   width: 100%;
 }
+
 .podium {
   border: solid #dbdde0 2px;
   width: 100%;
@@ -117,6 +128,7 @@ defineProps<{
   justify-content: center;
   gap: 8%;
 }
+
 .place-strip {
   display: flex;
   flex-direction: column;
@@ -124,6 +136,7 @@ defineProps<{
   width: 60px;
   min-height: 280px;
 }
+
 .podium-step {
   display: flex;
   flex-direction: column;
@@ -132,27 +145,34 @@ defineProps<{
   border-top-right-radius: 20px;
   border-top-left-radius: 20px;
 }
+
 .team-image-name {
   text-align: center;
 }
+
 .snd.podium-step {
   background-color: #efefef;
   flex: 5;
 }
+
 .st.podium-step {
   background-color: #ffebc2;
   flex: 100;
 }
+
 .rd.podium-step {
   background-color: #dfd0cc;
   flex: 0.8;
 }
+
 .podium-user {
   height: 60px;
 }
+
 .medal {
   height: 50px;
 }
+
 .f1 {
   flex: 1;
 }
@@ -163,6 +183,7 @@ defineProps<{
   font-weight: 500;
   color: var(--hemo-text-color);
 }
+
 .back-arrow {
   width: 1.5rem;
   height: 1.5rem;
@@ -173,6 +194,7 @@ defineProps<{
     height: 48px;
     width: 40%;
   }
+
   .register-button {
     height: 48px;
     flex: 10;

@@ -53,6 +53,10 @@
   margin: 0 !important;
 }
 
+.el-drawer__header {
+  margin-bottom: 0 !important;
+}
+
 html,
 body {
   background-color: var(--hemo-color-secondary);
