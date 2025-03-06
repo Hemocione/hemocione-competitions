@@ -9,7 +9,7 @@
             >Influenciado por <b>{{ influencedByFirstName }}</b></span
           >
         </div>
-        <h4>{{ presentationText }}</h4>
+        <h4 v-if="presentationText">{{ presentationText }}</h4>
       </header>
       <form
         class="form"
@@ -27,6 +27,7 @@
               @change="() => (form.competitionTeamId = null)"
               required
               filterable
+              :disabled="teamInfluenceControlled"
             >
               <el-option
                 v-for="(institution, idx) in institutions"
@@ -38,15 +39,6 @@
               </el-option>
             </el-select>
           </div>
-
-          <el-button
-            class="grey-button"
-            type="primary"
-            size="large"
-            native-type="submit"
-            @click="goToLogin()"
-            >{{ `Não é ${userName}? Entre como outro doador.` }}</el-button
-          >
           <!-- Team Select -->
           <div v-if="isInstitutionSelected" class="column" key="team">
             <label class="label-form">Equipe <span>*</span></label>
@@ -56,6 +48,7 @@
               :placeholder="'Selecione sua equipe'"
               required
               filterable
+              :disabled="teamInfluenceControlled"
             >
               <el-option
                 v-for="compTeam in competitionTeams"
@@ -204,6 +197,10 @@ const [{ data: competition }, { data: influence }, donation] =
     getDonationByCompetitionSlug(String(slug)),
   ]);
 
+if (influence.value && influence.value.hemocioneID === user?.id) {
+  influence.value = null; // prevent self-influence
+}
+
 const goToSuccess = () => {
   return navigateTo(
     `/competition/${slug}/success?name=${encodeURIComponent(
@@ -251,10 +248,17 @@ const isCompetitionInPast =
 const initialDate = dayjs(competition.value?.start_at).format("DD/MM/YYYY");
 const finalDate = dayjs(competition.value?.end_at).format("DD/MM/YYYY");
 
+const teamInfluenceControlled = Boolean(
+  influence.value?.competitionTeamId &&
+    competition.value?.influence_controls_team
+);
+
 const presentationText = isCompetitionInFuture
   ? `${competition.value?.name} ainda não começou. Aguarde até a data de início (${initialDate}) para registrar sua doação.`
   : isCompetitionInPast
   ? "A copa já acabou. Obrigado por participar!"
+  : teamInfluenceControlled
+  ? null
   : "Selecione sua equipe para registrar sua doação.";
 
 const proofText =
@@ -304,6 +308,22 @@ const isInstitutionSelected = computed(() => form.value.institutionId);
 const allRequiredExtraFieldsFilled = computed(() =>
   requiredExtraFieldsSlugs.every((slug) => form.value.extraFields[slug])
 );
+
+const selectCompetitionTeamId = (id: number) => {
+  const competitionTeam = competitionTeams.value.find(
+    (compTeam) => compTeam.id === id
+  );
+  const institutionId = competitionTeam?.teams?.institutions?.id;
+  form.value = {
+    ...form.value,
+    competitionTeamId: id,
+    institutionId,
+  };
+};
+
+if (teamInfluenceControlled && influence.value?.competitionTeamId) {
+  selectCompetitionTeamId(influence.value?.competitionTeamId);
+}
 
 const canRegisterDonation = computed(() => {
   return (

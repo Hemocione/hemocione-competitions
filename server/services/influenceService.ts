@@ -29,10 +29,15 @@ const getCompetitionInfluencesPromise = (competitionSlug: string) => {
       amountInfluence: "desc",
     },
   });
-}
+};
 
-type CompetitionInfluences = Awaited<ReturnType<typeof getCompetitionInfluencesPromise>>;
-const CompetititionInfluencesCache = new Map<string, { generatedAt: Date, influences: CompetitionInfluences }>();
+type CompetitionInfluences = Awaited<
+  ReturnType<typeof getCompetitionInfluencesPromise>
+>;
+const CompetititionInfluencesCache = new Map<
+  string,
+  { generatedAt: Date; influences: CompetitionInfluences }
+>();
 const CACHE_TTL = 60 * 1000 * 5; // 5 minutes
 
 export const getCompetitionInfluences = async (competitionSlug: string) => {
@@ -42,7 +47,10 @@ export const getCompetitionInfluences = async (competitionSlug: string) => {
   }
 
   const influences = await getCompetitionInfluencesPromise(competitionSlug);
-  CompetititionInfluencesCache.set(competitionSlug, { generatedAt: new Date(), influences });
+  CompetititionInfluencesCache.set(competitionSlug, {
+    generatedAt: new Date(),
+    influences,
+  });
   return influences;
 };
 
@@ -79,7 +87,10 @@ export const incrementInfluence = async (data: UpdateBody) => {
   return updatedInfluence;
 };
 
-export const getOrCreateUserInfluence = async (user: HemocioneUserAuthTokenData, competitionId: number) => {
+export const getOrCreateUserInfluence = async (
+  user: HemocioneUserAuthTokenData,
+  competitionId: number
+) => {
   const influence = await dbClient.influence.findFirst({
     where: {
       hemocioneID: user.id,
@@ -91,19 +102,23 @@ export const getOrCreateUserInfluence = async (user: HemocioneUserAuthTokenData,
     return influence;
   }
 
-  const userName = [user.givenName.trim(), user.surName.trim()].join(" ").trim();
+  const userName = [user.givenName.trim(), user.surName.trim()]
+    .join(" ")
+    .trim();
   const createdInfluence = await createInfluence({
     userEmail: user.email,
     hemocioneID: user.id,
     competitionId,
-    userName
+    userName,
   });
 
   return createdInfluence;
+};
 
-}
-
-export const getInfluenceByCodeAndCompetitionSlug = async (competitionSlug: string, code: string) => {
+export const getInfluenceByCodeAndCompetitionSlug = async (
+  competitionSlug: string,
+  code: string
+) => {
   const influence = await dbClient.influence.findFirst({
     where: {
       code,
@@ -115,4 +130,20 @@ export const getInfluenceByCodeAndCompetitionSlug = async (competitionSlug: stri
   });
 
   return influence;
-}
+};
+
+export const setInfluenceCompetitionTeamId = async (
+  influenceId: number,
+  competitionTeamId: number
+) => {
+  const updatedInfluence = await dbClient.influence.update({
+    where: {
+      id: influenceId,
+    },
+    data: {
+      competitionTeamId,
+    },
+  });
+
+  return updatedInfluence;
+};
