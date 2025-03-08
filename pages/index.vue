@@ -57,19 +57,20 @@ const { data: competitions } = await useAsyncData(
   { watch: [onGoing] }
 );
 
-const summaries = (competitions.value ?? []).map((competition) => ({
+const summaries = computed(() => competitions?.value.map((competition) => ({
   name: competition.name,
   start: dayjs(competition.start_at).toDate(),
   end: dayjs(competition.end_at).toDate(),
   slug: competition.slug,
   banner_background: competition.banner_background ?? undefined,
-}));
+})))
 
 const closedSummaries = computed(() =>
-  summaries.filter((summary) => summary.end < dayjs().toDate())
+  summaries.value.filter((summary) => summary.end < dayjs().toDate())
 );
+
 const onGoingSummaries = computed(() =>
-  summaries.filter((summary) => summary.end >= dayjs().toDate())
+  summaries.value.filter((summary) => summary.end >= dayjs().toDate()),
 );
 const filteredSummaries = computed(() =>
   onGoing.value ? onGoingSummaries.value : closedSummaries.value
