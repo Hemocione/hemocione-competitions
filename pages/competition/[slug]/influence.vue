@@ -6,7 +6,7 @@
           <ElIconArrowLeftBold />
         </ElIcon>
       </NuxtLink>
-      <h2>ajude pessoas a doarem sangue</h2>
+      <h2>inspire pessoas a doarem sangue</h2>
     </header>
     <div class="main-container">
       <div class="success">
@@ -134,7 +134,7 @@ const influencedTitle = computed(() => {
   const amountInfluence =
     competitionInfluence.value?.influence.amountInfluence || 0;
   if (amountInfluence === 0) {
-    return "Você ainda não indicou ninguém a doar sangue 🥲. Compartilhe seu link e ajude outras pessoas a salvarem vidas!";
+    return "Você ainda não indicou ninguém a doar sangue 🥲.";
   }
 
   if (amountInfluence === 1) {
@@ -203,7 +203,7 @@ const influencedMessage = computed(() => {
   const amountInfluence =
     competitionInfluence.value?.influence.amountInfluence || 0;
   if (!amountInfluence) {
-    return "Compartilhe seu link e ajude outras pessoas a salvarem vidas!";
+    return "Compartilhe seu link e inspire outras pessoas a salvarem vidas!";
   }
 
   return "Continue compartilhando seu link e influenciando mais pessoas 😀";
@@ -227,7 +227,7 @@ const zapUrl = getInfluenceWhatsappUrl(
 const more = async () => {
   const sharePayload = {
     title: competition.value?.name || "Copa Hemocione",
-    text: `Me ajude a salvar vidas! Doe sangue e participe da Copa Hemocione "${competition.value?.name}" de doação de sangue.`,
+    text: `Me inspire a salvar vidas! Doe sangue e participe da Copa Hemocione "${competition.value?.name}" de doação de sangue.`,
     url: shareUrl.value,
   };
   try {
