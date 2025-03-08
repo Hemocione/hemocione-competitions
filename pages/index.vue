@@ -30,7 +30,7 @@
                 `Ainda não há copas ${onGoing ? "disponíveis" : "encerradas"}`
               }}
             </p>
-            <img src="../public/images/rafiki.svg" />
+            <NuxtImg src="/images/rafiki.svg" />
           </div>
         </div>
         <CompetitionSummary v-for="summary in filteredSummaries" class="summaryBox" :key="summary.slug"
