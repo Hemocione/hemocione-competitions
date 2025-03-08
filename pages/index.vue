@@ -11,7 +11,7 @@
           Clique em uma copa para registrar sua doação ou acessar as
           informações.
         </p>
-        
+
         <div class="switch-container">
           <!-- Competition Status Switch -->
           <div class="switch-content">
@@ -33,7 +33,7 @@
             <img src="../public/images/rafiki.svg" />
           </div>
         </div>
-        <CompetitionSummary v-for="summary in filteredSummariesASCOrderd" class="summaryBox" :key="summary.slug"
+        <CompetitionSummary v-for="summary in filteredSummaries" class="summaryBox" :key="summary.slug"
           :title="summary.name" :start="summary.start" :end="summary.end" :slug="summary.slug"
           :banner_background="summary?.banner_background" />
       </div>
@@ -74,8 +74,6 @@ const onGoingSummaries = computed(() =>
 const filteredSummaries = computed(() =>
   onGoing.value ? onGoingSummaries.value : closedSummaries.value
 );
-
-const filteredSummariesASCOrderd = computed(() => filteredSummaries.value.sort((summary) => summary.start));
 
 const onGoingSwitchClass = computed(() => [
   "switch",
