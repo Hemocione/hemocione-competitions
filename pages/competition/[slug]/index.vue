@@ -94,7 +94,7 @@ import dayjs from "dayjs";
 import { useUserStore } from "~/store/user";
 import CommonRankingItemWithLogo from "~/components/common/RankingItemWithLogo.vue";
 
-const selectedType = ref<string>("");
+const selectedType = ref<"Equipe" | "Instituição">();
 const currentView = ref("Geral");
 
 const route = useRoute();
@@ -107,10 +107,10 @@ const slug = route.params.slug;
 const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
 const { data: engagements } = competition?.value?.has_likes
   ? await useFetch(`/api/v1/competitions/${slug}/engagements`)
-  : [];
+  : { data: ref([]) };
 const { data: influences } = competition?.value?.has_influence
   ? await useFetch(`/api/v1/competitions/${slug}/influence`)
-  : [];
+  : { data: ref([]) };
 
 const influenceRanking = computed(() => {
   return {
@@ -122,7 +122,6 @@ const influenceRanking = computed(() => {
           component: CommonRankingItemWithLogo,
           props: {
             label: c.user_name.split(" ")[0].trim(),
-            logo: c.logo,
           },
         },
         Influenciados: c.amountInfluence,
@@ -268,7 +267,7 @@ const labelByType = computed(() => {
     {
       Equipe: "Equipes",
       Instituição: "Instituições",
-    }[selectedType?.value] || "Equipes"
+    }[selectedType?.value ?? "Equipe"] || "Equipes"
   );
 });
 
@@ -296,7 +295,7 @@ const content = computed(() => {
     {
       Equipe: competitionTeams.value,
       Instituição: allInstitutionDonations.value,
-    }[selectedType.value] || competitionTeams.value
+    }[selectedType.value ?? "Equipe"] || competitionTeams.value
   );
 });
 
