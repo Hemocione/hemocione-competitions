@@ -14,7 +14,7 @@
         >
           {{ statusInfo.status }}
         </div>
-        <Transition name="fade" mode="out-in" appear>
+        <Transition name="fade" mode="out-in">
           <el-select
             v-if="allInstitutionDonations.length > 1 && isGeneralView"
             v-model="selectedType"
