@@ -71,6 +71,7 @@ defineProps<{
   display: flex;
   text-align: center;
   background-color: white;
+  align-items: center;
 }
 .f1 {
   flex: 1;

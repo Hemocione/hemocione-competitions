@@ -164,12 +164,11 @@ const mappedRankByCompetition = computed(() => {
     labels: ["#", labelByType.value, "Doações"],
     contents: content?.value?.map((c, idx) => ({
       "#": idx + 1 + "°",
-      // [labelByType.value]: c.name,
       [labelByType.value]: {
         component: CommonRankingItemWithLogo,
         props: {
           label: c.name,
-          // logo: c?.logo, SOON there will be a logo!
+          logo: c.logo_url,
         },
       },
       Doações: c.donation_count,
@@ -255,6 +254,7 @@ const competitionTeams = computed(() =>
         id: c.id,
         donation_count: c.donation_count,
         name: c.teams.name,
+        logo_url: c.teams.logo_url,
       })),
       "donation_count"
     )
@@ -284,6 +284,7 @@ const allInstitutionDonations = computed(() => {
         (acc, curr) => acc + (curr?.donation_count ?? 0),
         0
       ),
+      logo_url: value[0].logo_url,
     })
   );
 

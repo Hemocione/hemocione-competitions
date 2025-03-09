@@ -22,7 +22,16 @@
               #icon
               v-if="competitionInfluence?.influence.competitionTeamId"
             >
+              <NuxtImg
+                v-if="currentInfluenceTeam?.logo_url"
+                :src="currentInfluenceTeam?.logo_url"
+                alt="Logo"
+                class="logo_button"
+                height="24"
+                width="24"
+              />
               <CommonNameCircleAvatar
+                v-else
                 :name="currentInfluenceTeamName || teamButtonLabel || ''"
                 :size="24"
                 style="border: 1px solid white"
@@ -68,12 +77,14 @@
       :visible="teamDrawer"
       direction="btt"
       @close="teamDrawer = false"
+      size="40%"
     >
       <TransitionGroup name="slide-fade-down" appear>
         <ElSelect
           v-model="selectedInstitution"
           placeholder="Selecione a instituição"
           clearable
+          size="large"
           style="width: 100%; margin-bottom: 8px"
           v-if="institutions.length > 1"
           key="select-institution"
@@ -86,7 +97,19 @@
             :value="institution.id"
           >
             <div class="selection-wrapper">
-              <CommonNameCircleAvatar :name="institution?.name" :size="20" />
+              <NuxtImg
+                v-if="institution?.logo_url"
+                :src="institution?.logo_url"
+                alt="Logo"
+                class="logo_option"
+                height="20"
+                width="20"
+              />
+              <CommonNameCircleAvatar
+                v-else
+                :name="institution?.name"
+                :size="20"
+              />
               <span>{{ institution?.name }}</span>
             </div>
           </ElOption>
@@ -98,7 +121,7 @@
           required
           filterable
           style="width: 100%"
-          :disabled="loadingSaveTeam"
+          :disabled="!selectedInstitution || loadingSaveTeam"
         >
           <ElOption
             v-for="compTeam in competitionTeams"
@@ -107,7 +130,16 @@
             :value="compTeam.id"
           >
             <div class="selection-wrapper">
+              <NuxtImg
+                v-if="compTeam?.teams?.logo_url"
+                :src="compTeam?.teams?.logo_url"
+                alt="Logo"
+                class="logo_option"
+                height="20"
+                width="20"
+              />
               <CommonNameCircleAvatar
+                v-else
                 :name="compTeam?.teams?.name"
                 :size="20"
               />
@@ -115,19 +147,19 @@
             </div>
           </ElOption>
         </ElSelect>
-        <ElButton
-          @click="saveTeam"
-          type="success"
-          size="large"
-          style="width: 100%; margin-top: 1rem"
-          :loading="loadingSaveTeam"
-          :disabled="
-            !selectedCompTeamId || !selectedInstitution || loadingSaveTeam
-          "
-        >
-          Salvar
-        </ElButton>
       </TransitionGroup>
+      <ElButton
+        @click="saveTeam"
+        type="success"
+        size="large"
+        style="width: 100%; margin-top: 1rem"
+        :loading="loadingSaveTeam"
+        :disabled="
+          !selectedCompTeamId || !selectedInstitution || loadingSaveTeam
+        "
+      >
+        Salvar
+      </ElButton>
     </ElDrawer>
   </div>
 </template>
@@ -145,15 +177,20 @@ const competitionInfluence = ref(
   await userStore.getCompetitionInfluence(competitionSlug)
 );
 
+const currentInfluenceTeam = computed(
+  () =>
+    competition.value?.competitionTeams.find(
+      (e) => e.id === competitionInfluence.value?.influence.competitionTeamId
+    )?.teams
+);
+
 const currentInfluenceTeamName = computed(() => {
   const influenceCompetitionTeamId =
     competitionInfluence.value?.influence.competitionTeamId;
   if (!influenceCompetitionTeamId) {
     return "";
   }
-  return competition.value?.competitionTeams.find(
-    (e) => e.id === influenceCompetitionTeamId
-  )?.teams?.name;
+  return currentInfluenceTeam.value?.name;
 });
 
 if (!competitionInfluence.value) {
@@ -212,11 +249,15 @@ const getCompTeamInstitutionid = (compTeamId: number) =>
 
 const selectedCompTeamId = ref<number>();
 if (competitionInfluence.value?.influence.competitionTeamId) {
-  selectedCompTeamId.value =
-    competitionInfluence.value?.influence.competitionTeamId;
   selectedInstitution.value = getCompTeamInstitutionid(
-    selectedCompTeamId.value
+    competitionInfluence.value?.influence.competitionTeamId
   );
+  nextTick(() => {
+    if (competitionInfluence.value?.influence.competitionTeamId) {
+      selectedCompTeamId.value =
+        competitionInfluence.value?.influence.competitionTeamId;
+    }
+  });
 }
 
 const competitionTeams = computed(() =>
@@ -460,5 +501,21 @@ const saveTeam = async () => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.logo_option {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #e6e6e6;
+  object-fit: cover;
+}
+
+.logo_button {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid white;
+  object-fit: cover;
 }
 </style>

@@ -36,7 +36,16 @@
                 :value="institution?.id ?? idx"
               >
                 <div class="selection-wrapper">
+                  <NuxtImg
+                    v-if="institution?.logo_url"
+                    :src="institution?.logo_url"
+                    alt="Logo"
+                    class="logo_option"
+                    height="20"
+                    width="20"
+                  />
                   <CommonNameCircleAvatar
+                    v-else
                     :name="institution?.name"
                     :size="20"
                   />
@@ -63,7 +72,16 @@
                 :value="compTeam.id"
               >
                 <div class="selection-wrapper">
+                  <NuxtImg
+                    v-if="compTeam?.teams?.logo_url"
+                    :src="compTeam?.teams?.logo_url"
+                    alt="Logo"
+                    class="logo_option"
+                    height="20"
+                    width="20"
+                  />
                   <CommonNameCircleAvatar
+                    v-else
                     :name="compTeam?.teams?.name"
                     :size="20"
                   />
@@ -622,5 +640,13 @@ async function handleSubmit(event: any) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.logo_option {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #e6e6e6;
+  object-fit: cover;
 }
 </style>

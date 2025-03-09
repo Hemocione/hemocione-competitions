@@ -1,7 +1,14 @@
 <template>
   <div class="ranking-item">
-    <img v-if="logo" :src="logo" alt="Logo" class="ranking-item__logo" />
-    <CommonNameCircleAvatar v-else :name="label" :size="20" />
+    <NuxtImg
+      v-if="logo"
+      :src="logo"
+      alt="Logo"
+      class="ranking-item__logo"
+      height="25"
+      width="25"
+    />
+    <CommonNameCircleAvatar v-else :name="label" :size="25" />
 
     <ElTooltip v-if="isOverflowing" :content="label" placement="top">
       <span ref="labelRef" class="ranking-item__label">{{ label }}</span>
@@ -45,11 +52,11 @@ onMounted(async () => {
   width: 100%;
 }
 
-.ranking-item__logo,
-.ranking-item__avatar {
-  width: 20px;
-  height: 20px;
+.ranking-item__logo {
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
+  border: 1px solid #e6e6e6;
   object-fit: cover;
 }
 
