@@ -8,7 +8,11 @@
       height="25"
       width="25"
     />
-    <CommonNameCircleAvatar v-else :name="label" :size="25" />
+    <CommonNameCircleAvatar
+      v-else
+      :name="avatarGeneratorLabel ?? label"
+      :size="25"
+    />
 
     <ElTooltip v-if="isOverflowing" :content="label" placement="top">
       <span ref="labelRef" class="ranking-item__label">{{ label }}</span>
@@ -25,6 +29,10 @@ defineProps({
   label: {
     type: String,
     required: true,
+  },
+  avatarGeneratorLabel: {
+    type: String,
+    default: null,
   },
   logo: {
     type: String,

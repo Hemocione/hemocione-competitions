@@ -122,6 +122,7 @@ const influenceRanking = computed(() => {
           component: CommonRankingItemWithLogo,
           props: {
             label: c.user_name.split(" ")[0].trim(),
+            avatarGeneratorLabel: c.user_name, // use whole username to generate avatar initials
           },
         },
         Influenciados: c.amountInfluence,
