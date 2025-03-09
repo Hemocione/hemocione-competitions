@@ -14,12 +14,24 @@
         <div v-if="competition?.influence_controls_team" style="width: 100%">
           <ElButton
             @click="toggleTeamDrawer"
-            :icon="ElIconFlag"
             class="hemo-button"
             type="primary"
             size="large"
           >
-            {{ teamButtonLabel }}
+            <template
+              #icon
+              v-if="competitionInfluence?.influence.competitionTeamId"
+            >
+              <CommonNameCircleAvatar
+                :name="currentInfluenceTeamName || teamButtonLabel || ''"
+                :size="24"
+                style="border: 1px solid white"
+              />
+            </template>
+            <template #icon v-else>
+              <ElIconFlag />
+            </template>
+            {{ currentInfluenceTeamName || teamButtonLabel }}
           </ElButton>
           <span class="disclaimer-copy"
             >As próximas doações feitas por pessoas influenciadas por você serão
@@ -62,7 +74,7 @@
           v-model="selectedInstitution"
           placeholder="Selecione a instituição"
           clearable
-          style="width: 100%"
+          style="width: 100%; margin-bottom: 8px"
           v-if="institutions.length > 1"
           key="select-institution"
           :disabled="loadingSaveTeam"
@@ -72,7 +84,12 @@
             :key="institution.id"
             :label="institution.name"
             :value="institution.id"
-          />
+          >
+            <div class="selection-wrapper">
+              <CommonNameCircleAvatar :name="institution?.name" :size="20" />
+              <span>{{ institution?.name }}</span>
+            </div>
+          </ElOption>
         </ElSelect>
         <ElSelect
           v-model="selectedCompTeamId"
@@ -89,7 +106,13 @@
             :label="compTeam?.teams?.name ?? compTeam.id"
             :value="compTeam.id"
           >
-            {{ compTeam.teams?.name }}
+            <div class="selection-wrapper">
+              <CommonNameCircleAvatar
+                :name="compTeam?.teams?.name"
+                :size="20"
+              />
+              <span>{{ compTeam?.teams?.name }}</span>
+            </div>
           </ElOption>
         </ElSelect>
         <ElButton
@@ -121,6 +144,18 @@ const competitionSlug = String(route.params.slug);
 const competitionInfluence = ref(
   await userStore.getCompetitionInfluence(competitionSlug)
 );
+
+const currentInfluenceTeamName = computed(() => {
+  const influenceCompetitionTeamId =
+    competitionInfluence.value?.influence.competitionTeamId;
+  if (!influenceCompetitionTeamId) {
+    return "";
+  }
+  return competition.value?.competitionTeams.find(
+    (e) => e.id === influenceCompetitionTeamId
+  )?.teams?.name;
+});
+
 if (!competitionInfluence.value) {
   await navigateTo(`/competition/${competitionSlug}`);
   throw new Error("Competition not found");
@@ -160,6 +195,16 @@ const selectedInstitution = ref<number>();
 if (institutions.value.length === 1) {
   selectedInstitution.value = institutions.value[0].id;
 }
+
+watch(
+  () => selectedInstitution.value,
+  (newValue) => {
+    if (!newValue) {
+      return;
+    }
+    selectedCompTeamId.value = undefined;
+  }
+);
 
 const getCompTeamInstitutionid = (compTeamId: number) =>
   competition.value?.competitionTeams.find((e) => e.id === compTeamId)?.teams
@@ -384,6 +429,11 @@ const saveTeam = async () => {
   width: 100%;
 }
 
+.hemo-button:deep(.el-icon) {
+  width: 25px;
+  height: 25px;
+}
+
 .hemo-button:deep(span) {
   max-width: 80%;
   white-space: nowrap;
@@ -396,5 +446,19 @@ const saveTeam = async () => {
   font-size: 0.75rem;
   color: var(--hemo-color-text-secondary);
   text-align: center;
+}
+
+.selection-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.selection-wrapper span {
+  max-width: 70vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

@@ -35,7 +35,13 @@
                 :label="institution?.name ?? idx"
                 :value="institution?.id ?? idx"
               >
-                {{ institution?.name }}
+                <div class="selection-wrapper">
+                  <CommonNameCircleAvatar
+                    :name="institution?.name"
+                    :size="20"
+                  />
+                  <span>{{ institution?.name }}</span>
+                </div>
               </el-option>
             </el-select>
           </div>
@@ -56,7 +62,15 @@
                 :label="compTeam?.teams?.name ?? compTeam.id"
                 :value="compTeam.id"
               >
-                {{ compTeam.teams?.name }}
+                <div class="selection-wrapper">
+                  <CommonNameCircleAvatar
+                    :name="compTeam?.teams?.name"
+                    :size="20"
+                  />
+                  <span>
+                    {{ compTeam.teams?.name }}
+                  </span>
+                </div>
               </el-option>
             </el-select>
           </div>
@@ -594,5 +608,19 @@ async function handleSubmit(event: any) {
   background-color: #f3f2f1 !important;
   display: flex;
   text-wrap: wrap;
+}
+
+.selection-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.selection-wrapper span {
+  max-width: 70vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
