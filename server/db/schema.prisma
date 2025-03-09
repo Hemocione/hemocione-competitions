@@ -10,6 +10,7 @@ datasource db {
 model institutions {
   id        Int      @id @default(autoincrement())
   name      String   @unique @db.VarChar(255)
+  logo_url  String?  @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   teams     teams[]
@@ -18,6 +19,7 @@ model institutions {
 model teams {
   id               Int                @id @default(autoincrement())
   name             String             @db.VarChar(255)
+  logo_url         String?            @db.VarChar(255)
   institutionId    Int
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt

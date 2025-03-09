@@ -10,13 +10,26 @@
       v-for="(content, idx) in ranking.contents"
       :key="idx"
     >
-      <span
-        v-for="label in ranking.labels"
-        :key="label"
-        :class="{ 'bold-text': content.shouldHighlight, f1: true }"
-      >
-        {{ `${content[label]}` || "" }}
-      </span>
+      <template v-for="label in ranking.labels">
+        <span
+          :key="`${label}-text`"
+          :class="{ 'bold-text': content.shouldHighlight, f1: true }"
+          v-if="
+            typeof content[label] === 'string' ||
+            typeof content[label] === 'number' ||
+            content[label] === null
+          "
+        >
+          {{ `${content[label]}` || "" }}
+        </span>
+        <component
+          :key="`${label}-component`"
+          v-else-if="content[label]?.component"
+          :is="(content[label] as any)?.component"
+          v-bind="(content[label] as any)?.props"
+          :class="{ 'bold-text': content.shouldHighlight, f1: true }"
+        />
+      </template>
     </div>
   </div>
 </template>
@@ -25,7 +38,16 @@
 defineProps<{
   ranking: {
     labels: string[];
-    contents: Record<string, string | number | null>[];
+    contents: Record<
+      string,
+      | string
+      | number
+      | null
+      | {
+          component: Component;
+          props?: Record<string, unknown>;
+        }
+    >[];
   };
 }>();
 </script>
@@ -49,9 +71,13 @@ defineProps<{
   display: flex;
   text-align: center;
   background-color: white;
+  align-items: center;
 }
 .f1 {
   flex: 1;
+  text-align: center;
+  justify-content: center;
+  height: 100%;
 }
 .bold-text {
   font-weight: 700;

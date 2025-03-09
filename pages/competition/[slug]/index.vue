@@ -8,29 +8,64 @@
         <h2 class="competition-name">{{ competitionName }}</h2>
       </div>
       <div class="status-teams">
-        <div class="details-status" :style="`background-color:${statusInfo.color}`">
+        <div
+          class="details-status"
+          :style="`background-color:${statusInfo.color}`"
+        >
           {{ statusInfo.status }}
         </div>
-        <Transition name="fade" mode="out-in" appear>
-          <el-select v-if="allInstitutionDonations.length > 1 && isGeneralView" v-model="selectedType"
-            class="detail-team-select" placeholder="Ranking" value-key="id">
-            <el-option v-for="(type, idx) in rankingTypes" :label="type" :value="type" :key="idx" />
+        <Transition name="fade" mode="out-in">
+          <el-select
+            v-if="allInstitutionDonations.length > 1 && isGeneralView"
+            v-model="selectedType"
+            class="detail-team-select"
+            placeholder="Ranking"
+            value-key="id"
+          >
+            <el-option
+              v-for="(type, idx) in rankingTypes"
+              :label="type"
+              :value="type"
+              :key="idx"
+            />
           </el-select>
         </Transition>
       </div>
-      <Switch v-if="mappedSwitchsByCompetition" :items="mappedSwitchsByCompetition"
-        @update:selected="currentView = $event" class="switch-content" />
+      <Switch
+        v-if="mappedSwitchsByCompetition"
+        :items="mappedSwitchsByCompetition"
+        @update:selected="currentView = $event"
+        class="switch-content"
+      />
       <Transition name="slide-fade-right" mode="out-in" appear>
-        <FlowGeneral v-if="isGeneralView" :mappedRankByCompetition="mappedRankByCompetition"
-          :donationsAmount="donationsAmount" />
-        <FlowEngagement v-else-if="isEngagementView" :mappedRankByCompetition="mappedRankByCompetition"
-          :engagementAmount="engagementAmount" />
-        <FlowInfluence v-else-if="isInfluenceView" :influenceRanking="influenceRanking" :slug="slug"
-          :competition-ended="competitionEnded" />
+        <FlowGeneral
+          v-if="isGeneralView"
+          :mappedRankByCompetition="mappedRankByCompetition"
+          :donationsAmount="donationsAmount"
+        />
+        <FlowEngagement
+          v-else-if="isEngagementView"
+          :mappedRankByCompetition="mappedRankByCompetition"
+          :engagementAmount="engagementAmount"
+        />
+        <FlowInfluence
+          v-else-if="isInfluenceView"
+          :influenceRanking="influenceRanking"
+          :slug="slug"
+          :competition-ended="competitionEnded"
+        />
       </Transition>
     </div>
-    <common-cool-footer v-if="donationsIsOpen" hide-toggle height="fit-content" desktop-border-radius="0">
-      <NuxtLink :to="`/competition/${slug}/influence`" v-if="competition?.has_influence">
+    <common-cool-footer
+      v-if="donationsIsOpen"
+      hide-toggle
+      height="fit-content"
+      desktop-border-radius="0"
+    >
+      <NuxtLink
+        :to="`/competition/${slug}/influence`"
+        v-if="competition?.has_influence"
+      >
         <el-button size="large">
           <template #icon>
             <el-icon>
@@ -41,10 +76,13 @@
         </el-button>
       </NuxtLink>
       <NuxtLink :to="`/competition/${slug}/register`">
-        <el-button type="primary" size="large"><template #icon>
+        <el-button type="primary" size="large"
+          ><template #icon>
             <el-icon>
               <ElIconCirclePlusFilled />
-            </el-icon> </template>Registrar doação</el-button>
+            </el-icon> </template
+          >Registrar doação</el-button
+        >
       </NuxtLink>
     </common-cool-footer>
   </div>
@@ -54,8 +92,9 @@
 import _ from "lodash";
 import dayjs from "dayjs";
 import { useUserStore } from "~/store/user";
+import CommonRankingItemWithLogo from "~/components/common/RankingItemWithLogo.vue";
 
-const selectedType = ref<string>("");
+const selectedType = ref<"Equipe" | "Instituição">();
 const currentView = ref("Geral");
 
 const route = useRoute();
@@ -68,10 +107,10 @@ const slug = route.params.slug;
 const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
 const { data: engagements } = competition?.value?.has_likes
   ? await useFetch(`/api/v1/competitions/${slug}/engagements`)
-  : [];
+  : { data: ref([]) };
 const { data: influences } = competition?.value?.has_influence
   ? await useFetch(`/api/v1/competitions/${slug}/influence`)
-  : [];
+  : { data: ref([]) };
 
 const influenceRanking = computed(() => {
   return {
@@ -79,7 +118,13 @@ const influenceRanking = computed(() => {
     contents:
       influences?.value?.map((c, idx) => ({
         "#": `${idx + 1}°`,
-        Influenciador: c.user_name.split(" ")[0].trim(),
+        Influenciador: {
+          component: CommonRankingItemWithLogo,
+          props: {
+            label: c.user_name.split(" ")[0].trim(),
+            avatarGeneratorLabel: c.user_name, // use whole username to generate avatar initials
+          },
+        },
         Influenciados: c.amountInfluence,
         hemocioneID: c.hemocioneID,
         shouldHighlight: c.hemocioneID === user.value?.id,
@@ -120,7 +165,13 @@ const mappedRankByCompetition = computed(() => {
     labels: ["#", labelByType.value, "Doações"],
     contents: content?.value?.map((c, idx) => ({
       "#": idx + 1 + "°",
-      [labelByType.value]: c.name,
+      [labelByType.value]: {
+        component: CommonRankingItemWithLogo,
+        props: {
+          label: c.name,
+          logo: c.logo_url,
+        },
+      },
       Doações: c.donation_count,
     })),
   };
@@ -204,6 +255,7 @@ const competitionTeams = computed(() =>
         id: c.id,
         donation_count: c.donation_count,
         name: c.teams.name,
+        logo_url: c.teams.logo_url,
       })),
       "donation_count"
     )
@@ -216,7 +268,7 @@ const labelByType = computed(() => {
     {
       Equipe: "Equipes",
       Instituição: "Instituições",
-    }[selectedType?.value] || "Equipes"
+    }[selectedType?.value ?? "Equipe"] || "Equipes"
   );
 });
 
@@ -233,6 +285,7 @@ const allInstitutionDonations = computed(() => {
         (acc, curr) => acc + (curr?.donation_count ?? 0),
         0
       ),
+      logo_url: value[0].logo_url,
     })
   );
 
@@ -244,7 +297,7 @@ const content = computed(() => {
     {
       Equipe: competitionTeams.value,
       Instituição: allInstitutionDonations.value,
-    }[selectedType.value] || competitionTeams.value
+    }[selectedType.value ?? "Equipe"] || competitionTeams.value
   );
 });
 

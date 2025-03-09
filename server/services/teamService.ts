@@ -14,7 +14,9 @@ export const createTeamsForInstitution = async (
   if (duplicatedTeamNames.length > 0) {
     throw createError({
       statusCode: 400,
-      statusMessage: `Os nomes [${duplicatedTeamNames.join(', ')}] já estão sendo utilizados`,
+      statusMessage: `Os nomes [${duplicatedTeamNames.join(
+        ", "
+      )}] já estão sendo utilizados`,
     });
   }
   const createdTeams = await dbClient.teams.createMany({
@@ -25,12 +27,12 @@ export const createTeamsForInstitution = async (
   });
 
   return createdTeams;
-}
+};
 
 export const createTeam = async (name: string, institutionId: number) => {
   const duplicatedTeam = await dbClient.teams.findFirst({
     where: { institutionId, name }, // Não poderíamos olhar apenas o name e não o institutuin ID
-  }); 
+  });
 
   if (duplicatedTeam) {
     throw new Error(`O nome '${name}' já está sendo utilizado`);
@@ -46,11 +48,11 @@ export const createTeam = async (name: string, institutionId: number) => {
   return createdTeam;
 };
 
-
 export const editTeam = async (
   name: string,
   id: number,
-  institutionId: number
+  institutionId: number,
+  logo_url?: string
 ) => {
   const duplicatedTeam = await dbClient.teams.findFirst({
     where: { name, institutionId, id: { not: id } },
@@ -59,14 +61,15 @@ export const editTeam = async (
   if (duplicatedTeam) {
     throw createError({
       statusCode: 400,
-      statusMessage: `O nome '${name}' já está sendo utilizado`
-    })
+      statusMessage: `O nome '${name}' já está sendo utilizado`,
+    });
   }
 
   const updatedTeam = await dbClient.teams.update({
     where: { id: id },
     data: {
       name: name,
+      logo_url: logo_url,
     },
   });
 
