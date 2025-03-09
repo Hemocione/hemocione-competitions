@@ -64,8 +64,10 @@ const getCompetitionBySlugPromise = (slug: string) => {
             select: {
               name: true,
               id: true,
+              logo_url: true,
               institutions: {
                 select: {
+                  logo_url: true,
                   name: true,
                   id: true,
                 },
