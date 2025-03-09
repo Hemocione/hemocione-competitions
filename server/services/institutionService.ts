@@ -1,8 +1,6 @@
 import { dbClient } from "../db";
 
-export const getRankingByCompetitionId = async (
-  competitionId: any
-) => {
+export const getRankingByCompetitionId = async (competitionId: any) => {
   const id = parseInt(competitionId);
   if (!Number.isInteger(id)) return [];
 
@@ -21,28 +19,32 @@ export const getRankingByCompetitionId = async (
   return result;
 };
 
-
-export const createInstitution = async (name: string) => {
+export const createInstitution = async (name: string, logo_url?: string) => {
   const createdInstitution = await dbClient.institutions.create({
     data: {
       name: name,
+      logo_url: logo_url,
     },
   });
 
   return createdInstitution;
 };
 
-export const editInstitution = async (id: number, name: string) => {
+export const editInstitution = async (
+  id: number,
+  name: string,
+  logo_url?: string
+) => {
   const updatedInstitution = await dbClient.institutions.update({
     where: { id: id },
     data: {
       name: name,
+      logo_url: logo_url,
     },
   });
 
   return updatedInstitution;
 };
-
 
 export const deleteInstitution = async (id: number) => {
   const deletedInstitution = await dbClient.institutions.delete({
