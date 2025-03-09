@@ -6,7 +6,7 @@
           <ElIconArrowLeftBold />
         </ElIcon>
       </NuxtLink>
-      <h2>Influencie pessoas a doarem sangue</h2>
+      <h2>inspire pessoas a doarem sangue</h2>
     </header>
     <div class="main-container">
       <div class="success">
@@ -134,16 +134,16 @@ const influencedTitle = computed(() => {
   const amountInfluence =
     competitionInfluence.value?.influence.amountInfluence || 0;
   if (amountInfluence === 0) {
-    return "<b>Você ainda não influenciou ninguém a doar sangue 🥲</b>";
+    return "Você ainda não indicou ninguém a doar sangue 🥲.";
   }
 
   if (amountInfluence === 1) {
-    return "Até agora você influenciou <b>1 pessoa</b> a doar sangue, salvando até <b>4 vidas</b>!";
+    return "Até agora você indicou <b>1 pessoa</b> a doar sangue, salvando até <b>4 vidas</b>! Continue compartilhando seu link e indicando mais pessoas 😀";
   }
 
-  return `Até agora você influenciou <b>${amountInfluence} pessoas</b> a doarem sangue, salvando até <b>${
+  return `Até agora você indicou <b>${amountInfluence} pessoas</b> a doar sangue, salvando <b>${
     amountInfluence * 4
-  } vidas</b>!`;
+  } vidas</b>! Continue compartilhando seu link e indicando mais pessoas 😀`;
 });
 
 const institutions = computed(() =>
@@ -203,7 +203,7 @@ const influencedMessage = computed(() => {
   const amountInfluence =
     competitionInfluence.value?.influence.amountInfluence || 0;
   if (!amountInfluence) {
-    return "Compartilhe seu link e influencie outras pessoas a salvarem vidas!";
+    return "Compartilhe seu link e inspire outras pessoas a salvarem vidas!";
   }
 
   return "Continue compartilhando seu link e influenciando mais pessoas 😀";
@@ -227,7 +227,7 @@ const zapUrl = getInfluenceWhatsappUrl(
 const more = async () => {
   const sharePayload = {
     title: competition.value?.name || "Copa Hemocione",
-    text: `Me ajude a salvar vidas! Doe sangue e participe da Copa Hemocione "${competition.value?.name}" de doação de sangue.`,
+    text: `Me inspire a salvar vidas! Doe sangue e participe da Copa Hemocione "${competition.value?.name}" de doação de sangue.`,
     url: shareUrl.value,
   };
   try {
