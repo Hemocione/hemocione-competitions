@@ -227,7 +227,7 @@ const zapUrl = getInfluenceWhatsappUrl(
 const more = async () => {
   const sharePayload = {
     title: competition.value?.name || "Copa Hemocione",
-    text: `Me inspire a salvar vidas! Doe sangue e participe da Copa Hemocione "${competition.value?.name}" de doação de sangue.`,
+    text: `Salve vidas comigo! Doe sangue e participe da Copa Hemocione "${competition.value?.name}" de doação de sangue.`,
     url: shareUrl.value,
   };
   try {
