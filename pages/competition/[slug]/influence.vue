@@ -138,7 +138,7 @@ const influencedTitle = computed(() => {
   }
 
   if (amountInfluence === 1) {
-    return "Até agora você indicou <b>1 pessoa</b> a doar sangue, salvando até <b>4 vidas</b>! Continue compartilhando seu link e indicando mais pessoas 😀";
+    return "Até agora você indicou <b>1 pessoa</b>, salvando até <b>4 vidas</b>!";
   }
 
   return `Até agora você indicou <b>${amountInfluence} pessoas</b> a doar sangue, salvando <b>${
