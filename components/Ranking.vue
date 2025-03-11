@@ -14,19 +14,15 @@
         <span
           :key="`${label}-text`"
           :class="{ 'bold-text': content.shouldHighlight, f1: true }"
-          v-if="
-            typeof content[label] === 'string' ||
-            typeof content[label] === 'number' ||
-            content[label] === null
-          "
+          v-if="isContentLabelSimpleContent(content[label])"
         >
           {{ `${content[label]}` || "" }}
         </span>
         <component
+          v-else
           :key="`${label}-component`"
-          v-else-if="content[label]?.component"
-          :is="(content[label] as any)?.component"
-          v-bind="(content[label] as any)?.props"
+          :is="content[label].component"
+          v-bind="content[label].props"
           :class="{ 'bold-text': content.shouldHighlight, f1: true }"
         />
       </template>
@@ -35,14 +31,14 @@
 </template>
 
 <script setup lang="ts">
+type SimpleContent = string | number | null;
+
 defineProps<{
   ranking: {
     labels: string[];
     contents: Record<
       string,
-      | string
-      | number
-      | null
+      | SimpleContent
       | {
           component: Component;
           props?: Record<string, unknown>;
@@ -50,6 +46,16 @@ defineProps<{
     >[];
   };
 }>();
+
+const isContentLabelSimpleContent = (
+  contentLabel: unknown
+): contentLabel is SimpleContent => {
+  return (
+    typeof contentLabel === "string" ||
+    typeof contentLabel === "number" ||
+    contentLabel === null
+  );
+};
 </script>
 
 <style scoped>
