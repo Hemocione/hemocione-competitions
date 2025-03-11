@@ -3,8 +3,8 @@ import { createInstitution } from "~/server/services/institutionService";
 
 export default defineEventHandler(async (event) => {
   assertSecretAuth(event);
-  const body = await readBody(event)
-  const { name } = body
+  const body = await readBody(event);
+  const { name, logo_url } = body;
   if (!name) {
     throw createError({
       statusCode: 400,
@@ -12,6 +12,6 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const createdInstitution = await createInstitution(name);
+  const createdInstitution = await createInstitution(name, logo_url);
   return createdInstitution;
 });

@@ -15,6 +15,8 @@ export default defineEventHandler(async (event) => {
     banner_background,
     has_influence,
     has_likes,
+    influence_controls_team,
+    proof_type,
   } = body;
   if (!name || !startsAt || !endsAt || _.isBoolean(mandatoryProof) === false) {
     throw createError({
@@ -36,6 +38,8 @@ export default defineEventHandler(async (event) => {
     banner_background,
     has_influence,
     has_likes,
+    influence_controls_team,
+    proof_type,
   });
   return editedCompetition;
 });

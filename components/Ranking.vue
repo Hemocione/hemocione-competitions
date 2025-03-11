@@ -10,24 +10,52 @@
       v-for="(content, idx) in ranking.contents"
       :key="idx"
     >
-      <span
-        v-for="label in ranking.labels"
-        :key="label"
-        :class="{ 'bold-text': content.shouldHighlight, f1: true }"
-      >
-        {{ `${content[label]}` || "" }}
-      </span>
+      <template v-for="label in ranking.labels">
+        <span
+          :key="`${label}-text`"
+          :class="{ 'bold-text': content.shouldHighlight, f1: true }"
+          v-if="isContentLabelSimpleContent(content[label])"
+        >
+          {{ `${content[label]}` || "" }}
+        </span>
+        <component
+          v-else
+          :key="`${label}-component`"
+          :is="content[label].component"
+          v-bind="content[label].props"
+          :class="{ 'bold-text': content.shouldHighlight, f1: true }"
+        />
+      </template>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+type SimpleContent = string | number | null;
+
 defineProps<{
   ranking: {
     labels: string[];
-    contents: Record<string, string | number | null>[];
+    contents: Record<
+      string,
+      | SimpleContent
+      | {
+          component: Component;
+          props?: Record<string, unknown>;
+        }
+    >[];
   };
 }>();
+
+const isContentLabelSimpleContent = (
+  contentLabel: unknown
+): contentLabel is SimpleContent => {
+  return (
+    typeof contentLabel === "string" ||
+    typeof contentLabel === "number" ||
+    contentLabel === null
+  );
+};
 </script>
 
 <style scoped>
@@ -49,9 +77,13 @@ defineProps<{
   display: flex;
   text-align: center;
   background-color: white;
+  align-items: center;
 }
 .f1 {
   flex: 1;
+  text-align: center;
+  justify-content: center;
+  height: 100%;
 }
 .bold-text {
   font-weight: 700;
