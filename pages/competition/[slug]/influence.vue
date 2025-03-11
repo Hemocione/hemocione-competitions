@@ -119,7 +119,6 @@
           size="large"
           :placeholder="'Selecione sua equipe'"
           required
-          filterable
           style="width: 100%"
           :disabled="!selectedInstitution || loadingSaveTeam"
         >
