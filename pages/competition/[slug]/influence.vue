@@ -141,9 +141,8 @@ const influencedTitle = computed(() => {
     return "Até agora você indicou <b>1 pessoa</b>, salvando até <b>4 vidas</b>!";
   }
 
-  return `Até agora você indicou <b>${amountInfluence} pessoas</b> a doar sangue, salvando até <b>${
-    amountInfluence * 4
-  } vidas</b>! Continue compartilhando seu link e indicando mais pessoas 😀`;
+  return `Até agora você indicou <b>${amountInfluence} pessoas</b> a doar sangue, salvando até <b>${amountInfluence * 4
+    } vidas</b>!`;
 });
 
 const institutions = computed(() =>
