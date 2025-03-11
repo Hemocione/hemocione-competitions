@@ -57,7 +57,7 @@
               <ElIconShare />
             </el-icon>
           </template>
-          Influencie mais pessoas a doarem sangue
+          Inspire mais pessoas a doarem sangue
         </el-button>
       </NuxtLink>
       <NuxtLink :to="`/competition/${slug}/register`">

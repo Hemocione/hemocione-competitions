@@ -1,7 +1,7 @@
 <template>
   <div>
     <p v-if="!competitionEnded">
-      Faça a diferença ao participar do nosso Ranking de Influência! Conquiste
+      Faça a diferença ao participar do nosso Ranking de Indicações! Conquiste
       uma posição de destaque ao inspirar outras pessoas a doar. Quanto mais
       você engajar, mais alto será seu ranking. Juntos, podemos transformar
       vidas.
