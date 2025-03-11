@@ -16,7 +16,7 @@
         </div>
         <Transition name="fade" mode="out-in">
           <el-select
-            v-if="allInstitutionDonations.length > 1 && isGeneralView"
+            v-if="shouldShowRankingTypeSelect"
             v-model="selectedType"
             class="detail-team-select"
             placeholder="Ranking"
@@ -318,7 +318,10 @@ const content = computed(() => {
 const isGeneralView = computed(() => currentView?.value === "Geral");
 const isEngagementView = computed(() => currentView?.value === "Engajamento");
 const isInfluenceView = computed(() => currentView?.value === "Indicação");
-const back = () => router.back();
+
+const shouldShowRankingTypeSelect = computed(
+  () => allInstitutionDonations.value.length > 1 && isGeneralView.value
+);
 </script>
 
 <style scoped>
