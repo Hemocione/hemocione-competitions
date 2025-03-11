@@ -77,7 +77,7 @@
       :visible="teamDrawer"
       direction="btt"
       @close="teamDrawer = false"
-      size="40%"
+      size="260px"
     >
       <TransitionGroup name="slide-fade-down" appear>
         <ElSelect
@@ -152,7 +152,7 @@
         @click="saveTeam"
         type="success"
         size="large"
-        style="width: 100%; margin-top: 1rem"
+        style="width: 100%; margin-top: auto"
         :loading="loadingSaveTeam"
         :disabled="
           !selectedCompTeamId || !selectedInstitution || loadingSaveTeam
@@ -521,5 +521,10 @@ const saveTeam = async () => {
   border-radius: 50%;
   border: 1px solid white;
   object-fit: cover;
+}
+
+.main:deep(.el-drawer__body) {
+  display: flex;
+  flex-direction: column;
 }
 </style>
