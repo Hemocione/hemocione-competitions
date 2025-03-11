@@ -6,7 +6,7 @@
           <ElIconArrowLeftBold />
         </ElIcon>
       </NuxtLink>
-      <h2>inspire pessoas a doarem sangue</h2>
+      <h2>Inspire pessoas a doar sangue</h2>
     </header>
     <div class="main-container">
       <div class="success">
@@ -213,8 +213,9 @@ const influencedTitle = computed(() => {
     return "Até agora você inspirou <b>1 pessoa</b>, salvando até <b>4 vidas</b>!";
   }
 
-  return `Até agora você inspirou <b>${amountInfluence} pessoas</b> a doar sangue, salvando até <b>${amountInfluence * 4
-    } vidas</b>!`;
+  return `Até agora você inspirou <b>${amountInfluence} pessoas</b> a doar sangue, salvando até <b>${
+    amountInfluence * 4
+  } vidas</b>!`;
 });
 
 const institutions = computed(() =>
@@ -285,6 +286,10 @@ const teamButtonLabel = computed(() => {
 });
 
 const influencedMessage = computed(() => {
+  const start = new Date(competition.value?.start_at || "");
+  if (start > new Date()) {
+    return "A copa ainda não começou, mas você já pode preparar seu link de indicação. Compartilhe e inspire outras pessoas a doar sangue!";
+  }
   const amountInfluence =
     competitionInfluence.value?.influence.amountInfluence || 0;
   if (!amountInfluence) {
