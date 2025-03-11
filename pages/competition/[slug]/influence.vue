@@ -14,12 +14,33 @@
         <div v-if="competition?.influence_controls_team" style="width: 100%">
           <ElButton
             @click="toggleTeamDrawer"
-            :icon="ElIconFlag"
             class="hemo-button"
             type="primary"
             size="large"
           >
-            {{ teamButtonLabel }}
+            <template
+              #icon
+              v-if="competitionInfluence?.influence.competitionTeamId"
+            >
+              <NuxtImg
+                v-if="currentInfluenceTeam?.logo_url"
+                :src="currentInfluenceTeam?.logo_url"
+                alt="Logo"
+                class="logo_button"
+                height="24"
+                width="24"
+              />
+              <CommonNameCircleAvatar
+                v-else
+                :name="currentInfluenceTeamName || teamButtonLabel || ''"
+                :size="24"
+                style="border: 1px solid white"
+              />
+            </template>
+            <template #icon v-else>
+              <ElIconFlag />
+            </template>
+            {{ currentInfluenceTeamName || teamButtonLabel }}
           </ElButton>
           <span class="disclaimer-copy"
             >As próximas doações feitas por pessoas influenciadas por você serão
@@ -56,13 +77,15 @@
       :visible="teamDrawer"
       direction="btt"
       @close="teamDrawer = false"
+      size="40%"
     >
       <TransitionGroup name="slide-fade-down" appear>
         <ElSelect
           v-model="selectedInstitution"
           placeholder="Selecione a instituição"
           clearable
-          style="width: 100%"
+          size="large"
+          style="width: 100%; margin-bottom: 8px"
           v-if="institutions.length > 1"
           key="select-institution"
           :disabled="loadingSaveTeam"
@@ -72,7 +95,24 @@
             :key="institution.id"
             :label="institution.name"
             :value="institution.id"
-          />
+          >
+            <div class="selection-wrapper">
+              <NuxtImg
+                v-if="institution?.logo_url"
+                :src="institution?.logo_url"
+                alt="Logo"
+                class="logo_option"
+                height="20"
+                width="20"
+              />
+              <CommonNameCircleAvatar
+                v-else
+                :name="institution?.name"
+                :size="20"
+              />
+              <span>{{ institution?.name }}</span>
+            </div>
+          </ElOption>
         </ElSelect>
         <ElSelect
           v-model="selectedCompTeamId"
@@ -81,7 +121,7 @@
           required
           filterable
           style="width: 100%"
-          :disabled="loadingSaveTeam"
+          :disabled="!selectedInstitution || loadingSaveTeam"
         >
           <ElOption
             v-for="compTeam in competitionTeams"
@@ -89,22 +129,37 @@
             :label="compTeam?.teams?.name ?? compTeam.id"
             :value="compTeam.id"
           >
-            {{ compTeam.teams?.name }}
+            <div class="selection-wrapper">
+              <NuxtImg
+                v-if="compTeam?.teams?.logo_url"
+                :src="compTeam?.teams?.logo_url"
+                alt="Logo"
+                class="logo_option"
+                height="20"
+                width="20"
+              />
+              <CommonNameCircleAvatar
+                v-else
+                :name="compTeam?.teams?.name"
+                :size="20"
+              />
+              <span>{{ compTeam?.teams?.name }}</span>
+            </div>
           </ElOption>
         </ElSelect>
-        <ElButton
-          @click="saveTeam"
-          type="success"
-          size="large"
-          style="width: 100%; margin-top: 1rem"
-          :loading="loadingSaveTeam"
-          :disabled="
-            !selectedCompTeamId || !selectedInstitution || loadingSaveTeam
-          "
-        >
-          Salvar
-        </ElButton>
       </TransitionGroup>
+      <ElButton
+        @click="saveTeam"
+        type="success"
+        size="large"
+        style="width: 100%; margin-top: 1rem"
+        :loading="loadingSaveTeam"
+        :disabled="
+          !selectedCompTeamId || !selectedInstitution || loadingSaveTeam
+        "
+      >
+        Salvar
+      </ElButton>
     </ElDrawer>
   </div>
 </template>
@@ -121,6 +176,23 @@ const competitionSlug = String(route.params.slug);
 const competitionInfluence = ref(
   await userStore.getCompetitionInfluence(competitionSlug)
 );
+
+const currentInfluenceTeam = computed(
+  () =>
+    competition.value?.competitionTeams.find(
+      (e) => e.id === competitionInfluence.value?.influence.competitionTeamId
+    )?.teams
+);
+
+const currentInfluenceTeamName = computed(() => {
+  const influenceCompetitionTeamId =
+    competitionInfluence.value?.influence.competitionTeamId;
+  if (!influenceCompetitionTeamId) {
+    return "";
+  }
+  return currentInfluenceTeam.value?.name;
+});
+
 if (!competitionInfluence.value) {
   await navigateTo(`/competition/${competitionSlug}`);
   throw new Error("Competition not found");
@@ -160,17 +232,31 @@ if (institutions.value.length === 1) {
   selectedInstitution.value = institutions.value[0].id;
 }
 
+watch(
+  () => selectedInstitution.value,
+  (newValue) => {
+    if (!newValue) {
+      return;
+    }
+    selectedCompTeamId.value = undefined;
+  }
+);
+
 const getCompTeamInstitutionid = (compTeamId: number) =>
   competition.value?.competitionTeams.find((e) => e.id === compTeamId)?.teams
     ?.institutions?.id;
 
 const selectedCompTeamId = ref<number>();
 if (competitionInfluence.value?.influence.competitionTeamId) {
-  selectedCompTeamId.value =
-    competitionInfluence.value?.influence.competitionTeamId;
   selectedInstitution.value = getCompTeamInstitutionid(
-    selectedCompTeamId.value
+    competitionInfluence.value?.influence.competitionTeamId
   );
+  nextTick(() => {
+    if (competitionInfluence.value?.influence.competitionTeamId) {
+      selectedCompTeamId.value =
+        competitionInfluence.value?.influence.competitionTeamId;
+    }
+  });
 }
 
 const competitionTeams = computed(() =>
@@ -383,6 +469,11 @@ const saveTeam = async () => {
   width: 100%;
 }
 
+.hemo-button:deep(.el-icon) {
+  width: 25px;
+  height: 25px;
+}
+
 .hemo-button:deep(span) {
   max-width: 80%;
   white-space: nowrap;
@@ -395,5 +486,35 @@ const saveTeam = async () => {
   font-size: 0.75rem;
   color: var(--hemo-color-text-secondary);
   text-align: center;
+}
+
+.selection-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.selection-wrapper span {
+  max-width: 70vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logo_option {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #e6e6e6;
+  object-fit: cover;
+}
+
+.logo_button {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid white;
+  object-fit: cover;
 }
 </style>

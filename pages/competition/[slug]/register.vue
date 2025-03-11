@@ -35,7 +35,22 @@
                 :label="institution?.name ?? idx"
                 :value="institution?.id ?? idx"
               >
-                {{ institution?.name }}
+                <div class="selection-wrapper">
+                  <NuxtImg
+                    v-if="institution?.logo_url"
+                    :src="institution?.logo_url"
+                    alt="Logo"
+                    class="logo_option"
+                    height="20"
+                    width="20"
+                  />
+                  <CommonNameCircleAvatar
+                    v-else
+                    :name="institution?.name"
+                    :size="20"
+                  />
+                  <span>{{ institution?.name }}</span>
+                </div>
               </el-option>
             </el-select>
           </div>
@@ -56,7 +71,24 @@
                 :label="compTeam?.teams?.name ?? compTeam.id"
                 :value="compTeam.id"
               >
-                {{ compTeam.teams?.name }}
+                <div class="selection-wrapper">
+                  <NuxtImg
+                    v-if="compTeam?.teams?.logo_url"
+                    :src="compTeam?.teams?.logo_url"
+                    alt="Logo"
+                    class="logo_option"
+                    height="20"
+                    width="20"
+                  />
+                  <CommonNameCircleAvatar
+                    v-else
+                    :name="compTeam?.teams?.name"
+                    :size="20"
+                  />
+                  <span>
+                    {{ compTeam.teams?.name }}
+                  </span>
+                </div>
               </el-option>
             </el-select>
           </div>
@@ -594,5 +626,27 @@ async function handleSubmit(event: any) {
   background-color: #f3f2f1 !important;
   display: flex;
   text-wrap: wrap;
+}
+
+.selection-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.selection-wrapper span {
+  max-width: 70vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logo_option {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #e6e6e6;
+  object-fit: cover;
 }
 </style>
