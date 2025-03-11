@@ -11,7 +11,7 @@
           Clique em uma copa para registrar sua doação ou acessar as
           informações.
         </p>
-        
+
         <div class="switch-container">
           <!-- Competition Status Switch -->
           <div class="switch-content">
@@ -33,16 +33,9 @@
             <NuxtImg src="/images/rafiki.svg" />
           </div>
         </div>
-        <CompetitionSummary
-          v-for="summary in filteredSummaries"
-          class="summaryBox"
-          :key="summary.slug"
-          :title="summary.name"
-          :start="summary.start"
-          :end="summary.end"
-          :slug="summary.slug"
-          :banner_background="summary?.banner_background"
-        />
+        <CompetitionSummary v-for="summary in filteredSummaries" class="summaryBox" :key="summary.slug"
+          :title="summary.name" :start="summary.start" :end="summary.end" :slug="summary.slug"
+          :banner_background="summary?.banner_background" />
       </div>
     </el-main>
   </el-container>
@@ -64,19 +57,20 @@ const { data: competitions } = await useAsyncData(
   { watch: [onGoing] }
 );
 
-const summaries = (competitions.value ?? []).map((competition) => ({
+const summaries = computed(() => competitions?.value.map((competition) => ({
   name: competition.name,
   start: dayjs(competition.start_at).toDate(),
   end: dayjs(competition.end_at).toDate(),
   slug: competition.slug,
   banner_background: competition.banner_background ?? undefined,
-}));
+})))
 
 const closedSummaries = computed(() =>
-  summaries.filter((summary) => summary.end < dayjs().toDate())
+  summaries.value.filter((summary) => summary.end < dayjs().toDate())
 );
+
 const onGoingSummaries = computed(() =>
-  summaries.filter((summary) => summary.end >= dayjs().toDate())
+  summaries.value.filter((summary) => summary.end >= dayjs().toDate()),
 );
 const filteredSummaries = computed(() =>
   onGoing.value ? onGoingSummaries.value : closedSummaries.value

@@ -6,7 +6,7 @@
         <div class="user-name-wrapper">
           <h3>Olá, {{ user?.givenName }}!</h3>
           <span v-if="influencedByFirstName" class="influenced-by"
-            >Influenciado por <b>{{ influencedByFirstName }}</b></span
+            >Indicado por <b>{{ influencedByFirstName }}</b></span
           >
         </div>
         <h4 v-if="presentationText">{{ presentationText }}</h4>
