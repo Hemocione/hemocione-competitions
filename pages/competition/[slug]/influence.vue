@@ -134,14 +134,14 @@ const influencedTitle = computed(() => {
   const amountInfluence =
     competitionInfluence.value?.influence.amountInfluence || 0;
   if (amountInfluence === 0) {
-    return "Você ainda não indicou ninguém a doar sangue 🥲.";
+    return "Você ainda não inspirou ninguém a doar sangue 🥲.";
   }
 
   if (amountInfluence === 1) {
-    return "Até agora você indicou <b>1 pessoa</b>, salvando até <b>4 vidas</b>!";
+    return "Até agora você inspirou <b>1 pessoa</b>, salvando até <b>4 vidas</b>!";
   }
 
-  return `Até agora você indicou <b>${amountInfluence} pessoas</b> a doar sangue, salvando até <b>${amountInfluence * 4
+  return `Até agora você inspirou <b>${amountInfluence} pessoas</b> a doar sangue, salvando até <b>${amountInfluence * 4
     } vidas</b>!`;
 });
 
