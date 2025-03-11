@@ -164,6 +164,9 @@ export const getCompetitionEngagement = async (competitionSlug: string) => {
   return result;
 };
 
+const proofTypes = ["selfie", "document"] as const;
+type ProofType = (typeof proofTypes)[number];
+
 interface CreateCompetitionPayload {
   name: string;
   startsAt: Date;
@@ -174,6 +177,7 @@ interface CreateCompetitionPayload {
   banner_background?: string;
   extraFields?: ExtraFields;
   influence_controls_team?: boolean;
+  proof_type?: ProofType;
 }
 
 export const createCompetition = async ({
@@ -186,6 +190,7 @@ export const createCompetition = async ({
   banner_background,
   extraFields,
   influence_controls_team = false,
+  proof_type = "selfie",
 }: CreateCompetitionPayload) => {
   const slug = slugify(name, {
     lower: true,
@@ -205,6 +210,7 @@ export const createCompetition = async ({
       extraFields: extraFields || ([] as any), // TODO: fix this to type ExtraFields as Prisma JSON Array type
       published: false,
       influence_controls_team: has_influence && influence_controls_team,
+      proof_type,
     },
   });
 };
@@ -221,6 +227,7 @@ export const editCompetitionBySlug = async (
     mandatoryProof: boolean;
     extraFields?: ExtraFields;
     influence_controls_team?: boolean;
+    proof_type?: ProofType;
   }
 ) => {
   const {
@@ -233,6 +240,7 @@ export const editCompetitionBySlug = async (
     has_likes,
     mandatoryProof,
     influence_controls_team,
+    proof_type = "selfie",
   } = payload;
   const updatedCompetition = await dbClient.competitions.update({
     where: { slug },
@@ -246,6 +254,7 @@ export const editCompetitionBySlug = async (
       mandatory_proof: mandatoryProof,
       extraFields: extraFields || ([] as any), // TODO: fix this to type ExtraFields as Prisma JSON Array type
       influence_controls_team: has_influence && influence_controls_team,
+      proof_type,
     },
   });
   return updatedCompetition;
