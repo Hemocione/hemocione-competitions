@@ -42,7 +42,8 @@ function hashCode(str: string): number {
 }
 
 const abbreviation = computed(() => {
-  const words = props.name.trim().split(/\s+/);
+  const cleanedName = props.name.trim().replace(/[^a-zA-ZÀ-ÿ0-9\s]/g, ""); // Remove caracteres especiais, mantendo espaços
+  const words = cleanedName.split(/\s+/);
   return words.length > 1
     ? (words[0][0] + words[1][0]).toUpperCase()
     : words[0].slice(0, 2).toUpperCase();

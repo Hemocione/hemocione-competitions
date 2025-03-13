@@ -117,7 +117,7 @@ const influenceRanking = computed(() => {
     labels: ["#", "Indicador", "Indicados"],
     contents:
       influences?.value?.map((c, idx) => ({
-        "#": `${idx + 1}°`,
+        "#": rankingPosition(idx),
         Indicador: {
           component: CommonRankingItemWithLogo,
           props: {
