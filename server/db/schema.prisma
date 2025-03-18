@@ -90,10 +90,17 @@ model donations {
   influence         influence?        @relation(fields: [influenceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   competitions      competitions      @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   competitionTeams  competitionTeams? @relation(fields: [competitionTeamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  status            Status            @default(pending)
 
   @@unique([user_email, competitionId])
   @@index([competitionId, hemocioneID], map: "donations_competitionId_hemocioneID") // HemocioneID is the unique identifier for the user in the competition. will be unique in the future, since there are donations with only emails in the database
   @@index([hemocioneID, user_email], map: "donations_hemocioneID") // find donations by hemocioneID
+}
+
+enum Status {
+  pending
+  approved
+  rejected
 }
 
 model influence {
