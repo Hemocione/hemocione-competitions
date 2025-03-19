@@ -46,7 +46,7 @@ model competitions {
   has_influence           Boolean?   @default(false)
   influence_controls_team Boolean?   @default(false)
   has_likes               Boolean?   @default(false)
-  autoApprove             Boolean?   @default(false)
+  autoApprove             Boolean    @default(true)
   webhook_configs         Json?
 
   competitionTeams competitionTeams[]
