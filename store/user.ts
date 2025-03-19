@@ -162,8 +162,6 @@ export const useUserStore = defineStore("user", {
     ) {
       if (!this.token) return;
 
-      console.log("registerDonation", payload);
-
       const donation = await registerDonation(
         competitionSlug,
         this.token,
