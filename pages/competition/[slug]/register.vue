@@ -467,7 +467,13 @@ async function handleSubmit(event: any) {
     proof: form.value.proof,
     extraFields: extraFieldsResponse.value,
     influenceId,
+    status: 'pending'
   };
+
+  if (competition.value?.autoApprove) {
+    payload.status = 'approved'
+  }
+
   // TODO: do this inside registerDonation. pass this info in payload.
   try {
     await registerDonation(String(slug), payload);
