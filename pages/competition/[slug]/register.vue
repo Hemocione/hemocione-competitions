@@ -462,14 +462,27 @@ async function handleSubmit(event: any) {
   }
   const influenceId = influencedBy?.value?.id;
 
-  const payload = {
+  const payload: {
+    competitionTeamId: number;
+    proof: string;
+    extraFields: { slug: string; value: string }[];
+    influenceId?: number;
+    status: "pending" | "approved" | "rejected";
+  } = {
     competitionTeamId: form.value.competitionTeamId,
     proof: form.value.proof,
     extraFields: extraFieldsResponse.value,
     influenceId,
+    status: "pending",
   };
+
+  if (competition.value?.autoApprove) {
+    payload.status = "approved";
+  }
+
   // TODO: do this inside registerDonation. pass this info in payload.
   try {
+    // HIT promotions webhook here. Or maybe inside registerDonation
     await registerDonation(String(slug), payload);
   } catch (error) {
     ElMessage({

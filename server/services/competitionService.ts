@@ -31,6 +31,8 @@ export const getCompetitions = async (
       mandatory_proof: true,
       slug: true,
       status: statusCaseWhenClause,
+      autoApprove: true,
+      webhook_configs: true
     },
     orderBy,
   };
@@ -76,6 +78,7 @@ const getCompetitionBySlugPromise = (slug: string) => {
           },
         },
       },
+      autoApprove: true,
     },
   });
 };

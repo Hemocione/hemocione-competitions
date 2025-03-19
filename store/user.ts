@@ -157,6 +157,7 @@ export const useUserStore = defineStore("user", {
         extraFields: ExtraFieldsResponse;
         competitionTeamId: number;
         influenceId?: number;
+        status: "pending" | "approved" | "rejected";
       }
     ) {
       if (!this.token) return;
