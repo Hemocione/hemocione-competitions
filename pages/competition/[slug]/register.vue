@@ -482,6 +482,7 @@ async function handleSubmit(event: any) {
 
   // TODO: do this inside registerDonation. pass this info in payload.
   try {
+    // HIT promotions webhook here. Or maybe inside registerDonation
     await registerDonation(String(slug), payload);
   } catch (error) {
     ElMessage({
