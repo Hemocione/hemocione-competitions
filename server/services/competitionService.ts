@@ -180,7 +180,11 @@ interface CreateCompetitionPayload {
   banner_background?: string;
   extraFields?: ExtraFields;
   influence_controls_team?: boolean;
-  proof_type?: ProofType;
+  proof_type?: ProofType,
+  webhook_configs?: {
+    donation_approved: string
+  },
+  autoApprove: boolean
 }
 
 export const createCompetition = async ({
@@ -194,6 +198,8 @@ export const createCompetition = async ({
   extraFields,
   influence_controls_team = false,
   proof_type = "selfie",
+  webhook_configs,
+  autoApprove = true
 }: CreateCompetitionPayload) => {
   const slug = slugify(name, {
     lower: true,
@@ -214,6 +220,8 @@ export const createCompetition = async ({
       published: false,
       influence_controls_team: has_influence && influence_controls_team,
       proof_type,
+      webhook_configs,
+      autoApprove
     },
   });
 };
@@ -231,6 +239,10 @@ export const editCompetitionBySlug = async (
     extraFields?: ExtraFields;
     influence_controls_team?: boolean;
     proof_type?: ProofType;
+    webhook_configs?: {
+      donation_approved: string
+    },
+    autoApprove: boolean
   }
 ) => {
   const {
@@ -244,6 +256,8 @@ export const editCompetitionBySlug = async (
     mandatoryProof,
     influence_controls_team,
     proof_type = "selfie",
+    webhook_configs,
+    autoApprove
   } = payload;
   const updatedCompetition = await dbClient.competitions.update({
     where: { slug },
@@ -258,6 +272,8 @@ export const editCompetitionBySlug = async (
       extraFields: extraFields || ([] as any), // TODO: fix this to type ExtraFields as Prisma JSON Array type
       influence_controls_team: has_influence && influence_controls_team,
       proof_type,
+      webhook_configs,
+      autoApprove
     },
   });
   return updatedCompetition;
