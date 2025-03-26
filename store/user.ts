@@ -28,6 +28,23 @@ export const getUserInfluence = async (
   );
 };
 
+export const activatePromotion = async (
+  slug: string,
+  payload: {
+    name: string;
+    email: string;
+    hemocioneID: string;
+  }
+) => {
+  return await $fetch(`https://hemocione-promotions.com/promotions/${slug}`, {
+    method: "POST",
+    body: payload,
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+}
+
 export const registerDonation = async (
   competitionSlug: string,
   token: string,
