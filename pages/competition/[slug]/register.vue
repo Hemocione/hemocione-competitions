@@ -207,7 +207,7 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-const { user, token, getDonationByCompetitionSlug, registerDonation } =
+const { user, token, getDonationByCompetitionSlug, registerDonation, activatePromotion } =
   useUserStore();
 
 if (!user) {
@@ -482,7 +482,7 @@ async function handleSubmit(event: any) {
 
   // TODO: do this inside registerDonation. pass this info in payload.
   try {
-    // HIT promotions webhook here. Or maybe inside registerDonation
+    await activatePromotion(String(slug), { email: user?.email, name: user?.givenName, hemocioneId: user?.id });
     await registerDonation(String(slug), payload);
   } catch (error) {
     ElMessage({
