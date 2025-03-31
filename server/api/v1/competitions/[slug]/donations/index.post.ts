@@ -2,6 +2,7 @@ import { useHemocioneUserAuth } from "~/server/services/auth";
 import { getCompetitionBySlug } from "~/server/services/competitionService";
 import { registerDonation } from "~/server/services/donationService";
 import { getPrettyFullName } from "~/utils/getPrettyFullName";
+import { callWebhook } from "~/server/services/hemocioneWebHookService";
 
 export default defineEventHandler(async (event) => {
   const competitionSlug = String(getRouterParam(event, 'slug'));
@@ -69,6 +70,10 @@ export default defineEventHandler(async (event) => {
     competitionTeamId,
     payload
   );
+
+  if (createdDonation.status === "approved") {
+    await callWebhook(user.id, user.name, competitionSlug)
+  }
 
   return createdDonation;
 });
