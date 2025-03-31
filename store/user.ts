@@ -28,15 +28,14 @@ export const getUserInfluence = async (
   );
 };
 
-export const activatePromotion = async (
+export const registerPromotion = async (
   slug: string,
   payload: {
-    name: string;
-    email: string;
+    name: string
     hemocioneID: string;
   }
 ) => {
-  return await $fetch(`https://hemocione-promotions.com/promotions/${slug}`, {
+  return await $fetch(`api/v1/competitions/${slug}/promotions`, {
     method: "POST",
     body: payload,
     headers: {
