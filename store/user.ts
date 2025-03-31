@@ -28,22 +28,6 @@ export const getUserInfluence = async (
   );
 };
 
-export const registerPromotion = async (
-  slug: string,
-  payload: {
-    name?: string
-    hemocioneId?: string;
-  }
-) => {
-  return await $fetch(`api/v1/competitions/${slug}/promotions`, {
-    method: "POST",
-    body: payload,
-    headers: {
-      "Content-Type": "application/json"
-    }
-  })
-}
-
 export const registerDonation = async (
   competitionSlug: string,
   token: string,
@@ -54,6 +38,8 @@ export const registerDonation = async (
     influenceId?: number;
   }
 ) => {
+  
+
   const { proof, extraFields, competitionTeamId, influenceId } = payload;
   return await $fetch(`/api/v1/competitions/${competitionSlug}/donations`, {
     method: "POST",
@@ -186,18 +172,6 @@ export const useUserStore = defineStore("user", {
 
       this.donationsByCompetitionSlug.set(competitionSlug, donation);
       return donation;
-    },
-
-    async registerPromotion(
-      competitionSlug: string,
-      payload: {
-        name?: string;
-        hemocioneId?: string;
-      }
-    ) {
-      const promotion = await registerPromotion(competitionSlug, payload)
-
-      return promotion
     },
 
     async registerInfluence(
