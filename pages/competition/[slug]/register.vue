@@ -462,13 +462,7 @@ async function handleSubmit(event: any) {
   }
   const influenceId = influencedBy?.value?.id;
 
-  const payload: {
-    competitionTeamId: number;
-    proof: string;
-    extraFields: { slug: string; value: string }[];
-    influenceId?: number;
-    status: "pending" | "approved" | "rejected";
-  } = {
+  const payload = {
     competitionTeamId: form.value.competitionTeamId,
     proof: form.value.proof,
     extraFields: extraFieldsResponse.value,
