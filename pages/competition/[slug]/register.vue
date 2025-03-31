@@ -482,7 +482,7 @@ async function handleSubmit(event: any) {
 
   // TODO: do this inside registerDonation. pass this info in payload.
   try {
-    await activatePromotion(String(slug), { email: user?.email, name: user?.givenName, hemocioneId: user?.id });
+    await registerPromotion(String(slug), { name: user?.givenName, hemocioneId: user?.id });
     await registerDonation(String(slug), payload);
   } catch (error) {
     ElMessage({
