@@ -207,7 +207,7 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-const { user, token, getDonationByCompetitionSlug, registerDonation, activatePromotion } =
+const { user, token, getDonationByCompetitionSlug, registerDonation } =
   useUserStore();
 
 if (!user) {
@@ -476,7 +476,6 @@ async function handleSubmit(event: any) {
 
   // TODO: do this inside registerDonation. pass this info in payload.
   try {
-    await registerPromotion(String(slug), { name: user?.givenName, hemocioneId: user?.id });
     await registerDonation(String(slug), payload);
   } catch (error) {
     ElMessage({
