@@ -31,8 +31,8 @@ export const getUserInfluence = async (
 export const registerPromotion = async (
   slug: string,
   payload: {
-    name: string
-    hemocioneID: string;
+    name?: string
+    hemocioneId?: string;
   }
 ) => {
   return await $fetch(`api/v1/competitions/${slug}/promotions`, {
@@ -187,6 +187,19 @@ export const useUserStore = defineStore("user", {
       this.donationsByCompetitionSlug.set(competitionSlug, donation);
       return donation;
     },
+
+    async registerPromotion(
+      competitionSlug: string,
+      payload: {
+        name?: string;
+        hemocioneId?: string;
+      }
+    ) {
+      const promotion = await registerPromotion(competitionSlug, payload)
+
+      return promotion
+    },
+
     async registerInfluence(
       competitionSlug: string,
       competitionTeamId: number
