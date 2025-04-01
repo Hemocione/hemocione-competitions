@@ -57,6 +57,7 @@ export default defineNuxtConfig({
       hemocioneIdApiUrl:
         process.env.HEMOCIONE_ID_API_URL ??
         "https://hemocione-id-dev.cpt.hemocione.com.br",
+      hemocionePromotionsApiUrl: process.env.HEMOCIONE_PROMOTIONS_API_URL ?? "https://localhost:3001/api/v1",
       cdnUploadUrl:
         process.env.CDN_UPLOAD_URL ?? "http://localhost:3001/api/upload",
       instagramUrl:
