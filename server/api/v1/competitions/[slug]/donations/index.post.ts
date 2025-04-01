@@ -62,7 +62,8 @@ export default defineEventHandler(async (event) => {
     hemocioneID: user.id,
     extraFields,
     proof,
-    influenceId
+    influenceId,
+    payload: competition.autoApprove ? "approved" : "pending",
   }
 
   const createdDonation = await registerDonation(
@@ -71,7 +72,7 @@ export default defineEventHandler(async (event) => {
     payload
   );
 
-  if (competition.autoApprove) createdDonation.status = "approved";
+
 
   if (createdDonation.status === "approved") {
     await callWebhook(user.id, user.name, competitionSlug)
