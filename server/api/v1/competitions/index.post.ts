@@ -44,5 +44,12 @@ export default defineEventHandler(async (event) => {
     webhook_configs,
     autoApprove
   });
-  return createdCompetition;
+
+  const {
+    autoApprove: autoApproveRemoved,
+    webhook_configs: webhookConfigsRemoved,
+    ...secureCompetition
+  } = createdCompetition;
+
+  return secureCompetition;
 });
