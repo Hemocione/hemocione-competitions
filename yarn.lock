@@ -2939,10 +2939,10 @@
   dependencies:
     server-only "^0.0.1"
 
-"@vercel/functions@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@vercel/functions/-/functions-1.0.2.tgz#c26ed4e3b0ed701e28c4ebd71c76b1bfe14db02a"
-  integrity sha512-j3udyHOv/05Y8o3WQ/ANMWa1aYagsY5B3ouImiwgYsz5z4CBUHTY5dk74oQAXYr+bgoVDpdDlmxkpnxGzKEdLQ==
+"@vercel/functions@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@vercel/functions/-/functions-2.0.0.tgz#be72057235a667b8c5b2713880fba717cd5a372b"
+  integrity sha512-BSwIihLHoV18gerKZJyGuqd3rtaYM6rJvET1kOwKktshucyaHXTJel7Cxegs+sdX0NZqsX4LO2MFnMU2jG01Cw==
 
 "@vercel/nft@^0.24.3":
   version "0.24.3"
