@@ -71,6 +71,8 @@ export default defineEventHandler(async (event) => {
     payload
   );
 
+  if (competition.autoApprove) createdDonation.status = "approved";
+
   if (createdDonation.status === "approved") {
     await callWebhook(user.id, user.name, competitionSlug)
   }
