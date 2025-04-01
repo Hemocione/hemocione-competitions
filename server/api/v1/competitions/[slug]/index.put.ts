@@ -17,6 +17,8 @@ export default defineEventHandler(async (event) => {
     has_likes,
     influence_controls_team,
     proof_type,
+    webhook_configs,
+    autoApprove
   } = body;
   if (!name || !startsAt || !endsAt || _.isBoolean(mandatoryProof) === false) {
     throw createError({
@@ -40,6 +42,9 @@ export default defineEventHandler(async (event) => {
     has_likes,
     influence_controls_team,
     proof_type,
+    webhook_configs,
+    autoApprove
   });
-  return editedCompetition;
+
+  return editedCompetition
 });

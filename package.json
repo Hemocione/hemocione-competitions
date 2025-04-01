@@ -37,7 +37,7 @@
     "schema": "server/db/schema.prisma"
   },
   "dependencies": {
-    "@vercel/functions": "^1.0.2",
+    "@vercel/functions": "^2.0.0",
     "prisma": "^5.9.1"
   }
 }

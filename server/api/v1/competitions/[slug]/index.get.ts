@@ -9,5 +9,8 @@ export default defineEventHandler(async (event) => {
       statusMessage: "Not Found",
     });
   }
-  return competition;
+
+  const { autoApprove, webhook_configs, ...secureCompetition } = competition
+
+  return secureCompetition;
 });

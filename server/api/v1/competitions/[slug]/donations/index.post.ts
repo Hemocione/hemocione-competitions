@@ -1,7 +1,9 @@
 import { useHemocioneUserAuth } from "~/server/services/auth";
 import { getCompetitionBySlug } from "~/server/services/competitionService";
 import { registerDonation } from "~/server/services/donationService";
+import { callWebhook } from "~/server/services/webhookService";
 import { getPrettyFullName } from "~/utils/getPrettyFullName";
+import { waitUntil } from '@vercel/functions';
 
 export default defineEventHandler(async (event) => {
   const competitionSlug = String(getRouterParam(event, 'slug'));
@@ -61,7 +63,8 @@ export default defineEventHandler(async (event) => {
     hemocioneID: user.id,
     extraFields,
     proof,
-    influenceId
+    influenceId,
+    payload: competition.autoApprove ? "approved" : "pending",
   }
 
   const createdDonation = await registerDonation(
@@ -69,6 +72,10 @@ export default defineEventHandler(async (event) => {
     competitionTeamId,
     payload
   );
+
+  if (createdDonation.status === "approved" && competition.webhook_configs?.donation_approved) {
+    waitUntil(callWebhook(competition.webhook_configs.donation_approved, { hemocioneId: user.id }));
+  }
 
   return createdDonation;
 });

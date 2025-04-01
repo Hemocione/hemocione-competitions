@@ -38,6 +38,8 @@ export const registerDonation = async (
     influenceId?: number;
   }
 ) => {
+
+
   const { proof, extraFields, competitionTeamId, influenceId } = payload;
   return await $fetch(`/api/v1/competitions/${competitionSlug}/donations`, {
     method: "POST",
@@ -170,6 +172,7 @@ export const useUserStore = defineStore("user", {
       this.donationsByCompetitionSlug.set(competitionSlug, donation);
       return donation;
     },
+
     async registerInfluence(
       competitionSlug: string,
       competitionTeamId: number
