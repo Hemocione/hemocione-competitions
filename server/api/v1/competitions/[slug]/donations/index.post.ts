@@ -75,7 +75,7 @@ export default defineEventHandler(async (event) => {
 
 
   if (createdDonation.status === "approved" && competition.webhook_configs?.donation_approved) {
-    await callWebhook(competition.webhook_configs.donation_approved, { hemocioneId: user.id, name: user.givenName });
+    await callWebhook(competition.webhook_configs.donation_approved, { hemocioneId: user.id });
   }
 
   return createdDonation;
