@@ -470,10 +470,6 @@ async function handleSubmit(event: any) {
     status: "pending",
   };
 
-  if (competition.value?.autoApprove) {
-    payload.status = "approved";
-  }
-
   // TODO: do this inside registerDonation. pass this info in payload.
   try {
     await registerDonation(String(slug), payload);
