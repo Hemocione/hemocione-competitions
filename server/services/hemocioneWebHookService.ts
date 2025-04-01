@@ -8,7 +8,8 @@ export async function callWebhook(hemocioneId: string, name: string, competition
       name
     },
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "x-secret": config.hemocionePromotionsApiSecret,
     }
   })
 }
