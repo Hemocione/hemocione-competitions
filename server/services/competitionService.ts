@@ -79,6 +79,7 @@ const getCompetitionBySlugPromise = (slug: string) => {
         },
       },
       autoApprove: true,
+      webhook_configs: true,
     },
   });
 };
