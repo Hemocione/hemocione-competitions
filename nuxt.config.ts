@@ -27,11 +27,13 @@ const currentEnv = getCurrentEnv();
 
 export default defineNuxtConfig({
   devtools: true,
+
   css: [
     "~/assets/css/main.css",
     "~/assets/css/transitions.css",
     "~/assets/css/animations.css",
   ],
+
   modules: [
     "@element-plus/nuxt",
     "@nuxtjs/google-fonts",
@@ -41,14 +43,17 @@ export default defineNuxtConfig({
     "nuxt-bugsnag",
     "@vueuse/nuxt",
   ],
+
   googleFonts: {
     families: {
       Roboto: [400, 500, 700, 900],
     },
   },
+
   nitro: {
     preset: "vercel",
   },
+
   runtimeConfig: {
     public: {
       authCookieKey: process.env.HEMOCIONE_AUTH_COOKIE_KEY ?? "hemocioneId",
@@ -70,6 +75,7 @@ export default defineNuxtConfig({
     secret: process.env.API_SECRET ?? "secret",
     donationsQueueUrl: process.env.DONATIONS_QUEUE_URL ?? "queue-url",
   },
+
   routeRules: {
     "/competition/:slug/register": {
       ssr: false,
@@ -81,6 +87,7 @@ export default defineNuxtConfig({
       ssr: false,
     },
   },
+
   bugsnag: {
     publishRelease: true,
     disableLog: false, // might activate later
@@ -92,6 +99,7 @@ export default defineNuxtConfig({
       appVersion: `${currentEnv}-${process.env.VERCEL_GIT_COMMIT_SHA}`,
     },
   },
+
   app: {
     pageTransition: {
       name: "slide-left",
@@ -103,10 +111,13 @@ export default defineNuxtConfig({
       mode: "out-in",
     },
   },
+
   image: {
     domains: ["cdn.hemocione.com.br"],
     alias: {
       cdn: "https://cdn.hemocione.com.br",
     },
   },
+
+  compatibilityDate: "2025-03-31"
 });

@@ -6,5 +6,6 @@ export default defineEventHandler(async (event) => {
   const kindView = query.kindView as "available" | "finished";
 
   const competitions = await getCompetitions(includeUnpublished, kindView);
-  return competitions;
+
+  return competitions.map(({autoApprove, webhook_configs, ...competition}) => competition);
 });
