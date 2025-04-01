@@ -62,7 +62,6 @@ export default defineNuxtConfig({
       hemocioneIdApiUrl:
         process.env.HEMOCIONE_ID_API_URL ??
         "https://hemocione-id-dev.cpt.hemocione.com.br",
-      hemocionePromotionsApiUrl: process.env.HEMOCIONE_PROMOTIONS_API_URL ?? "http://localhost:3001/api/v1",
       cdnUploadUrl:
         process.env.CDN_UPLOAD_URL ?? "http://localhost:3001/api/upload",
       instagramUrl:
@@ -73,7 +72,6 @@ export default defineNuxtConfig({
       process.env.HEMOCIONE_ID_INTEGRATION_SECRET ?? "secret",
     hemocioneIdJwtSecretKey:
       process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "hemocione",
-    hemocionePromotionsApiSecret: process.env.HEMOCIONE_PROMOTIONS_API_SECRET ?? "secret",
     secret: process.env.API_SECRET ?? "secret",
     donationsQueueUrl: process.env.DONATIONS_QUEUE_URL ?? "queue-url",
   },
