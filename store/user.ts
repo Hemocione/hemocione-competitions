@@ -38,7 +38,7 @@ export const registerDonation = async (
     influenceId?: number;
   }
 ) => {
-  
+
 
   const { proof, extraFields, competitionTeamId, influenceId } = payload;
   return await $fetch(`/api/v1/competitions/${competitionSlug}/donations`, {
@@ -159,7 +159,6 @@ export const useUserStore = defineStore("user", {
         extraFields: ExtraFieldsResponse;
         competitionTeamId: number;
         influenceId?: number;
-        status: "pending" | "approved" | "rejected";
       }
     ) {
       if (!this.token) return;
