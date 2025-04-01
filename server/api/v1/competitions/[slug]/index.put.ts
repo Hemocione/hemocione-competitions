@@ -46,11 +46,5 @@ export default defineEventHandler(async (event) => {
     autoApprove
   });
 
-  const {
-    autoApprove: autoApproveRemoved,
-    webhook_configs: webhookConfigsRemoved,
-    ...secureCompetition
-  } = editedCompetition;
-
-  return secureCompetition;
+  return editedCompetition
 });
