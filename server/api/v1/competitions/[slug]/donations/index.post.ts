@@ -2,7 +2,8 @@ import { useHemocioneUserAuth } from "~/server/services/auth";
 import { getCompetitionBySlug } from "~/server/services/competitionService";
 import { registerDonation } from "~/server/services/donationService";
 import { getPrettyFullName } from "~/utils/getPrettyFullName";
-import { callWebhook } from "~/server/services/hemocioneWebHookService";
+
+const config = useRuntimeConfig();
 
 export default defineEventHandler(async (event) => {
   const competitionSlug = String(getRouterParam(event, 'slug'));
@@ -75,7 +76,13 @@ export default defineEventHandler(async (event) => {
 
 
   if (createdDonation.status === "approved") {
-    await callWebhook(user.id, user.name, competitionSlug)
+    $fetch(`${competition.webhook_configs.donation_approved}?x-secret=${config.hemocionePromotionsApiSecret}`, {
+      method: "POST",
+      body: { hemocioneId: user.id, name: user.name },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
   }
 
   return createdDonation;
