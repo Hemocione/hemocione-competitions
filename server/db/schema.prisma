@@ -46,7 +46,7 @@ model competitions {
   has_influence           Boolean?   @default(false)
   influence_controls_team Boolean?   @default(false)
   has_likes               Boolean?   @default(false)
-  autoApprove             Boolean    @default(true)
+  autoApprove             Boolean?   @default(true)
   webhook_configs         Json?
 
   competitionTeams competitionTeams[]
@@ -75,22 +75,22 @@ model competitionTeams {
 }
 
 model donations {
-  id                Int               @id @default(autoincrement())
-  user_name         String?           @db.VarChar(255)
-  user_email        String?           @db.VarChar(255)
-  hemocioneID       String?           @db.VarChar(255)
+  id                Int                   @id @default(autoincrement())
+  user_name         String?               @db.VarChar(255)
+  user_email        String?               @db.VarChar(255)
+  hemocioneID       String?               @db.VarChar(255)
   competitionTeamId Int
   competitionId     Int
   influenceId       Int?
   extraFields       Json?
-  proof             String?           @db.VarChar(255)
-  createdAt         DateTime          @default(now())
-  donationDate      DateTime?         @default(now())
-  updatedAt         DateTime          @updatedAt
-  influence         influence?        @relation(fields: [influenceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  competitions      competitions      @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  competitionTeams  competitionTeams? @relation(fields: [competitionTeamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  status            ProofValidationStatus            @default(approved)
+  proof             String?               @db.VarChar(255)
+  createdAt         DateTime              @default(now())
+  donationDate      DateTime?             @default(now())
+  updatedAt         DateTime              @updatedAt
+  influence         influence?            @relation(fields: [influenceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  competitions      competitions          @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  competitionTeams  competitionTeams?     @relation(fields: [competitionTeamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  status            ProofValidationStatus @default(approved)
 
   @@unique([user_email, competitionId])
   @@index([competitionId, hemocioneID], map: "donations_competitionId_hemocioneID") // HemocioneID is the unique identifier for the user in the competition. will be unique in the future, since there are donations with only emails in the database
