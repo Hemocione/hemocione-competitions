@@ -466,8 +466,7 @@ async function handleSubmit(event: any) {
     competitionTeamId: form.value.competitionTeamId,
     proof: form.value.proof,
     extraFields: extraFieldsResponse.value,
-    influenceId,
-    status: "pending",
+    influenceId
   };
 
   // TODO: do this inside registerDonation. pass this info in payload.
