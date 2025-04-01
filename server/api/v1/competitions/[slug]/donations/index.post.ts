@@ -73,8 +73,6 @@ export default defineEventHandler(async (event) => {
     payload
   );
 
-
-
   if (createdDonation.status === "approved" && competition.webhook_configs?.donation_approved) {
     waitUntil(callWebhook(competition.webhook_configs.donation_approved, { hemocioneId: user.id }));
   }

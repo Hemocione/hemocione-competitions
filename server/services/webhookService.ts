@@ -1,5 +1,5 @@
-export async function callWebhook(url: string, payload: Record<string, unknown>) {
-  $fetch(url, {
+export function callWebhook(url: string, payload: Record<string, unknown>) {
+  return $fetch(url, {
     method: "POST",
     body: payload,
     headers: {
