@@ -42,6 +42,7 @@ export default defineNuxtConfig({
     "nuxt-vercel-analytics",
     "nuxt-bugsnag",
     "@vueuse/nuxt",
+    "nitro-opentelemetry",
   ],
 
   googleFonts: {
@@ -52,6 +53,13 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: "vercel",
+    errorHandler: "~/errorHandler.ts",
+    otel: {
+      preset: {
+        name: "custom",
+        filePath: "./server/opentelemetry.ts",
+      },
+    },
   },
 
   runtimeConfig: {
@@ -119,5 +127,5 @@ export default defineNuxtConfig({
     },
   },
 
-  compatibilityDate: "2025-03-31"
+  compatibilityDate: "2025-03-31",
 });
