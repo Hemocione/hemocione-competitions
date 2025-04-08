@@ -112,8 +112,7 @@ const currentView = ref("Geral");
 
 const route = useRoute();
 const router = useRouter();
-const userStore,
-  { logge } = useUserStore();
+const userStore = useUserStore();
 const user = computed(() => userStore.user);
 
 const slug = route.params.slug;
