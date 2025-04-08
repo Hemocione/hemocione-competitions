@@ -63,7 +63,12 @@
       desktop-border-radius="0"
     >
       <NuxtLink
-        :to="`/competition/${slug}/influence`"
+        :to="
+          user
+            ? `/competition/${slug}/influence`
+            : getRedirectToIdUrl(`/competition/${slug}/influence`)
+        "
+        :external="!Boolean(user)"
         v-if="competition?.has_influence"
       >
         <el-button size="large">
@@ -75,7 +80,14 @@
           Inspire outras pessoas a doarem sangue
         </el-button>
       </NuxtLink>
-      <NuxtLink :to="`/competition/${slug}/register`">
+      <NuxtLink
+        :to="
+          user
+            ? `/competition/${slug}/register`
+            : getRedirectToIdUrl(`/competition/${slug}/register`)
+        "
+        :external="!Boolean(user)"
+      >
         <el-button type="primary" size="large"
           ><template #icon>
             <el-icon>
@@ -93,13 +105,15 @@ import _ from "lodash";
 import dayjs from "dayjs";
 import { useUserStore } from "~/store/user";
 import CommonRankingItemWithLogo from "~/components/common/RankingItemWithLogo.vue";
+import { getRedirectToIdUrl } from "~/middleware/auth";
 
 const selectedType = ref<"Equipe" | "Instituição">();
 const currentView = ref("Geral");
 
 const route = useRoute();
 const router = useRouter();
-const userStore = useUserStore();
+const userStore,
+  { logge } = useUserStore();
 const user = computed(() => userStore.user);
 
 const slug = route.params.slug;

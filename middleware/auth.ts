@@ -77,8 +77,11 @@ export function getCurrentToken(query?: LocationQuery): string | null {
   return cookieToken;
 }
 
-export function redirectToID(fullPath: string) {
+export function getRedirectToIdUrl(fullPath: string) {
   const redirectUrl = `${window.location.origin}${fullPath}`;
-  const newUrl = getHemocioneIdUrl(redirectUrl);
-  open(newUrl, "_self");
+  return getHemocioneIdUrl(redirectUrl);
+}
+
+export function redirectToID(fullPath: string) {
+  return navigateTo(getRedirectToIdUrl(fullPath));
 }
