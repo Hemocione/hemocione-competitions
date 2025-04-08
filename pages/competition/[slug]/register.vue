@@ -210,9 +210,6 @@ definePageMeta({
 const { user, token, getDonationByCompetitionSlug, registerDonation } =
   useUserStore();
 
-if (!user) {
-  navigateTo("/unauthorized");
-}
 const route = useRoute();
 const slug = route.params.slug;
 const code = route.query.code ? String(route.query.code) : null;
@@ -466,7 +463,7 @@ async function handleSubmit(event: any) {
     competitionTeamId: form.value.competitionTeamId,
     proof: form.value.proof,
     extraFields: extraFieldsResponse.value,
-    influenceId
+    influenceId,
   };
 
   // TODO: do this inside registerDonation. pass this info in payload.
