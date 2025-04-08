@@ -80,5 +80,5 @@ export function getCurrentToken(query?: LocationQuery): string | null {
 export function redirectToID(fullPath: string) {
   const redirectUrl = `${window.location.origin}${fullPath}`;
   const newUrl = getHemocioneIdUrl(redirectUrl);
-  window.location.href = newUrl;
+  open(newUrl, "_self");
 }
