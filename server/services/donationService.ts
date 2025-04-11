@@ -107,3 +107,18 @@ export const getCompetitionUserDonations = async (data: {
     },
   });
 };
+
+export const updateDonationStatus = async (data: {
+  donationId: number;
+  status: "pending" | "approved" | "rejected";
+}) => {
+  const { donationId, status } = data;
+  return await dbClient.donations.update({
+    where: {
+      id: donationId,
+    },
+    data: {
+      status,
+    },
+  });
+}
