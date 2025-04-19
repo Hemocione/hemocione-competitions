@@ -64,8 +64,8 @@ export default defineEventHandler(async (event) => {
     extraFields,
     proof,
     influenceId,
-    payload: competition.autoApprove ? "approved" : "pending",
-  }
+    status: competition.autoApprove ? "approved" : "pending",
+  } as const
 
   const createdDonation = await registerDonation(
     competition.id,
