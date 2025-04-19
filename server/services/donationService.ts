@@ -12,6 +12,7 @@ export const registerDonation = async (
     extraFields?: string;
     proof?: string;
     influenceId?: number;
+    status: "pending" | "approved" | "rejected";
   }
 ) => {
   const { user_name, user_email, extraFields, hemocioneID, proof } = payload;
@@ -26,6 +27,7 @@ export const registerDonation = async (
         influenceId: payload.influenceId,
         ...(extraFields ? { extraFields } : {}),
         ...(proof ? { proof } : {}),
+        status: payload.status,
       },
     });
 
