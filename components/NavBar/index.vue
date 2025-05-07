@@ -1,5 +1,5 @@
 <template>
-  <nav v-if="!isIframed" :class="{ 'nav-bar': true, hide: !validatedIframe }">
+  <nav v-if="!isIframed" class="nav-bar">
     <NuxtLink to="/" class="logo-wrapper">
       <NuxtImg
         src="/images/logos/logo-horizontal-vermelha-branca.svg"
@@ -14,12 +14,19 @@
 </template>
 
 <script setup lang="ts">
-const isIframed = ref(false);
-const validatedIframe = ref(false);
+const route = useRoute();
+const isIframed = ref(route.query.iframed === "true");
 
-onMounted(() => {
-  isIframed.value = window !== window.top;
-  validatedIframe.value = true;
+onBeforeMount(() => {
+  if (isIframed.value) {
+    // override --hemo-navbar-height: 7dvh to 0 and --hemo-page-min-height: 93dvh; to 100dvh;
+    // to make the page full screen
+    document.documentElement.style.setProperty("--hemo-navbar-height", "0dvh");
+    document.documentElement.style.setProperty(
+      "--hemo-page-min-height",
+      "100dvh"
+    );
+  }
 });
 </script>
 
@@ -36,7 +43,7 @@ onMounted(() => {
   background-color: var(--black-100);
   top: 0;
   left: 0;
-  height: 7dvh;
+  height: var(--hemo-navbar-height);
 }
 
 .hide {
