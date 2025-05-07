@@ -320,10 +320,7 @@ const more = async () => {
     url: shareUrl.value,
   };
   try {
-    if (!navigator.share) {
-      throw new Error("Share API not available");
-    }
-    await navigator.share(sharePayload);
+    await useHemocioneSdk()?.share(sharePayload);
   } catch (error) {
     console.error("Error sharing", error);
     copyLink();
