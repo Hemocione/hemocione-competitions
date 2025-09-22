@@ -36,10 +36,9 @@ export const registerDonation = async (
     extraFields: ExtraFieldsResponse;
     competitionTeamId: number;
     influenceId?: number;
+    competitionName?: string;
   }
 ) => {
-
-
   const { proof, extraFields, competitionTeamId, influenceId } = payload;
   return await $fetch(`/api/v1/competitions/${competitionSlug}/donations`, {
     method: "POST",
@@ -125,6 +124,7 @@ export const useUserStore = defineStore("user", {
     token: null as string | null,
     donationsByCompetitionSlug: new Map<string, UserDonation>(),
     influenceByCompetitionSlug: new Map<string, InfluenceData>(),
+    iframed: false as boolean,
   }),
   getters: {
     loggedIn: (state) => Boolean(state.user),
@@ -136,6 +136,9 @@ export const useUserStore = defineStore("user", {
     },
     setToken(token: string | null) {
       this.token = token;
+    },
+    setIframed(iframed: boolean) {
+      this.iframed = iframed;
     },
     async getDonationByCompetitionSlug(competitionSlug: string) {
       if (!this.token) return;
@@ -159,6 +162,7 @@ export const useUserStore = defineStore("user", {
         extraFields: ExtraFieldsResponse;
         competitionTeamId: number;
         influenceId?: number;
+        competitionName?: string;
       }
     ) {
       if (!this.token) return;
@@ -169,6 +173,24 @@ export const useUserStore = defineStore("user", {
         payload
       );
 
+      if (this.iframed && payload.competitionName) {
+        const sdk = useHemocioneSdk();
+        if (sdk) {
+          sdk
+            .registerVirtualDonation({
+              label: payload.competitionName,
+              donationDate: new Date().toISOString(),
+              bloodBanksLocationId: null,
+              metadata: null,
+            })
+            .then(() => {
+              console.log("Virtual donation registered");
+            })
+            .catch((error) => {
+              console.error("Error registering virtual donation", error);
+            });
+        }
+      }
       this.donationsByCompetitionSlug.set(competitionSlug, donation);
       return donation;
     },

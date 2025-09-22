@@ -15,10 +15,12 @@
 
 <script setup lang="ts">
 const route = useRoute();
+const userStore = useUserStore();
 const isIframed = ref(route.query.iframed === "true");
 
 onBeforeMount(() => {
   if (isIframed.value) {
+    userStore.setIframed(true);
     // override --hemo-navbar-height: 7dvh to 0 and --hemo-page-min-height: 93dvh; to 100dvh;
     // to make the page full screen
     document.documentElement.style.setProperty("--hemo-navbar-height", "0dvh");
