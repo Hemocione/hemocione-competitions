@@ -464,6 +464,7 @@ async function handleSubmit(event: any) {
     proof: form.value.proof,
     extraFields: extraFieldsResponse.value,
     influenceId,
+    competitionName: competition.value?.name,
   };
 
   // TODO: do this inside registerDonation. pass this info in payload.
