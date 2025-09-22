@@ -14,6 +14,7 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from "~/store/user";
 const route = useRoute();
 const userStore = useUserStore();
 const isIframed = ref(route.query.iframed === "true");
