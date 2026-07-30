@@ -53,3 +53,26 @@ export const deleteInstitution = async (id: number) => {
 
   return deletedInstitution;
 };
+
+/**
+ * Lista instituicoes com seus times.
+ *
+ * Existe porque a API criava times (`POST .../teams/bulk` devolve so um count)
+ * mas nao tinha como LISTAR os ids — e `POST /competitions/:slug/teams/set`
+ * exige teamIds. Sem isto, cadastrar uma copa pelo backoffice obrigava a
+ * adivinhar ids ou ir direto no banco.
+ */
+export const listInstitutions = async () => {
+  return await dbClient.institutions.findMany({
+    select: {
+      id: true,
+      name: true,
+      logo_url: true,
+      teams: {
+        select: { id: true, name: true, logo_url: true },
+        orderBy: { name: "asc" },
+      },
+    },
+    orderBy: { name: "asc" },
+  });
+};
