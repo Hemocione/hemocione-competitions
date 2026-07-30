@@ -129,7 +129,10 @@
                   ? "Comprovante da sua participação"
                   : "Comprovante de doação"
               }}
-              <span v-if="competition?.mandatory_proof && !form.proofUrl"
+              <span
+                v-if="
+                  competition?.mandatory_proof && !form.proof && !form.proofUrl
+                "
                 >*</span
               ></label
             >

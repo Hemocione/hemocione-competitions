@@ -1,4 +1,8 @@
-const NEAREST_TIMEOUT_MS = 4000;
+// Este lookup acontece no caminho do request de registro, entao o timeout e o
+// teto de latencia que ele adiciona. 1.5s e suficiente para uma consulta com
+// indice 2dsphere e mantem o custo aceitavel — e, como a geo e best-effort,
+// estourar o prazo apenas resulta em geoValidated=false.
+const NEAREST_TIMEOUT_MS = 1500;
 
 /**
  * Consulta o ondedoar pelo banco de sangue mais proximo.
