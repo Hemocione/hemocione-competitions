@@ -55,6 +55,11 @@ const getCompetitionBySlugPromise = (slug: string) => {
       extraFields: true,
       mandatory_proof: true,
       proof_type: true,
+      // OBRIGATORIO: o register.vue liga toda a UI de participacao em
+      // `competition.mode`. Fora deste select o campo chega undefined no
+      // frontend e a copa participativa se comporta como copa de doacao,
+      // silenciosamente.
+      mode: true,
       has_influence: true,
       has_likes: true,
       influence_controls_team: true,
