@@ -9,7 +9,9 @@
     "utils:reset-db": "npx prisma db push --force-reset && npx prisma db push",
     "utils:populate": "docker cp sql-scripts/populate_tables.sql my-postgres:/populate.sql && docker exec -i my-postgres psql -U postgres -d competitions -f /populate.sql",
     "migrate:deploy": "if [ \"$ENABLE_MIGRATIONS\" = \"1\" ]; then npx prisma migrate deploy; else echo \"no migrations enabled\"; fi",
-    "postinstall": "yarn migrate:deploy && npx prisma generate && nuxt prepare"
+    "postinstall": "yarn migrate:deploy && npx prisma generate && nuxt prepare",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@aws-sdk/client-sqs": "^3.600.0",
@@ -32,7 +34,8 @@
     "nuxt-bugsnag": "^7.2.3",
     "nuxt-vercel-analytics": "^1.0.0",
     "slugify": "^1.6.6",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^4.1.10"
   },
   "prisma": {
     "schema": "server/db/schema.prisma"
