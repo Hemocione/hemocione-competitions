@@ -74,6 +74,13 @@ export default defineNuxtConfig({
       process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "hemocione",
     secret: process.env.API_SECRET ?? "secret",
     donationsQueueUrl: process.env.DONATIONS_QUEUE_URL ?? "queue-url",
+    ondeDoarApiUrl:
+      process.env.ONDE_DOAR_API_URL ?? "https://ondedoar.hemocione.com.br",
+    // Hosts de onde aceitamos um proofUrl vindo por query string. Comparacao de
+    // host exato — ver utils/proofUrl.ts.
+    allowedProofHosts:
+      process.env.ALLOWED_PROOF_HOSTS ??
+      "possodoar.hemocione.com.br,possodoar.d.hemocione.com.br,cdn.hemocione.com.br",
   },
 
   routeRules: {
