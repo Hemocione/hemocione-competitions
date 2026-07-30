@@ -160,7 +160,14 @@ export default defineEventHandler(async (event) => {
     payload
   );
 
-  if (createdDonation.status === "approved" && competition.webhook_configs?.donation_approved) {
+  // Mesmo gate da fila do hemocione-id: o webhook se chama donation_approved e
+  // seus consumidores esperam uma doacao. Disparar em participacao faria eles
+  // contabilizarem bolsa que nao existe.
+  if (
+    kind === "donation" &&
+    createdDonation.status === "approved" &&
+    competition.webhook_configs?.donation_approved
+  ) {
     waitUntil(callWebhook(competition.webhook_configs.donation_approved, { hemocioneId: user.id }));
   }
 

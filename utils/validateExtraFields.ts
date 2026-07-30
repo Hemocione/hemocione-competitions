@@ -36,7 +36,10 @@ export const isValidExtraFieldsResponse = (
   // A resposta vem do corpo do request: uma entrada null, string ou numero faria
   // o acesso a `.slug` estourar dentro do handler de registro.
   const isEntry = (e: unknown): e is ExtraFieldResponse =>
-    typeof e === "object" && e !== null && "slug" in e;
+    typeof e === "object" &&
+    e !== null &&
+    !Array.isArray(e) &&
+    typeof (e as { slug?: unknown }).slug === "string";
 
   if (!extraFieldsResponse.every(isEntry)) return false;
 
