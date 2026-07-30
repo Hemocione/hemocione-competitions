@@ -24,4 +24,13 @@ ALTER TABLE "donations" ADD COLUMN     "kind" "RegistrationKind" NOT NULL DEFAUL
 ADD COLUMN     "proof_metadata" JSONB;
 
 -- CreateIndex
-CREATE INDEX "donations_competitionId_kind" ON "donations"("competitionId", "kind");
+--
+-- Sem CONCURRENTLY de proposito: o Prisma envelopa migrations em transacao, e
+-- CREATE INDEX CONCURRENTLY nao roda dentro de transacao (Postgres 25001).
+--
+-- Este CREATE INDEX pega lock que bloqueia ESCRITA em "donations" enquanto
+-- constroi. Em producao, aplique o PROD_RUNBOOK.sql deste diretorio ANTES do
+-- `prisma migrate deploy`: ele cria o mesmo indice com CONCURRENTLY, e o
+-- IF NOT EXISTS abaixo torna esta linha no-op depois — a migration e marcada
+-- como aplicada normalmente, sem `migrate resolve` na mao.
+CREATE INDEX IF NOT EXISTS "donations_competitionId_kind" ON "donations"("competitionId", "kind");

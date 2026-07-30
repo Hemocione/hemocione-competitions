@@ -60,6 +60,13 @@ describe("isValidExtraFieldsResponse", () => {
     ).toBe(false);
   });
 
+  it("recusa entrada malformada sem estourar ao ler slug", () => {
+    expect(isValidExtraFieldsResponse(fields, [null as never])).toBe(false);
+    expect(isValidExtraFieldsResponse(fields, ["matricula" as never])).toBe(false);
+    expect(isValidExtraFieldsResponse(fields, [123 as never])).toBe(false);
+    expect(isValidExtraFieldsResponse(fields, [{} as never])).toBe(false);
+  });
+
   it("recusa valor que nao e string", () => {
     expect(
       isValidExtraFieldsResponse(fields, [
