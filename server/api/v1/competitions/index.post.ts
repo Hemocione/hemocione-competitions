@@ -17,13 +17,22 @@ export default defineEventHandler(async (event) => {
     influence_controls_team,
     proof_type,
     webhook_configs,
-    autoApprove
+    autoApprove,
+    mode
   } = body;
   if (!name || !startsAt || !endsAt || _.isBoolean(mandatoryProof) === false) {
     throw createError({
       statusCode: 400,
       statusMessage:
         "Bad Request - name, startsAt, mandatoryProof and endsAt are required",
+    });
+  }
+
+  // Sem isso um valor invalido chega no Prisma e volta 500 em vez de 400.
+  if (mode !== undefined && mode !== "donation" && mode !== "participation") {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Bad Request - mode must be 'donation' or 'participation'",
     });
   }
 
@@ -42,7 +51,8 @@ export default defineEventHandler(async (event) => {
     influence_controls_team,
     proof_type,
     webhook_configs,
-    autoApprove
+    autoApprove,
+    mode
   });
 
   return createdCompetition;

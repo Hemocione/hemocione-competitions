@@ -1,5 +1,6 @@
 import { dbClient } from "../db";
 import slugify from "slugify";
+import type { CompetitionMode } from "@prisma/client";
 
 // status 3 = draft, 2 = ativo, 1 = upcoming, 0 = finalizado
 const statusCaseWhenClause = `
@@ -54,6 +55,11 @@ const getCompetitionBySlugPromise = (slug: string) => {
       extraFields: true,
       mandatory_proof: true,
       proof_type: true,
+      // OBRIGATORIO: o register.vue liga toda a UI de participacao em
+      // `competition.mode`. Fora deste select o campo chega undefined no
+      // frontend e a copa participativa se comporta como copa de doacao,
+      // silenciosamente.
+      mode: true,
       has_influence: true,
       has_likes: true,
       influence_controls_team: true,
@@ -185,7 +191,9 @@ interface CreateCompetitionPayload {
   webhook_configs?: {
     donation_approved: string
   },
-  autoApprove: boolean
+  autoApprove: boolean,
+  // Copa de participacao conta gente que entrou na campanha, nao bolsas.
+  mode?: CompetitionMode
 }
 
 export const createCompetition = async ({
@@ -200,7 +208,8 @@ export const createCompetition = async ({
   influence_controls_team = false,
   proof_type = "selfie",
   webhook_configs,
-  autoApprove = true
+  autoApprove = true,
+  mode = "donation"
 }: CreateCompetitionPayload) => {
   const slug = slugify(name, {
     lower: true,
@@ -222,7 +231,8 @@ export const createCompetition = async ({
       influence_controls_team: has_influence && influence_controls_team,
       proof_type,
       webhook_configs,
-      autoApprove
+      autoApprove,
+      mode
     },
   });
 };
