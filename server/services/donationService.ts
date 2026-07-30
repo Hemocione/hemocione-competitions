@@ -1,6 +1,7 @@
 import { dbClient } from "../db";
 import { runAsync } from "~/utils/runAsync";
 import { buildAndSendDonationToHemocioneIdQueue } from "./hemocioneId";
+import type { ProofMetadata } from "~/utils/geo";
 
 export const registerDonation = async (
   competitionId: number,
@@ -13,9 +14,12 @@ export const registerDonation = async (
     proof?: string;
     influenceId?: number;
     status: "pending" | "approved" | "rejected";
+    kind?: "donation" | "participation";
+    proof_metadata?: ProofMetadata;
   }
 ) => {
   const { user_name, user_email, extraFields, hemocioneID, proof } = payload;
+  const kind = payload.kind ?? "donation";
   const donation = await dbClient.$transaction(async (db) => {
     const createdDonation = await db.donations.create({
       data: {
@@ -25,12 +29,18 @@ export const registerDonation = async (
         competitionTeamId: competitionTeamId,
         competitionId: competitionId,
         influenceId: payload.influenceId,
+        kind,
         ...(extraFields ? { extraFields } : {}),
         ...(proof ? { proof } : {}),
+        ...(payload.proof_metadata
+          ? { proof_metadata: payload.proof_metadata as object }
+          : {}),
         status: payload.status,
       },
     });
 
+    // O contador soma os dois tipos de proposito: numa copa participativa o
+    // ranking E de participacao. Assim getCompetitionRanking nao muda.
     await db.competitionTeams.update({
       where: {
         id: competitionTeamId,
@@ -56,7 +66,13 @@ export const registerDonation = async (
     }
     return createdDonation;
   });
-  runAsync(buildAndSendDonationToHemocioneIdQueue(donation, competitionId));
+
+  // GATE: participacao NAO e bolsa de sangue. Sem isso, quem registrasse
+  // participacao teria uma doacao aparecendo no historico do hemocione-id.
+  if (kind === "donation") {
+    runAsync(buildAndSendDonationToHemocioneIdQueue(donation, competitionId));
+  }
+
   return donation;
 };
 
@@ -93,6 +109,8 @@ export const getCompetitionUserDonations = async (data: {
       },
     },
     where: {
+      // Participacao nao entra no historico de doacoes do usuario.
+      kind: "donation",
       OR: [
         {
           hemocioneID: hemocioneId,

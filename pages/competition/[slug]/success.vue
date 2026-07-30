@@ -6,7 +6,11 @@
       </header>
       <div class="success">
         <img src="/images/check-donation.svg" alt="checked-icon" />
-        <span
+        <span v-if="competition?.mode === 'participation'">
+          Participação registrada com sucesso! Obrigado por entrar nessa com a
+          gente :)
+        </span>
+        <span v-else
           >Doação registrada com sucesso! Obrigado por salvar 4 vidas :)</span
         >
       </div>
