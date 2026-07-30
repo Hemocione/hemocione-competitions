@@ -28,23 +28,42 @@ export const getUserInfluence = async (
   );
 };
 
+export type RegisterDonationPayload = {
+  proof: string;
+  extraFields: ExtraFieldsResponse;
+  competitionTeamId: number;
+  influenceId?: number;
+  competitionName?: string;
+  /** URL do comprovante de pre-triagem, quando a pessoa vem daquele fluxo. */
+  proofUrl?: string;
+  /** Autodeclaracao: decide se o registro alimenta o historico do hemocione-id. */
+  kind?: "donation" | "participation";
+  /** Geolocalizacao best-effort, ou o motivo de nao ter vindo. */
+  geo?: { lat: number; lng: number; accuracy?: number } | { reason: string };
+};
+
 export const registerDonation = async (
   competitionSlug: string,
   token: string,
-  payload: {
-    proof: string;
-    extraFields: ExtraFieldsResponse;
-    competitionTeamId: number;
-    influenceId?: number;
-    competitionName?: string;
-  }
+  payload: RegisterDonationPayload
 ) => {
-  const { proof, extraFields, competitionTeamId, influenceId } = payload;
+  const {
+    proof,
+    proofUrl,
+    kind,
+    geo,
+    extraFields,
+    competitionTeamId,
+    influenceId,
+  } = payload;
   return await $fetch(`/api/v1/competitions/${competitionSlug}/donations`, {
     method: "POST",
     body: {
       competitionTeamId,
       proof,
+      proofUrl,
+      kind,
+      geo,
       extraFields,
       influenceId,
     },
@@ -157,13 +176,7 @@ export const useUserStore = defineStore("user", {
     },
     async registerDonation(
       competitionSlug: string,
-      payload: {
-        proof: string;
-        extraFields: ExtraFieldsResponse;
-        competitionTeamId: number;
-        influenceId?: number;
-        competitionName?: string;
-      }
+      payload: RegisterDonationPayload
     ) {
       if (!this.token) return;
 
@@ -173,7 +186,12 @@ export const useUserStore = defineStore("user", {
         payload
       );
 
-      if (this.iframed && payload.competitionName) {
+      // Mesmo gate do servidor, aplicado aqui tambem: este caminho registra
+      // doacao virtual no app via SDK e passaria por fora do gate da fila do
+      // hemocione-id. Participacao nao e bolsa de sangue.
+      const isDonation = (payload.kind ?? "donation") === "donation";
+
+      if (isDonation && this.iframed && payload.competitionName) {
         const sdk = useHemocioneSdk();
         if (sdk) {
           sdk
