@@ -253,7 +253,9 @@ export const editCompetitionBySlug = async (
     webhook_configs?: {
       donation_approved: string
     },
-    autoApprove: boolean
+    autoApprove: boolean,
+    // Permite converter uma copa existente entre doacao e participacao.
+    mode?: CompetitionMode
   }
 ) => {
   const {
@@ -268,7 +270,8 @@ export const editCompetitionBySlug = async (
     influence_controls_team,
     proof_type = "selfie",
     webhook_configs,
-    autoApprove
+    autoApprove,
+    mode
   } = payload;
   const updatedCompetition = await dbClient.competitions.update({
     where: { slug },
@@ -284,7 +287,9 @@ export const editCompetitionBySlug = async (
       influence_controls_team: has_influence && influence_controls_team,
       proof_type,
       webhook_configs,
-      autoApprove
+      autoApprove,
+      // undefined nao altera a coluna: quem nao manda mode mantem o valor atual.
+      mode
     },
   });
   return updatedCompetition;
