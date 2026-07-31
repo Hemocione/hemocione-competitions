@@ -2,7 +2,10 @@ export type GeoFailureReason =
   | "denied"
   | "timeout"
   | "unavailable"
-  | "no-point-nearby";
+  | "no-point-nearby"
+  // A pessoa registrou antes de responder ao prompt de permissao. A captura
+  // roda em background e nunca prende o submit — ver register.vue.
+  | "pending";
 
 export type ProofMetadata = {
   lat?: number;
