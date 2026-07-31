@@ -123,8 +123,33 @@
             </el-radio-group>
           </div>
 
+          <!--
+            Prova ja recebida por URL (comprovante da pre-triagem): pular o campo
+            inteiro. Pedir foto a quem acabou de ser reprovado na pre-triagem nao
+            faz sentido — ela nao tem foto de doacao para enviar, e a prova dela
+            ja esta na mao.
+          -->
+          <div
+            class="column"
+            key="proof-from-url"
+            v-if="hasExternalProof && isTeamSelected"
+          >
+            <label class="label-form">Comprovante</label>
+            <div class="external-proof">
+              <el-icon size="18"><ElIconCircleCheckFilled /></el-icon>
+              <span>
+                Comprovante da sua pré-triagem anexado.
+                <a :href="form.proofUrl" target="_blank" rel="noopener">Ver</a>
+              </span>
+            </div>
+          </div>
+
           <!-- Proof Field -->
-          <div class="column" key="proof" v-if="isTeamSelected">
+          <div
+            class="column"
+            key="proof"
+            v-if="!hasExternalProof && isTeamSelected"
+          >
             <input
               id="file-input"
               type="file"
@@ -259,7 +284,14 @@ const code = route.query.code ? String(route.query.code) : null;
 // mentir pelo query param equivale a mentir clicando.
 const initialKind =
   route.query.kind === "participation" ? "participation" : "donation";
-const externalProofUrl = route.query.proofUrl ? String(route.query.proofUrl) : "";
+// Mesma regra do servidor (utils/proofUrl.ts): https sob qualquer subdominio
+// hemocione. Sem validar aqui, um proofUrl invalido esconderia o campo de foto
+// enquanto o servidor descartaria o link — a pessoa ficaria sem poder registrar
+// nem enviar comprovante.
+const externalProofUrl = (() => {
+  const raw = route.query.proofUrl ? String(route.query.proofUrl) : "";
+  return isAllowedProofUrl(raw) ? raw : "";
+})();
 
 const uploadingImage = ref(false);
 const registeringDonation = ref(false);
@@ -366,6 +398,8 @@ const form = ref({
     ...Object.fromEntries(extraFieldsSlugs.map((slug) => [slug, ""])),
   },
 });
+
+const hasExternalProof = computed(() => Boolean(form.value.proofUrl));
 
 const institutions = computed(() =>
   sortBy(
@@ -588,6 +622,22 @@ async function handleSubmit(event: any) {
 }
 </script>
 <style scoped>
+.external-proof {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #dbdde0;
+  border-radius: 0.5rem;
+  color: #52575c;
+  font-size: 0.9rem;
+}
+
+.external-proof a {
+  color: var(--hemo-color-primary);
+  font-weight: 600;
+}
+
 /* O toggle de autodeclaracao ocupa a largura toda: em celular duas opcoes
    estreitas e centralizadas sao dificeis de acertar com o dedo. */
 .kind-radio-group {
