@@ -552,21 +552,38 @@ const extraFieldsResponse = computed(() => {
 
 const GEO_TIMEOUT_MS = 8000;
 
+type GeoResult =
+  | { lat: number; lng: number; accuracy?: number }
+  | { reason: string };
+
 /**
- * Geolocalizacao best-effort. NUNCA rejeita: geo e enriquecimento de prova, nao
- * pre-requisito de registro.
+ * Resultado da geolocalizacao, resolvido em background.
+ *
+ * Comeca como "pending": se a pessoa nunca responder ao prompt, o registro sai
+ * com esse motivo em vez de esperar por ela.
+ */
+const geoResult = ref<GeoResult>({ reason: "pending" });
+
+/**
+ * Geolocalizacao best-effort. NUNCA rejeita e NUNCA prende o fluxo: geo e
+ * enriquecimento de prova, nao pre-requisito de registro.
+ *
+ * O timeout do getCurrentPosition NAO cobre o tempo em que o prompt de
+ * permissao fica aberto — se a pessoa ignora o prompt, o callback simplesmente
+ * nunca dispara. Por isso ha um teto de tempo proprio, por Promise.race: sem
+ * ele o await ficava pendurado para sempre e o botao de registrar travava em
+ * loading, que foi o bug relatado.
  *
  * Dentro do app, o iframe precisa de allow="geolocation" e o build nativo
- * precisa das permissoes de plataforma. Em app antigo isso simplesmente nao vem
- * — e o registro tem que funcionar do mesmo jeito.
+ * precisa das permissoes de plataforma. Em app antigo isso nao vem — e o
+ * registro tem que funcionar do mesmo jeito.
  */
-async function captureGeo(): Promise<
-  { lat: number; lng: number; accuracy?: number } | { reason: string }
-> {
+function captureGeo(): Promise<GeoResult> {
   if (!import.meta.client || !navigator.geolocation) {
-    return { reason: "unavailable" };
+    return Promise.resolve({ reason: "unavailable" });
   }
-  return new Promise((resolve) => {
+
+  const doBrowser = new Promise<GeoResult>((resolve) => {
     navigator.geolocation.getCurrentPosition(
       (pos) =>
         resolve({
@@ -581,7 +598,36 @@ async function captureGeo(): Promise<
       { timeout: GEO_TIMEOUT_MS, maximumAge: 60_000 },
     );
   });
+
+  const tetoDeTempo = new Promise<GeoResult>((resolve) =>
+    setTimeout(() => resolve({ reason: "timeout" }), GEO_TIMEOUT_MS),
+  );
+
+  return Promise.race([doBrowser, tetoDeTempo]);
 }
+
+/**
+ * Dispara a captura assim que a pagina abre, sem await: o prompt aparece
+ * enquanto a pessoa preenche o formulario, e nao no meio do submit. Se ela
+ * responder depois, o resultado e aproveitado; se nunca responder, o registro
+ * sai com reason "pending".
+ */
+function iniciarCapturaDeGeo() {
+  if (!isParticipation.value) return;
+  captureGeo().then((resultado) => {
+    geoResult.value = resultado;
+  });
+}
+
+onMounted(iniciarCapturaDeGeo);
+
+// Copa carregada depois do mount (ou time escolhido antes de sabermos o modo):
+// tenta de novo quando o modo participativo aparecer.
+watch(isParticipation, (participativa) => {
+  if (participativa && "reason" in geoResult.value && geoResult.value.reason === "pending") {
+    iniciarCapturaDeGeo();
+  }
+});
 
 async function handleSubmit(event: any) {
   registeringDonation.value = true;
@@ -591,7 +637,8 @@ async function handleSubmit(event: any) {
   }
   const influenceId = influencedBy?.value?.id;
 
-  const geo = isParticipation.value ? await captureGeo() : undefined;
+  // Usa o que a captura em background ja tiver resolvido. Nao espera.
+  const geo = isParticipation.value ? geoResult.value : undefined;
 
   const payload = {
     competitionTeamId: form.value.competitionTeamId,
