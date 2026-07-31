@@ -71,6 +71,13 @@ describe("resolveGeoValidation", () => {
     });
   });
 
+  it("aceita 'pending' — registro antes de a pessoa responder ao prompt", () => {
+    expect(resolveGeoValidation({ coords: null, reason: "pending" })).toEqual({
+      geoValidated: false,
+      reason: "pending",
+    });
+  });
+
   it("usa 'unavailable' como motivo padrao", () => {
     expect(resolveGeoValidation({ coords: null })).toEqual({
       geoValidated: false,
