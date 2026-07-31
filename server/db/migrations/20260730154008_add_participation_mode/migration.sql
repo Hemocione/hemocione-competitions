@@ -1,12 +1,16 @@
 -- Migration IDEMPOTENTE de ponta a ponta, de proposito.
 --
--- Em producao o PROD_RUNBOOK.sql deste diretorio deve ser aplicado ANTES do
--- `prisma migrate deploy`: ele cria os mesmos objetos na ordem certa, com
--- CREATE INDEX CONCURRENTLY, que nao bloqueia escrita em "donations". Como todo
--- statement aqui e idempotente, depois do runbook esta migration vira no-op
--- inteira e o Prisma a marca como aplicada sem `migrate resolve` na mao.
+-- Roda inteira no deploy, via `prisma migrate deploy`. Nao ha runbook manual.
 --
--- Em dev e CI, onde a tabela e pequena, rodar so esta migration basta.
+-- O CREATE INDEX abaixo e SEM CONCURRENTLY e portanto bloqueia escrita em
+-- "donations" enquanto constroi. Isso foi decidido conscientemente: nao ha copa
+-- em andamento, a tabela e pequena, e a janela e de segundos — nao vale o custo
+-- operacional de um passo manual antes de cada deploy.
+--
+-- Se algum dia isso rodar com uma copa ativa e tabela grande, o caminho e criar
+-- o indice com CONCURRENTLY por fora ANTES do deploy: como todo statement aqui e
+-- idempotente, a migration vira no-op e o Prisma a marca como aplicada sem
+-- `migrate resolve` na mao.
 
 -- CreateEnum
 -- CREATE TYPE nao aceita IF NOT EXISTS, daí o DO block.
@@ -49,8 +53,9 @@ ALTER TABLE "donations"
   ADD COLUMN IF NOT EXISTS "proof_metadata" JSONB;
 
 -- CreateIndex
--- Sem CONCURRENTLY porque o Prisma envelopa migrations em transacao e o Postgres
--- recusa CREATE INDEX CONCURRENTLY dentro de transacao (25001). Em producao,
--- prefira o PROD_RUNBOOK.sql — ver comentario no topo.
+-- Sem CONCURRENTLY: o Prisma envelopa migrations em transacao e o Postgres
+-- recusa CREATE INDEX CONCURRENTLY dentro de transacao (erro 25001). O
+-- IF NOT EXISTS torna isto no-op onde o indice ja existe — inclusive no banco de
+-- dev, onde ele foi criado durante os testes.
 CREATE INDEX IF NOT EXISTS "donations_competitionId_kind"
   ON "donations" ("competitionId", "kind");
