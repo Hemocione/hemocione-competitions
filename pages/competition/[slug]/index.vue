@@ -42,6 +42,7 @@
           v-if="isGeneralView"
           :mappedRankByCompetition="mappedRankByCompetition"
           :donationsAmount="donationsAmount"
+          :totalLabel="wording.totalLabel.value"
         />
         <FlowEngagement
           v-else-if="isEngagementView"
@@ -93,7 +94,7 @@
             <el-icon>
               <ElIconCirclePlusFilled />
             </el-icon> </template
-          >Registrar doação</el-button
+          >{{ wording.registerCta.value }}</el-button
         >
       </NuxtLink>
     </common-cool-footer>
@@ -118,6 +119,10 @@ const user = computed(() => userStore.user);
 const slug = route.params.slug;
 
 const { data: competition } = await useFetch(`/api/v1/competitions/${slug}`);
+
+// Vocabulario da copa: participativa conta PARTICIPACAO, nao bolsa de sangue.
+const wording = useCompetitionWording(() => (competition.value as any)?.mode);
+const unitLabel = wording.nounPluralCapitalized;
 const { data: engagements } = competition?.value?.has_likes
   ? await useFetch(`/api/v1/competitions/${slug}/engagements`)
   : { data: ref([]) };
@@ -189,7 +194,7 @@ const rankingPosition = (idx: number) => {
 
 const mappedRankByCompetition = computed(() => {
   const generalRanking = {
-    labels: ["#", labelByType.value, "Doações"],
+    labels: ["#", labelByType.value, unitLabel.value],
     contents: content?.value?.map((c, idx) => ({
       "#": rankingPosition(idx),
       [labelByType.value]: {
@@ -199,16 +204,16 @@ const mappedRankByCompetition = computed(() => {
           logo: c.logo_url,
         },
       },
-      Doações: c.donation_count,
+      [unitLabel.value]: c.donation_count,
     })),
   };
 
   const likesRanking = {
-    labels: ["#", "Doações", "Curtidas"],
+    labels: ["#", unitLabel.value, "Curtidas"],
     contents:
       engagements?.value?.map((c: any, idx: number) => ({
         "#": rankingPosition(idx),
-        Doações: c.teams.name,
+        [unitLabel.value]: c.teams.name,
         Curtidas: c.amountLikes,
       })) ?? [],
   };
