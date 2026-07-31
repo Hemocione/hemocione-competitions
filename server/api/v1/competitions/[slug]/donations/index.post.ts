@@ -67,16 +67,10 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  // proofUrl chega por query string: e o comprovante da pre-triagem, mandado
-  // pelo can-donate. Sem allowlist o campo proof viraria armazem de link
-  // arbitrario. Fora da allowlist o valor e ignorado, nao falha o registro.
-  const allowedProofHosts = String(config.allowedProofHosts ?? "")
-    .split(",")
-    .map((host) => host.trim())
-    .filter(Boolean);
-  const externalProof = isAllowedProofUrl(proofUrl, allowedProofHosts)
-    ? String(proofUrl)
-    : undefined;
+  // proofUrl chega por query string: e o comprovante da pre-triagem mandado pelo
+  // can-donate, ou uma imagem da CDN. Aceita https sob qualquer subdominio
+  // hemocione.com.br. Fora disso o valor e ignorado, nao falha o registro.
+  const externalProof = isAllowedProofUrl(proofUrl) ? String(proofUrl) : undefined;
 
   const resolvedProof = proof || externalProof;
 
