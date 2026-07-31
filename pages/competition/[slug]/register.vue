@@ -104,9 +104,20 @@
               algum impedimento, sua participação continua contando para a sua
               unidade.
             </span>
-            <el-radio-group v-model="form.kind" size="large">
-              <el-radio-button value="donation">Sim, consegui doar</el-radio-button>
-              <el-radio-button value="participation">
+            <!--
+              Element Plus 2.4.x usa `label` como VALOR do radio; o prop `value`
+              so existe a partir do 2.6. Com `value`, os dois botoes ficavam com
+              valor undefined e o grupo nao conseguia distingui-los: o primeiro
+              clique "funcionava", o segundo travava e a primeira opcao era
+              inalcancavel. O texto visivel continua vindo do slot.
+            -->
+            <el-radio-group
+              v-model="form.kind"
+              size="large"
+              class="kind-radio-group"
+            >
+              <el-radio-button label="donation">Sim, consegui doar</el-radio-button>
+              <el-radio-button label="participation">
                 Não consegui doar
               </el-radio-button>
             </el-radio-group>
@@ -577,6 +588,30 @@ async function handleSubmit(event: any) {
 }
 </script>
 <style scoped>
+/* O toggle de autodeclaracao ocupa a largura toda: em celular duas opcoes
+   estreitas e centralizadas sao dificeis de acertar com o dedo. */
+.kind-radio-group {
+  width: 100%;
+  display: flex;
+}
+
+.kind-radio-group :deep(.el-radio-button) {
+  flex: 1 1 0;
+  display: flex;
+}
+
+.kind-radio-group :deep(.el-radio-button__inner) {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: normal;
+  line-height: 1.2;
+  padding: 0.75rem 0.5rem;
+}
+
 .user-name-wrapper {
   width: 100%;
   display: flex;
