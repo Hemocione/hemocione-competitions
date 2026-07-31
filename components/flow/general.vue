@@ -3,7 +3,7 @@
     <TemplateCompetitionContent2 :disablePodium="false">
       <template #podium-content>
         <div class="blood-view">
-          <h4>TOTAL DE DOAÇÕES REALIZADAS</h4>
+          <h4>{{ totalLabel }}</h4>
           <h1 class="blood-amount-donation">
             {{ formattedDonationsAmount }}
           </h1>
@@ -26,7 +26,14 @@
 const props = defineProps<{
   donationsAmount: number;
   mappedRankByCompetition: any;
+  // Rotulo do contador. Vem de useCompetitionWording na pagina, para o
+  // componente nao precisar conhecer o modo da copa.
+  totalLabel?: string;
 }>();
+
+const totalLabel = computed(
+  () => props.totalLabel ?? "TOTAL DE DOAÇÕES REALIZADAS",
+);
 
 const formattedDonationsAmount = computed(() => {
   const amount = props.donationsAmount;

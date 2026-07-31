@@ -92,6 +92,37 @@
               </el-option>
             </el-select>
           </div>
+          <!-- Autodeclaracao: so aparece em copa participativa -->
+          <div
+            class="column"
+            key="kind"
+            v-if="isParticipation && isTeamSelected"
+          >
+            <label class="label-form">Você conseguiu doar? <span>*</span></label>
+            <span class="proof-type-text">
+              Vale participar mesmo sem conseguir doar. Se a pré-triagem apontou
+              algum impedimento, sua participação continua contando para a sua
+              unidade.
+            </span>
+            <!--
+              Element Plus 2.4.x usa `label` como VALOR do radio; o prop `value`
+              so existe a partir do 2.6. Com `value`, os dois botoes ficavam com
+              valor undefined e o grupo nao conseguia distingui-los: o primeiro
+              clique "funcionava", o segundo travava e a primeira opcao era
+              inalcancavel. O texto visivel continua vindo do slot.
+            -->
+            <el-radio-group
+              v-model="form.kind"
+              size="large"
+              class="kind-radio-group"
+            >
+              <el-radio-button label="donation">Sim, consegui doar</el-radio-button>
+              <el-radio-button label="participation">
+                Não consegui doar
+              </el-radio-button>
+            </el-radio-group>
+          </div>
+
           <!-- Proof Field -->
           <div class="column" key="proof" v-if="isTeamSelected">
             <input
@@ -104,8 +135,17 @@
               @change="handleFileSelect($event)"
             />
             <label class="label-form"
-              >Comprovante de doação
-              <span v-if="competition?.mandatory_proof">*</span></label
+              >{{
+                isParticipation
+                  ? "Comprovante da sua participação"
+                  : "Comprovante de doação"
+              }}
+              <span
+                v-if="
+                  competition?.mandatory_proof && !form.proof && !form.proofUrl
+                "
+                >*</span
+              ></label
             >
             <span class="proof-type-text">{{ proofText }}</span>
             <Transition name="fade" appear mode="out-in">
@@ -139,7 +179,7 @@
                 </el-icon>
                 <img
                   :src="form.proof"
-                  alt="Comprovante de Doação"
+                  :alt="isParticipation ? 'Comprovante de Participação' : 'Comprovante de Doação'"
                   class="taken-image"
                 />
               </div>
@@ -214,6 +254,13 @@ const route = useRoute();
 const slug = route.params.slug;
 const code = route.query.code ? String(route.query.code) : null;
 
+// Quem chega pelo caminho "reprovado na pre-triagem" vem com kind e o
+// comprovante ja na URL. O radio segue editavel: o campo e autodeclarado, entao
+// mentir pelo query param equivale a mentir clicando.
+const initialKind =
+  route.query.kind === "participation" ? "participation" : "donation";
+const externalProofUrl = route.query.proofUrl ? String(route.query.proofUrl) : "";
+
 const uploadingImage = ref(false);
 const registeringDonation = ref(false);
 
@@ -282,24 +329,38 @@ const teamInfluenceControlled = Boolean(
     competition.value?.influence_controls_team
 );
 
+const isParticipationCompetition = competition.value?.mode === "participation";
+
 const presentationText = isCompetitionInFuture
-  ? `${competition.value?.name} ainda não começou. Aguarde até a data de início (${initialDate}) para registrar sua doação.`
+  ? `${competition.value?.name} ainda não começou. Aguarde até a data de início (${initialDate}) para registrar sua ${
+      isParticipationCompetition ? "participação" : "doação"
+    }.`
   : isCompetitionInPast
   ? "A copa já acabou. Obrigado por participar!"
   : teamInfluenceControlled
   ? null
+  : isParticipationCompetition
+  ? "Selecione sua unidade para registrar sua participação na campanha."
   : "Selecione sua equipe para registrar sua doação.";
 
 const proofText =
   competition.value?.proof_type === "document"
     ? "Envie uma foto do comprovante de doação de sangue"
+    : competition.value?.proof_type === "any"
+    ? "Envie qualquer registro da sua ida ao banco de sangue: uma selfie no local, foto do comprovante ou da pulseira. Se você não pôde doar, o comprovante da pré-triagem já vale."
     : "Envie uma foto sua realizando a doação de sangue (pode ser uma selfie!)";
 
 export type Competition = typeof competition.value;
 
+const isParticipation = computed(
+  () => competition.value?.mode === "participation",
+);
+
 const form = ref({
   competitionTeamId: null as number | null | undefined,
   proof: "",
+  proofUrl: externalProofUrl,
+  kind: initialKind as "donation" | "participation",
   institutionId: null as number | null | undefined,
   extraFields: {
     ...Object.fromEntries(extraFieldsSlugs.map((slug) => [slug, ""])),
@@ -358,7 +419,11 @@ const canRegisterDonation = computed(() => {
   return (
     isTeamSelected.value &&
     allRequiredExtraFieldsFilled.value &&
-    (!competition.value?.mandatory_proof || form.value.proof)
+    // O comprovante da pre-triagem, recebido por proofUrl, satisfaz a exigencia
+    // de prova: quem foi reprovado nao tem foto de doacao para enviar.
+    (!competition.value?.mandatory_proof ||
+      form.value.proof ||
+      form.value.proofUrl)
   );
 });
 
@@ -372,7 +437,7 @@ const coolButtonText = computed(() => {
   if (!canRegisterDonation.value) {
     return "Preencha os Campos Obrigatórios";
   }
-  return "Registrar Doação";
+  return isParticipation.value ? "Registrar Participação" : "Registrar Doação";
 });
 
 const MB = 1024 * 1024;
@@ -451,6 +516,39 @@ const extraFieldsResponse = computed(() => {
   );
 });
 
+const GEO_TIMEOUT_MS = 8000;
+
+/**
+ * Geolocalizacao best-effort. NUNCA rejeita: geo e enriquecimento de prova, nao
+ * pre-requisito de registro.
+ *
+ * Dentro do app, o iframe precisa de allow="geolocation" e o build nativo
+ * precisa das permissoes de plataforma. Em app antigo isso simplesmente nao vem
+ * — e o registro tem que funcionar do mesmo jeito.
+ */
+async function captureGeo(): Promise<
+  { lat: number; lng: number; accuracy?: number } | { reason: string }
+> {
+  if (!import.meta.client || !navigator.geolocation) {
+    return { reason: "unavailable" };
+  }
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) =>
+        resolve({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
+        }),
+      (err) =>
+        resolve({
+          reason: err.code === err.PERMISSION_DENIED ? "denied" : "timeout",
+        }),
+      { timeout: GEO_TIMEOUT_MS, maximumAge: 60_000 },
+    );
+  });
+}
+
 async function handleSubmit(event: any) {
   registeringDonation.value = true;
   event.preventDefault();
@@ -459,9 +557,14 @@ async function handleSubmit(event: any) {
   }
   const influenceId = influencedBy?.value?.id;
 
+  const geo = isParticipation.value ? await captureGeo() : undefined;
+
   const payload = {
     competitionTeamId: form.value.competitionTeamId,
     proof: form.value.proof,
+    proofUrl: form.value.proofUrl || undefined,
+    kind: isParticipation.value ? form.value.kind : "donation",
+    geo,
     extraFields: extraFieldsResponse.value,
     influenceId,
     competitionName: competition.value?.name,
@@ -473,7 +576,7 @@ async function handleSubmit(event: any) {
   } catch (error) {
     ElMessage({
       type: "error",
-      message: "Erro ao registrar doação. Por favor, tente novamente.",
+      message: `Erro ao registrar ${isParticipation.value ? "participação" : "doação"}. Por favor, tente novamente.`,
       duration: 3000,
     });
     registeringDonation.value = false;
@@ -485,6 +588,30 @@ async function handleSubmit(event: any) {
 }
 </script>
 <style scoped>
+/* O toggle de autodeclaracao ocupa a largura toda: em celular duas opcoes
+   estreitas e centralizadas sao dificeis de acertar com o dedo. */
+.kind-radio-group {
+  width: 100%;
+  display: flex;
+}
+
+.kind-radio-group :deep(.el-radio-button) {
+  flex: 1 1 0;
+  display: flex;
+}
+
+.kind-radio-group :deep(.el-radio-button__inner) {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: normal;
+  line-height: 1.2;
+  padding: 0.75rem 0.5rem;
+}
+
 .user-name-wrapper {
   width: 100%;
   display: flex;

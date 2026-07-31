@@ -48,6 +48,9 @@ model competitions {
   has_likes               Boolean?   @default(false)
   autoApprove             Boolean?   @default(true)
   webhook_configs         Json?
+  // Copa de participacao conta gente que entrou na campanha, nao bolsas de
+  // sangue. Default donation preserva o comportamento de todas as copas atuais.
+  mode                    CompetitionMode @default(donation)
 
   competitionTeams competitionTeams[]
   donations        donations[]
@@ -84,6 +87,11 @@ model donations {
   influenceId       Int?
   extraFields       Json?
   proof             String?               @db.VarChar(255)
+  // O que esta linha E. Decide se o registro alimenta o historico de doacoes
+  // do hemocione-id: participacao nao e bolsa de sangue.
+  kind              RegistrationKind      @default(donation)
+  // Geolocalizacao best-effort da participacao. Ver utils/geo.ts.
+  proof_metadata    Json?
   createdAt         DateTime              @default(now())
   donationDate      DateTime?             @default(now())
   updatedAt         DateTime              @updatedAt
@@ -93,6 +101,7 @@ model donations {
   status            ProofValidationStatus @default(approved)
 
   @@unique([user_email, competitionId])
+  @@index([competitionId, kind], map: "donations_competitionId_kind") // relatorio por tipo de registro sem varrer a competicao inteira
   @@index([competitionId, hemocioneID], map: "donations_competitionId_hemocioneID") // HemocioneID is the unique identifier for the user in the competition. will be unique in the future, since there are donations with only emails in the database
   @@index([hemocioneID, user_email], map: "donations_hemocioneID") // find donations by hemocioneID
 }
@@ -124,4 +133,18 @@ model influence {
 enum ProofType {
   selfie
   document
+  // Prova permissiva: aceita qualquer registro da ida ao banco de sangue.
+  // Necessario porque quem foi reprovado na pre-triagem nao tem foto de doacao
+  // para enviar — o comprovante da pre-triagem serve.
+  any
+}
+
+enum CompetitionMode {
+  donation
+  participation
+}
+
+enum RegistrationKind {
+  donation
+  participation
 }
