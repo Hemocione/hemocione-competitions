@@ -105,7 +105,7 @@
               unidade.
             </span>
             <el-radio-group v-model="form.kind" size="large">
-              <el-radio-button value="donation">Sim, eu doei</el-radio-button>
+              <el-radio-button value="donation">Sim, consegui doar</el-radio-button>
               <el-radio-button value="participation">
                 Não consegui doar
               </el-radio-button>
@@ -168,7 +168,7 @@
                 </el-icon>
                 <img
                   :src="form.proof"
-                  alt="Comprovante de Doação"
+                  :alt="isParticipation ? 'Comprovante de Participação' : 'Comprovante de Doação'"
                   class="taken-image"
                 />
               </div>
@@ -565,7 +565,7 @@ async function handleSubmit(event: any) {
   } catch (error) {
     ElMessage({
       type: "error",
-      message: "Erro ao registrar doação. Por favor, tente novamente.",
+      message: `Erro ao registrar ${isParticipation.value ? "participação" : "doação"}. Por favor, tente novamente.`,
       duration: 3000,
     });
     registeringDonation.value = false;

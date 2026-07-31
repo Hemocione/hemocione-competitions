@@ -43,7 +43,7 @@
             {{ currentInfluenceTeamName || teamButtonLabel }}
           </ElButton>
           <span class="disclaimer-copy"
-            >As próximas doações feitas por pessoas influenciadas por você serão
+            >As próximas {{ influenceUnit }} feitas por pessoas influenciadas por você serão
             computadas para o time selecionado!</span
           >
         </div>
@@ -73,7 +73,7 @@
     </div>
     <ElDrawer
       v-model="teamDrawer"
-      title="Escolha o time para o qual as doações serão computadas"
+      :title="`Escolha o time para o qual as ${influenceUnit} serão computadas`"
       :visible="teamDrawer"
       direction="btt"
       @close="teamDrawer = false"
@@ -199,6 +199,12 @@ if (!competitionInfluence.value) {
 
 const { data: competition } = await useFetch(
   `/api/v1/competitions/${competitionSlug}`
+);
+
+// Copa participativa conta participacao, nao bolsa de sangue.
+const { noun } = useCompetitionWording(() => (competition.value as any)?.mode);
+const influenceUnit = computed(() =>
+  noun.value === "participação" ? "participações" : "doações",
 );
 
 const influencedTitle = computed(() => {
