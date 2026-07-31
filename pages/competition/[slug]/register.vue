@@ -92,11 +92,33 @@
               </el-option>
             </el-select>
           </div>
+          <!--
+            Kind travado pela URL: a pessoa vem do resultado da pre-triagem, ou
+            seja esta NESTE momento decidindo doar — nao doou ainda, por
+            definicao. Perguntar "voce conseguiu doar?" ali convida a resposta
+            errada, e uma resposta errada aqui vira bolsa de sangue no historico
+            de quem nao doou.
+          -->
+          <div
+            class="column"
+            key="kind-locked"
+            v-if="isParticipation && isKindLocked && isTeamSelected"
+          >
+            <label class="label-form">Sua participação</label>
+            <div class="external-proof">
+              <el-icon size="18"><ElIconCircleCheckFilled /></el-icon>
+              <span>
+                Registrando sua participação na campanha. Vale mesmo sem
+                conseguir doar — ela conta para a sua unidade.
+              </span>
+            </div>
+          </div>
+
           <!-- Autodeclaracao: so aparece em copa participativa -->
           <div
             class="column"
             key="kind"
-            v-if="isParticipation && isTeamSelected"
+            v-if="isParticipation && !isKindLocked && isTeamSelected"
           >
             <label class="label-form">Você conseguiu doar? <span>*</span></label>
             <span class="proof-type-text">
@@ -284,6 +306,16 @@ const code = route.query.code ? String(route.query.code) : null;
 // mentir pelo query param equivale a mentir clicando.
 const initialKind =
   route.query.kind === "participation" ? "participation" : "donation";
+
+// Travamento explicito vindo da URL. Comparacao com strings literais de
+// proposito: `Boolean(query.lockKind)` trataria "false" como true, que e a
+// pegadinha classica de boolean em query string.
+const lockKindParam = route.query.lockKind
+  ? String(route.query.lockKind)
+  : "";
+const isKindLocked =
+  initialKind === "participation" &&
+  (lockKindParam === "true" || lockKindParam === "1");
 // Mesma regra do servidor (utils/proofUrl.ts): https sob qualquer subdominio
 // hemocione. Sem validar aqui, um proofUrl invalido esconderia o campo de foto
 // enquanto o servidor descartaria o link — a pessoa ficaria sem poder registrar
