@@ -130,15 +130,29 @@ export const getCompetitionUserDonations = async (data: {
 
 export const updateDonationStatus = async (data: {
   donationId: number;
+  competitionId: number;
   status: "pending" | "approved" | "rejected";
 }) => {
-  const { donationId, status } = data;
-  return await dbClient.donations.update({
+  const { donationId, competitionId, status } = data;
+
+  // O update e restrito a competicao da rota: sem isso, qualquer slug valido
+  // moderava doacao de qualquer competicao, e um slug de outra competicao
+  // selecionava o webhook errado.
+  const { count } = await dbClient.donations.updateMany({
     where: {
       id: donationId,
+      competitionId,
     },
     data: {
       status,
+    },
+  });
+
+  if (count === 0) return null;
+
+  return await dbClient.donations.findUnique({
+    where: {
+      id: donationId,
     },
   });
 }
