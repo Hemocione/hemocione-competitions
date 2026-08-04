@@ -7,6 +7,11 @@ const KINDS_VALIDOS = ["donation", "participation"] as const;
 
 const TAKE_PADRAO = 50;
 const TAKE_MAXIMO = 200;
+// Offset tem teto porque o Postgres varre e descarta tudo antes do OFFSET: um
+// valor arbitrario faz o banco trabalhar a competicao inteira para devolver uma
+// pagina vazia. 100 mil, com take de 200, da 500 paginas - alem disso, o caso de
+// uso pede filtro, nao paginacao mais profunda.
+const SKIP_MAXIMO = 100_000;
 
 function lerInteiro(valor: unknown, padrao: number, minimo: number, maximo: number) {
   if (valor === undefined || valor === "") return padrao;
@@ -65,6 +70,6 @@ export default defineEventHandler(async (event) => {
     ...(status ? { status: status as (typeof STATUS_VALIDOS)[number] } : {}),
     ...(kind ? { kind: kind as (typeof KINDS_VALIDOS)[number] } : {}),
     take: lerInteiro(query.take, TAKE_PADRAO, 1, TAKE_MAXIMO),
-    skip: lerInteiro(query.skip, 0, 0, Number.MAX_SAFE_INTEGER),
+    skip: lerInteiro(query.skip, 0, 0, SKIP_MAXIMO),
   });
 });

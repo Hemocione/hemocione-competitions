@@ -186,9 +186,10 @@ export const listCompetitionDonations = async (data: {
           },
         },
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      // `id` como desempate porque `createdAt` nao e unico: doacoes gravadas no
+      // mesmo instante nao tem ordem relativa definida, e sem chave estavel uma
+      // linha pode repetir numa pagina e faltar na seguinte.
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       take,
       skip,
     }),
