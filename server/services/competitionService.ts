@@ -111,6 +111,22 @@ export const getCompetitionBySlug = async (slug: string) => {
   return competition;
 };
 
+/**
+ * Resolve a competicao por slug SEM filtrar por publicacao.
+ *
+ * `getCompetitionBySlug` exige `published: true`, o que e correto para as rotas
+ * publicas: rascunho nao deve aparecer. Mas as rotas de backoffice precisam
+ * operar justamente a competicao que ainda nao foi publicada - configurar e
+ * conferir antes de publicar e o fluxo normal de quem organiza a copa.
+ *
+ * Use somente em rota protegida por `assertSecretAuth`.
+ */
+export const getCompetitionBySlugForBackoffice = async (slug: string) => {
+  return await dbClient.competitions.findUnique({
+    where: { slug },
+  });
+};
+
 export const getCompetition = async (id: number) => {
   const competition = await dbClient.$queryRaw`SELECT
     id,

@@ -1,6 +1,6 @@
 import { assertSecretAuth } from "~/server/services/auth";
 import { listCompetitionDonations } from "~/server/services/donationService";
-import { getCompetitionBySlug } from "~/server/services/competitionService";
+import { getCompetitionBySlugForBackoffice } from "~/server/services/competitionService";
 
 const STATUS_VALIDOS = ["pending", "approved", "rejected"] as const;
 const KINDS_VALIDOS = ["donation", "participation"] as const;
@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
   assertSecretAuth(event);
 
   const slug = String(getRouterParam(event, "slug"));
-  const competition = await getCompetitionBySlug(slug);
+  const competition = await getCompetitionBySlugForBackoffice(slug);
   if (!competition) {
     throw createError({
       statusCode: 404,

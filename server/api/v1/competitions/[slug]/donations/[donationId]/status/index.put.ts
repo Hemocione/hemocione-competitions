@@ -1,6 +1,6 @@
 import { assertSecretAuth } from "~/server/services/auth";
 import { updateDonationStatus } from "~/server/services/donationService";
-import { getCompetitionBySlug } from "~/server/services/competitionService";
+import { getCompetitionBySlugForBackoffice } from "~/server/services/competitionService";
 import { waitUntil } from '@vercel/functions';
 import { callWebhook } from "~/server/services/webhookService";
 
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
   });
 
   const competitionSlug = String(getRouterParam(event, 'slug'));
-  const competition = await getCompetitionBySlug(competitionSlug);
+  const competition = await getCompetitionBySlugForBackoffice(competitionSlug);
   if (!competition) {
     throw createError({
       statusCode: 404,
