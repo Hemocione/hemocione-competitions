@@ -142,3 +142,58 @@ export const updateDonationStatus = async (data: {
     },
   });
 }
+
+export const listCompetitionDonations = async (data: {
+  competitionId: number;
+  status?: "pending" | "approved" | "rejected";
+  kind?: "donation" | "participation";
+  take: number;
+  skip: number;
+}) => {
+  const { competitionId, status, kind, take, skip } = data;
+  const where = {
+    competitionId,
+    ...(status ? { status } : {}),
+    ...(kind ? { kind } : {}),
+  };
+
+  // A contagem usa o mesmo filtro da pagina: sem isso, quem pagina nao sabe
+  // quantas doacoes ainda faltam moderar.
+  const [total, items] = await Promise.all([
+    dbClient.donations.count({ where }),
+    dbClient.donations.findMany({
+      where,
+      select: {
+        id: true,
+        user_name: true,
+        user_email: true,
+        hemocioneID: true,
+        competitionTeamId: true,
+        competitionId: true,
+        kind: true,
+        status: true,
+        proof: true,
+        extraFields: true,
+        donationDate: true,
+        createdAt: true,
+        updatedAt: true,
+        // O nome do time vive em `teams`; `competitionTeams` e a ligacao
+        // entre time e competicao. Quem modera precisa ver o nome.
+        competitionTeams: {
+          select: {
+            id: true,
+            teams: { select: { id: true, name: true } },
+          },
+        },
+      },
+      // `id` como desempate porque `createdAt` nao e unico: doacoes gravadas no
+      // mesmo instante nao tem ordem relativa definida, e sem chave estavel uma
+      // linha pode repetir numa pagina e faltar na seguinte.
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take,
+      skip,
+    }),
+  ]);
+
+  return { total, items };
+};

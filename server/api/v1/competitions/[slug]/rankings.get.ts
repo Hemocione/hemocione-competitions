@@ -1,14 +1,26 @@
-import { getCompetitionRanking } from "~/server/services/competitionService";
+import {
+  getCompetitionBySlug,
+  getCompetitionRanking,
+} from "~/server/services/competitionService";
 
+/**
+ * Ranking dos times de uma competicao.
+ *
+ * O parametro da rota chama-se `slug`, mas este handler lia `id` — sempre
+ * undefined, entao `Number(undefined)` era NaN e a rota lancava em 100% das
+ * chamadas. Nenhuma pagina do front a consumia, o que explica o bug ter
+ * passado sem ninguem notar.
+ */
 export default defineEventHandler(async (event) => {
-  
-    const id = getRouterParam(event, 'id');
+  const slug = String(getRouterParam(event, "slug"));
 
-    // Check if id is a number
-    if (isNaN(Number(id))) {
-        throw new Error('Invalid competition id');
-    }
+  const competition = await getCompetitionBySlug(slug);
+  if (!competition) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Competition not found",
+    });
+  }
 
-    const ranking = await getCompetitionRanking(Number(id));
-    return ranking;
+  return await getCompetitionRanking(competition.id);
 });
