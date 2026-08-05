@@ -76,6 +76,10 @@ export default defineNuxtConfig({
     donationsQueueUrl: process.env.DONATIONS_QUEUE_URL ?? "queue-url",
     ondeDoarApiUrl:
       process.env.ONDE_DOAR_API_URL ?? "https://ondedoar.hemocione.com.br",
+    hemocioneIdApiUrl:
+      process.env.HEMOCIONE_ID_API_URL ?? "http://localhost:8080",
+    hemocioneIdFactsSecret:
+      process.env.HEMOCIONE_ID_FACTS_SECRET ?? "secret",
   },
 
   routeRules: {
