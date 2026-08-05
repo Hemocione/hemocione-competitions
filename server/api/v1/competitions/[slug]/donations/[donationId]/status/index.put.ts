@@ -3,6 +3,8 @@ import { updateDonationStatus } from "~/server/services/donationService";
 import { getCompetitionBySlug } from "~/server/services/competitionService";
 import { waitUntil } from '@vercel/functions';
 import { callWebhook } from "~/server/services/webhookService";
+import { runAsync } from "~/utils/runAsync";
+import { postFactToHemocioneId } from "~/server/services/hemocioneIdFacts";
 
 export default defineEventHandler(async (event) => {
   assertSecretAuth(event);
@@ -41,6 +43,18 @@ export default defineEventHandler(async (event) => {
 
   if (updatedDonation.status === "approved" && competition.webhook_configs?.donation_approved) {
     waitUntil(callWebhook(competition.webhook_configs?.donation_approved, { hemocioneId: updatedDonation.hemocioneID }));
+  }
+
+  if (updatedDonation.status === "approved" && updatedDonation.hemocioneID) {
+    runAsync(
+      postFactToHemocioneId({
+        userId: updatedDonation.hemocioneID,
+        eventType: "competition.participated",
+        occurredAt: updatedDonation.updatedAt.toISOString(),
+        payload: { competitionId: updatedDonation.competitionId, kind: updatedDonation.kind },
+        idempotencyKey: `hemocione-competitions:competition.participated:donation-${updatedDonation.id}`,
+      })
+    );
   }
 
   return updatedDonation
