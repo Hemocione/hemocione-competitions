@@ -6,6 +6,8 @@ import { callWebhook } from "~/server/services/webhookService";
 import { getPrettyFullName } from "~/utils/getPrettyFullName";
 import { isAllowedProofUrl } from "~/utils/proofUrl";
 import { resolveGeoValidation } from "~/utils/geo";
+import { runAsync } from "~/utils/runAsync";
+import { postFactToHemocioneId } from "~/server/services/hemocioneIdFacts";
 import {
   isValidExtraFieldsResponse,
   type ExtraFields,
@@ -163,6 +165,18 @@ export default defineEventHandler(async (event) => {
     competition.webhook_configs?.donation_approved
   ) {
     waitUntil(callWebhook(competition.webhook_configs.donation_approved, { hemocioneId: user.id }));
+  }
+
+  if (createdDonation.status === "approved" && createdDonation.hemocioneID) {
+    runAsync(
+      postFactToHemocioneId({
+        userId: createdDonation.hemocioneID,
+        eventType: "competition.participated",
+        occurredAt: createdDonation.createdAt.toISOString(),
+        payload: { competitionId: createdDonation.competitionId, kind: createdDonation.kind },
+        idempotencyKey: `hemocione-competitions:competition.participated:donation-${createdDonation.id}`,
+      })
+    );
   }
 
   return createdDonation;
