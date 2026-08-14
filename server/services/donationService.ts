@@ -137,15 +137,23 @@ export const getCompetitionUserDonations = async (data: {
 
 export const updateDonationStatus = async (data: {
   donationId: number;
+  competitionId: number;
   status: "pending" | "approved" | "rejected";
 }) => {
-  const { donationId, status } = data;
+  const { donationId, competitionId, status } = data;
+
   return await dbClient.$transaction(async (db) => {
-    const previousDonation = await db.donations.findUnique({
+    // O update e restrito a competicao da rota: sem isso, qualquer slug valido
+    // moderava doacao de qualquer competicao, e um slug de outra competicao
+    // selecionava o webhook errado.
+    const previousDonation = await db.donations.findFirst({
       where: {
         id: donationId,
+        competitionId,
       },
     });
+
+    if (!previousDonation) return null;
 
     const updatedDonation = await db.donations.update({
       where: {
@@ -158,7 +166,7 @@ export const updateDonationStatus = async (data: {
 
     // O contador so acompanha doacoes de sangue de verdade. Participacao conta
     // na criacao e nunca e ajustada — o ranking participativo nao tem reversao.
-    if (previousDonation?.kind === "donation") {
+    if (previousDonation.kind === "donation") {
       const wasApproved = previousDonation.status === "approved";
       const isApproved = status === "approved";
 
@@ -190,3 +198,58 @@ export const updateDonationStatus = async (data: {
     return updatedDonation;
   });
 }
+
+export const listCompetitionDonations = async (data: {
+  competitionId: number;
+  status?: "pending" | "approved" | "rejected";
+  kind?: "donation" | "participation";
+  take: number;
+  skip: number;
+}) => {
+  const { competitionId, status, kind, take, skip } = data;
+  const where = {
+    competitionId,
+    ...(status ? { status } : {}),
+    ...(kind ? { kind } : {}),
+  };
+
+  // A contagem usa o mesmo filtro da pagina: sem isso, quem pagina nao sabe
+  // quantas doacoes ainda faltam moderar.
+  const [total, items] = await Promise.all([
+    dbClient.donations.count({ where }),
+    dbClient.donations.findMany({
+      where,
+      select: {
+        id: true,
+        user_name: true,
+        user_email: true,
+        hemocioneID: true,
+        competitionTeamId: true,
+        competitionId: true,
+        kind: true,
+        status: true,
+        proof: true,
+        extraFields: true,
+        donationDate: true,
+        createdAt: true,
+        updatedAt: true,
+        // O nome do time vive em `teams`; `competitionTeams` e a ligacao
+        // entre time e competicao. Quem modera precisa ver o nome.
+        competitionTeams: {
+          select: {
+            id: true,
+            teams: { select: { id: true, name: true } },
+          },
+        },
+      },
+      // `id` como desempate porque `createdAt` nao e unico: doacoes gravadas no
+      // mesmo instante nao tem ordem relativa definida, e sem chave estavel uma
+      // linha pode repetir numa pagina e faltar na seguinte.
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take,
+      skip,
+    }),
+  ]);
+
+  return { total, items };
+};
