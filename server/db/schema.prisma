@@ -73,8 +73,20 @@ model competitionTeams {
   teams        teams        @relation(fields: [teamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   donations    donations[]
   influences   influence[]
+  likes        likes[]
 
   @@unique([competitionId, teamId])
+}
+
+model likes {
+  id                Int      @id @default(autoincrement())
+  hemocioneID       String   @db.VarChar(255)
+  competitionTeamId Int
+  createdAt         DateTime @default(now())
+
+  competitionTeams competitionTeams @relation(fields: [competitionTeamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([hemocioneID, competitionTeamId], name: "likes_hemocioneID_competitionTeamId")
 }
 
 model donations {
