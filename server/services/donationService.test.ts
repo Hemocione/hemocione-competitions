@@ -4,6 +4,7 @@ const db = vi.hoisted(() => {
   const donations = {
     create: vi.fn(),
     findUnique: vi.fn(),
+    findFirst: vi.fn(),
     update: vi.fn(),
   };
   const competitionTeams = {
@@ -87,14 +88,14 @@ describe("updateDonationStatus", () => {
   });
 
   it("increments donation_count when a donation goes from pending to approved", async () => {
-    db.donations.findUnique.mockResolvedValue({
+    db.donations.findFirst.mockResolvedValue({
       id: 1,
       kind: "donation",
       status: "pending",
       competitionTeamId: 10,
     });
 
-    await updateDonationStatus({ donationId: 1, status: "approved" });
+    await updateDonationStatus({ donationId: 1, competitionId: 1, status: "approved" });
 
     expect(db.competitionTeams.update).toHaveBeenCalledWith({
       where: { id: 10 },
@@ -103,14 +104,14 @@ describe("updateDonationStatus", () => {
   });
 
   it("decrements donation_count when an approved donation is rejected", async () => {
-    db.donations.findUnique.mockResolvedValue({
+    db.donations.findFirst.mockResolvedValue({
       id: 1,
       kind: "donation",
       status: "approved",
       competitionTeamId: 10,
     });
 
-    await updateDonationStatus({ donationId: 1, status: "rejected" });
+    await updateDonationStatus({ donationId: 1, competitionId: 1, status: "rejected" });
 
     expect(db.competitionTeams.update).toHaveBeenCalledWith({
       where: { id: 10 },
@@ -119,14 +120,14 @@ describe("updateDonationStatus", () => {
   });
 
   it("decrements donation_count when an approved donation goes back to pending", async () => {
-    db.donations.findUnique.mockResolvedValue({
+    db.donations.findFirst.mockResolvedValue({
       id: 1,
       kind: "donation",
       status: "approved",
       competitionTeamId: 10,
     });
 
-    await updateDonationStatus({ donationId: 1, status: "pending" });
+    await updateDonationStatus({ donationId: 1, competitionId: 1, status: "pending" });
 
     expect(db.competitionTeams.update).toHaveBeenCalledWith({
       where: { id: 10 },
@@ -135,28 +136,38 @@ describe("updateDonationStatus", () => {
   });
 
   it("does not change the counter when the status does not change", async () => {
-    db.donations.findUnique.mockResolvedValue({
+    db.donations.findFirst.mockResolvedValue({
       id: 1,
       kind: "donation",
       status: "approved",
       competitionTeamId: 10,
     });
 
-    await updateDonationStatus({ donationId: 1, status: "approved" });
+    await updateDonationStatus({ donationId: 1, competitionId: 1, status: "approved" });
 
     expect(db.competitionTeams.update).not.toHaveBeenCalled();
   });
 
   it("never adjusts the counter for participation", async () => {
-    db.donations.findUnique.mockResolvedValue({
+    db.donations.findFirst.mockResolvedValue({
       id: 1,
       kind: "participation",
       status: "pending",
       competitionTeamId: 10,
     });
 
-    await updateDonationStatus({ donationId: 1, status: "approved" });
+    await updateDonationStatus({ donationId: 1, competitionId: 1, status: "approved" });
 
+    expect(db.competitionTeams.update).not.toHaveBeenCalled();
+  });
+
+  it("returns null and does not touch the counter when the donation belongs to another competition", async () => {
+    db.donations.findFirst.mockResolvedValue(null);
+
+    const result = await updateDonationStatus({ donationId: 1, competitionId: 999, status: "approved" });
+
+    expect(result).toBeNull();
+    expect(db.donations.update).not.toHaveBeenCalled();
     expect(db.competitionTeams.update).not.toHaveBeenCalled();
   });
 });
