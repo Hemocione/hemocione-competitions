@@ -8,7 +8,7 @@ const db = vi.hoisted(() => {
   const competitionTeams = {
     update: vi.fn(),
   };
-  const dbClient = {
+  const dbClient: { likes: typeof likes; competitionTeams: typeof competitionTeams; $transaction: ReturnType<typeof vi.fn> } = {
     likes,
     competitionTeams,
     $transaction: vi.fn(async (callback: (tx: unknown) => Promise<unknown>) =>

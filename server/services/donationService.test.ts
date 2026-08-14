@@ -13,7 +13,12 @@ const db = vi.hoisted(() => {
   const influence = {
     update: vi.fn(),
   };
-  const dbClient = {
+  const dbClient: {
+    donations: typeof donations;
+    competitionTeams: typeof competitionTeams;
+    influence: typeof influence;
+    $transaction: ReturnType<typeof vi.fn>;
+  } = {
     donations,
     competitionTeams,
     influence,
