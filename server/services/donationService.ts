@@ -20,6 +20,13 @@ export const registerDonation = async (
 ) => {
   const { user_name, user_email, extraFields, hemocioneID, proof } = payload;
   const kind = payload.kind ?? "donation";
+
+  // O ranking soma apenas doacoes aprovadas. Participacao (check-in) nao passa
+  // por moderacao, entao conta na criacao. Doacao de sangue conta so depois de
+  // aprovada: quem registra e depois e rejeitado nao pode contar pra sempre.
+  const shouldCountOnCreation =
+    kind === "participation" || payload.status === "approved";
+
   const donation = await dbClient.$transaction(async (db) => {
     const createdDonation = await db.donations.create({
       data: {
@@ -39,18 +46,18 @@ export const registerDonation = async (
       },
     });
 
-    // O contador soma os dois tipos de proposito: numa copa participativa o
-    // ranking E de participacao. Assim getCompetitionRanking nao muda.
-    await db.competitionTeams.update({
-      where: {
-        id: competitionTeamId,
-      },
-      data: {
-        donation_count: {
-          increment: 1,
+    if (shouldCountOnCreation) {
+      await db.competitionTeams.update({
+        where: {
+          id: competitionTeamId,
         },
-      },
-    });
+        data: {
+          donation_count: {
+            increment: 1,
+          },
+        },
+      });
+    }
 
     if (payload.influenceId) {
       await db.influence.update({
@@ -133,12 +140,53 @@ export const updateDonationStatus = async (data: {
   status: "pending" | "approved" | "rejected";
 }) => {
   const { donationId, status } = data;
-  return await dbClient.donations.update({
-    where: {
-      id: donationId,
-    },
-    data: {
-      status,
-    },
+  return await dbClient.$transaction(async (db) => {
+    const previousDonation = await db.donations.findUnique({
+      where: {
+        id: donationId,
+      },
+    });
+
+    const updatedDonation = await db.donations.update({
+      where: {
+        id: donationId,
+      },
+      data: {
+        status,
+      },
+    });
+
+    // O contador so acompanha doacoes de sangue de verdade. Participacao conta
+    // na criacao e nunca e ajustada — o ranking participativo nao tem reversao.
+    if (previousDonation?.kind === "donation") {
+      const wasApproved = previousDonation.status === "approved";
+      const isApproved = status === "approved";
+
+      if (isApproved && !wasApproved) {
+        await db.competitionTeams.update({
+          where: {
+            id: previousDonation.competitionTeamId,
+          },
+          data: {
+            donation_count: {
+              increment: 1,
+            },
+          },
+        });
+      } else if (wasApproved && !isApproved) {
+        await db.competitionTeams.update({
+          where: {
+            id: previousDonation.competitionTeamId,
+          },
+          data: {
+            donation_count: {
+              decrement: 1,
+            },
+          },
+        });
+      }
+    }
+
+    return updatedDonation;
   });
 }
