@@ -86,5 +86,5 @@ export function getRedirectToIdUrl(fullPath: string) {
 }
 
 export function redirectToID(fullPath: string) {
-  return navigateTo(getRedirectToIdUrl(fullPath));
+  return navigateTo(getRedirectToIdUrl(fullPath), { external: true });
 }
