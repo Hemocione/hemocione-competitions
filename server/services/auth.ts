@@ -72,3 +72,23 @@ export function useHemocioneUserAuthOrHemocioneIdIntegrationSecret(
     assertHemocioneIdIntegrationSecret(event);
   }
 }
+
+/**
+ * Usuario logado, se houver. Token ausente ou invalido devolve null, nunca 401:
+ * serve a rotas publicas que so personalizam a resposta (ex.: isMine).
+ */
+export function getOptionalHemocioneUser(
+  event: H3Event
+): HemocioneUserAuthTokenData | null {
+  const token = event.headers
+    .get("Authorization")
+    ?.replace("Bearer", "")
+    .trim();
+  if (!token) return null;
+
+  try {
+    return verifyAndReturnData<HemocioneUserAuthTokenData>(token);
+  } catch {
+    return null;
+  }
+}

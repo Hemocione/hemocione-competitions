@@ -12,6 +12,9 @@ export interface UpdateBody {
   competitionTeamId: number;
 }
 
+// Rotas publicas, sem login. O select e o where daqui decidem o que sai.
+// user_email nunca e lido; hemocioneID e lido so para calcular isMine no
+// servidor e nunca sai na resposta (ver toPublicInfluenceRow).
 const getCompetitionInfluencesPromise = (competitionSlug: string) => {
   return dbClient.influence.findMany({
     select: {
@@ -23,6 +26,8 @@ const getCompetitionInfluencesPromise = (competitionSlug: string) => {
     where: {
       competitions: {
         slug: competitionSlug,
+        published: true,
+        has_influence: true,
       },
     },
     orderBy: {
@@ -40,7 +45,7 @@ const CompetititionInfluencesCache = new Map<
 >();
 const CACHE_TTL = 60 * 1000 * 5; // 5 minutes
 
-export const getCompetitionInfluences = async (competitionSlug: string) => {
+const getCompetitionInfluences = async (competitionSlug: string) => {
   const cacheHit = CompetititionInfluencesCache.get(competitionSlug);
   if (cacheHit && cacheHit.generatedAt.getTime() + CACHE_TTL > Date.now()) {
     return cacheHit.influences;
@@ -52,6 +57,40 @@ export const getCompetitionInfluences = async (competitionSlug: string) => {
     influences,
   });
   return influences;
+};
+
+/** "Maria Clara Souza" -> "Maria S."; um nome so fica como esta. */
+export const shortUserName = (fullName: string | null | undefined) => {
+  const parts = (fullName ?? "").trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "";
+  if (parts.length === 1) return parts[0];
+  return `${parts[0]} ${parts[parts.length - 1][0]}.`;
+};
+
+export interface PublicInfluenceRow {
+  user_name: string;
+  amountInfluence: number;
+  code: string;
+  isMine: boolean;
+}
+
+const toPublicInfluenceRow = (
+  row: { hemocioneID: string; user_name: string; amountInfluence: number; code: string },
+  viewerHemocioneID: string | null
+): PublicInfluenceRow => ({
+  user_name: shortUserName(row.user_name),
+  amountInfluence: row.amountInfluence,
+  code: row.code,
+  isMine: Boolean(viewerHemocioneID) && row.hemocioneID === viewerHemocioneID,
+});
+
+/** Lista publica do ranking de indicacoes. Sem e-mail e sem hemocioneID. */
+export const getPublicCompetitionInfluences = async (
+  competitionSlug: string,
+  viewerHemocioneID: string | null
+): Promise<PublicInfluenceRow[]> => {
+  const influences = await getCompetitionInfluences(competitionSlug);
+  return influences.map((row) => toPublicInfluenceRow(row, viewerHemocioneID));
 };
 
 export const createInfluence = async (data: CreateBody) => {
@@ -120,16 +159,54 @@ export const getInfluenceByCodeAndCompetitionSlug = async (
   code: string
 ) => {
   const influence = await dbClient.influence.findFirst({
+    select: {
+      id: true,
+      code: true,
+      user_name: true,
+      competitionTeamId: true,
+      hemocioneID: true,
+    },
     where: {
       code,
       competitions: {
         slug: competitionSlug,
+        published: true,
         has_influence: true,
       },
     },
   });
 
   return influence;
+};
+
+export interface PublicInfluence {
+  id: number;
+  code: string;
+  user_name: string;
+  competitionTeamId: number | null;
+  isMine: boolean;
+}
+
+/** Indicacao por codigo, para a tela de registro. Sem e-mail e sem hemocioneID. */
+export const getPublicInfluenceByCode = async (
+  competitionSlug: string,
+  code: string,
+  viewerHemocioneID: string | null
+): Promise<PublicInfluence | null> => {
+  const influence = await getInfluenceByCodeAndCompetitionSlug(
+    competitionSlug,
+    code
+  );
+  if (!influence) return null;
+
+  return {
+    id: influence.id,
+    code: influence.code,
+    user_name: shortUserName(influence.user_name),
+    competitionTeamId: influence.competitionTeamId ?? null,
+    isMine:
+      Boolean(viewerHemocioneID) && influence.hemocioneID === viewerHemocioneID,
+  };
 };
 
 export const setInfluenceCompetitionTeamId = async (
