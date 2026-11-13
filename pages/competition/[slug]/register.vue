@@ -328,16 +328,20 @@ const externalProofUrl = (() => {
 const uploadingImage = ref(false);
 const registeringDonation = ref(false);
 
+const influenceViewerAuth = useInfluenceViewerAuth();
 const [{ data: competition }, { data: influence }, donation] =
   await Promise.all([
     useFetch(`/api/v1/competitions/${slug}`),
     code
-      ? useFetch(`/api/v1/competitions/${slug}/influence/codes/${code}`)
+      ? useFetch(`/api/v1/competitions/${slug}/influence/codes/${code}`, {
+          headers: influenceViewerAuth.headers,
+          watch: [influenceViewerAuth.token],
+        })
       : { data: ref(null) },
     getDonationByCompetitionSlug(String(slug)),
   ]);
 
-if (influence.value && influence.value.hemocioneID === user?.id) {
+if (influence.value && influence.value.isMine) {
   influence.value = null; // prevent self-influence
 }
 
@@ -361,7 +365,7 @@ if (donation) {
 }
 
 const influencedBy = computed(() =>
-  influence.value && influence.value.hemocioneID !== user?.id
+  influence.value && !influence.value.isMine
     ? influence.value
     : null
 );

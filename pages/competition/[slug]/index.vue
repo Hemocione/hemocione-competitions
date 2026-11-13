@@ -126,8 +126,12 @@ const unitLabel = wording.nounPluralCapitalized;
 const { data: engagements } = competition?.value?.has_likes
   ? await useFetch(`/api/v1/competitions/${slug}/engagements`)
   : { data: ref([]) };
+const influenceViewerAuth = useInfluenceViewerAuth();
 const { data: influences } = competition?.value?.has_influence
-  ? await useFetch(`/api/v1/competitions/${slug}/influence`)
+  ? await useFetch(`/api/v1/competitions/${slug}/influence`, {
+      headers: influenceViewerAuth.headers,
+      watch: [influenceViewerAuth.token],
+    })
   : { data: ref([]) };
 
 const influenceRanking = computed(() => {
@@ -144,8 +148,7 @@ const influenceRanking = computed(() => {
           },
         },
         Indicados: c.amountInfluence,
-        hemocioneID: c.hemocioneID,
-        shouldHighlight: c.hemocioneID === user.value?.id,
+        shouldHighlight: c.isMine,
       })) ?? [],
   };
 });
